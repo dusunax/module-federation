@@ -6,12 +6,11 @@ module.exports = {
   entry: './src/index.js',
   mode: 'development',
   devServer: {
-    port: 3000,
-    open: true,
-    historyApiFallback: true, // SPA 라우팅을 위해 필요
+    port: 3004,
+    historyApiFallback: true,
   },
   output: {
-    publicPath: 'http://localhost:3000/',
+    publicPath: 'http://localhost:3004/',
   },
   module: {
     rules: [
@@ -25,34 +24,23 @@ module.exports = {
           },
         },
       },
-      {
-        test: /\.css$/i,
-        use: [
-          'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              esModule: false,
-            },
-          },
-        ],
-      },
     ],
   },
   plugins: [
     new ModuleFederationPlugin({
-      name: 'host',
+      name: 'archive',
+      filename: 'remoteEntry.js',
       remotes: {
-        header: 'header@http://localhost:3001/remoteEntry.js',
         products: 'products@http://localhost:3002/remoteEntry.js',
-        cart: 'cart@http://localhost:3003/remoteEntry.js',
-        archive: 'archive@http://localhost:3004/remoteEntry.js',
+      },
+      exposes: {
+        './OrderList': './src/OrderList',
+        './OrderDetail': './src/OrderDetail',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },
         'react-dom': { singleton: true, requiredVersion: '^18.2.0' },
         'react-router-dom': { singleton: true, requiredVersion: '^7.12.0' },
-        '@tanstack/react-query': { singleton: true },
         zustand: { singleton: true },
       },
     }),

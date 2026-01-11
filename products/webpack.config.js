@@ -34,6 +34,7 @@ module.exports = {
         "./ProductList": "./src/ProductList.js",
         "./ProductDetail": "./src/ProductDetail.js",
         "./cartStore": "./src/store/cartStore.js",
+        "./orderStore": "./src/store/orderStore.js",
         "./utils/statusStyle": "./src/utils/statusStyle.js",
         "./constants": "./src/constants/index.js",
       },

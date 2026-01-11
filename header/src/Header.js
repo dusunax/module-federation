@@ -1,13 +1,21 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useCartStore } from 'products/cartStore';
 
 function Header() {
+  const location = useLocation();
   const items = useCartStore((state) => state.items);
   const totalItems = Object.values(items).reduce(
     (total, item) => total + item.quantity,
     0
   );
+
+  const isActive = (path) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
+  };
 
   return (
     <header
@@ -52,7 +60,22 @@ function Header() {
           }}
         >
           <li>
-            <Link to="/" style={{ color: "#FFF8D4", textDecoration: "none" }}>
+            <Link
+              to="/"
+              style={{
+                color: "#FFF8D4",
+                textDecoration: "none",
+                padding: "8px 12px",
+                borderRadius: "4px",
+                background: isActive("/")
+                  ? "rgba(163, 176, 135, 0.3)"
+                  : "transparent",
+                borderBottom: isActive("/")
+                  ? "2px solid #A3B087"
+                  : "2px solid transparent",
+                transition: "all 0.3s ease",
+              }}
+            >
               홈
             </Link>
           </li>
@@ -66,6 +89,15 @@ function Header() {
                 alignItems: "center",
                 gap: "8px",
                 position: "relative",
+                padding: "8px 12px",
+                borderRadius: "4px",
+                background: isActive("/cart")
+                  ? "rgba(163, 176, 135, 0.3)"
+                  : "transparent",
+                borderBottom: isActive("/cart")
+                  ? "2px solid #A3B087"
+                  : "2px solid transparent",
+                transition: "all 0.3s ease",
               }}
             >
               🛒 장바구니
@@ -87,6 +119,29 @@ function Header() {
                   {totalItems}
                 </span>
               )}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/archive"
+              style={{
+                color: "#FFF8D4",
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "8px 12px",
+                borderRadius: "4px",
+                background: isActive("/archive")
+                  ? "rgba(163, 176, 135, 0.3)"
+                  : "transparent",
+                borderBottom: isActive("/archive")
+                  ? "2px solid #A3B087"
+                  : "2px solid transparent",
+                transition: "all 0.3s ease",
+              }}
+            >
+              📚 감정 기록
             </Link>
           </li>
         </ul>
