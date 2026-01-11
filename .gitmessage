@@ -1,0 +1,18 @@
+# <type>(<scope>): <subject>
+
+# <body>
+
+# <footer>
+
+# Type: feat, fix, docs, style, refactor, test, chore
+# Scope: host, header, products, cart, shared, config
+# Subject: 50자 이내, 명령형으로 작성
+# Body: 변경 이유와 방법 설명 (선택사항)
+# Footer: Breaking changes, Issues (선택사항)
+
+# 예시:
+# feat(products): cart store 기능 추가, zustand 사용
+# fix(host): router context 문제 해결
+# docs(header): README 업데이트
+# style(host): 전역 CSS 스타일 추가
+# refactor(cart): 장바구니 아이템 렌더링 개선
