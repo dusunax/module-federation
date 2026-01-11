@@ -1,6 +1,8 @@
-# Greenary
+# Between Lines
 
-Webpack Module Federation을 사용한 마이크로 프론트엔드 기반의 플랜테리어 & 라이프스타일 쇼핑몰 서비스입니다.
+**Like Real People Do**
+
+사랑에 대한 순간들을 담은 이커머스 서비스입니다. 감정의 순간을 기억하고, 저장하며, 마음에 남겨두는 마이크로 프론트엔드 기반 플랫폼입니다.
 
 ## 프로젝트 구조
 

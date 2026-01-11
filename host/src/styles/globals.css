@@ -1,8 +1,29 @@
+/* Between Lines - Like Real People Do */
+/* 어두운 네이비/차콜 배경, 낮은 대비, 미세한 그라데이션 */
+
 /* CSS Reset & Base Styles */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+:root {
+  /* 새로운 컬러 팔레트 */
+  --bg-dark: #313647; /* 어두운 네이비-그레이 */
+  --bg-medium: #435663; /* 중간 톤 블루-그레이 */
+  --accent-olive: #A3B087; /* 올리브 그린 */
+  --text-cream: #FFF8D4; /* 밝은 크림/베이지 */
+  --text-primary: #FFF8D4; /* 주요 텍스트 */
+  --text-secondary: rgba(255, 248, 212, 0.85); /* 보조 텍스트 */
+  --text-muted: rgba(255, 248, 212, 0.7); /* 약한 텍스트 */
+  --border-color: rgba(255, 248, 212, 0.2); /* 테두리 */
+  --border-color-hover: rgba(163, 176, 135, 0.4); /* 호버 테두리 */
+}
+
+html {
+  background: var(--bg-dark);
+  min-height: 100vh;
 }
 
 body {
@@ -12,67 +33,101 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
-  color: #333;
-  background-color: #fff;
+  color: var(--text-primary);
+  background: var(--bg-dark);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  /* 미세한 그라데이션 효과 */
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(67, 86, 99, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(163, 176, 135, 0.05) 0%, transparent 50%);
+  position: relative;
+}
+
+#root {
+  background: var(--bg-dark);
+  min-height: 100vh;
+}
+
+/* 노이즈 오버레이 (선택적) */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* 공통 버튼 스타일 */
 .btn {
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: all 0.3s ease;
+  background: rgba(67, 86, 99, 0.3);
+  color: var(--text-primary);
+  font-weight: 300;
+  letter-spacing: 0.5px;
 }
 
 .btn:hover {
-  transform: translateY(-1px);
+  background: rgba(67, 86, 99, 0.5);
+  border-color: var(--border-color-hover);
 }
 
 .btn:active {
-  transform: translateY(0);
+  transform: translateY(1px);
 }
 
 .btn-primary {
-  background-color: #4CAF50;
-  color: white;
+  background: rgba(163, 176, 135, 0.3);
+  border-color: rgba(163, 176, 135, 0.5);
 }
 
 .btn-primary:hover {
-  background-color: #45a049;
+  background: rgba(163, 176, 135, 0.5);
+  border-color: rgba(163, 176, 135, 0.7);
 }
 
 .btn-secondary {
-  background-color: #f0f0f0;
-  color: #333;
-  border: 1px solid #ddd;
+  background: rgba(67, 86, 99, 0.2);
+  border-color: var(--border-color);
 }
 
 .btn-secondary:hover {
-  background-color: #e0e0e0;
+  background: rgba(67, 86, 99, 0.4);
 }
 
 .btn-danger {
-  background-color: #ff5252;
-  color: white;
+  background: rgba(67, 86, 99, 0.3);
+  border-color: var(--border-color);
+  color: var(--text-primary);
 }
 
 .btn-danger:hover {
-  background-color: #e04545;
+  background: rgba(67, 86, 99, 0.5);
 }
 
 /* 공통 카드 스타일 */
 .card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  background-color: white;
-  transition: box-shadow 0.2s, transform 0.2s;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 24px;
+  background: rgba(67, 86, 99, 0.2);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--border-color-hover);
+  background: rgba(67, 86, 99, 0.3);
   transform: translateY(-2px);
 }
 
@@ -80,15 +135,23 @@ body {
 .input {
   width: 100%;
   padding: 12px 16px;
-  font-size: 16px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
+  font-size: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.3s ease;
+  background: rgba(67, 86, 99, 0.3);
+  color: var(--text-primary);
+  font-weight: 300;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
 }
 
 .input:focus {
-  border-color: #4CAF50;
+  border-color: var(--accent-olive);
+  background: rgba(67, 86, 99, 0.4);
 }
 
 /* 공통 레이아웃 */
@@ -109,14 +172,27 @@ body {
 .p-2 { padding: 20px; }
 .p-3 { padding: 30px; }
 
-/* 공통 색상 변수 (CSS 변수 사용) */
-:root {
-  --primary-color: #4CAF50;
-  --primary-hover: #45a049;
-  --secondary-color: #f0f0f0;
-  --danger-color: #ff5252;
-  --text-color: #333;
-  --text-muted: #666;
-  --border-color: #ddd;
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+/* 텍스트 스타일 - 개선된 가독성 */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: 300;
+  letter-spacing: 0.5px;
+}
+
+p {
+  color: var(--text-secondary);
+  font-weight: 300;
+  line-height: 1.8;
+}
+
+/* 링크 스타일 */
+a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-weight: 300;
+}
+
+a:hover {
+  color: var(--accent-olive);
 }

@@ -3,13 +3,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './styles/globals.css';
 
-// 원격 컴포넌트를 동적으로 로드
-const Header = lazy(() => import('header/Header'));
-const ProductList = lazy(() => import('products/ProductList'));
-const ProductDetail = lazy(() => import('products/ProductDetail'));
-const Cart = lazy(() => import('cart/Cart'));
+const Header = lazy(() => import("header/Header"));
+const ProductList = lazy(() => import("products/ProductList"));
+const ProductDetail = lazy(() => import("products/ProductDetail"));
+const Cart = lazy(() => import("cart/Cart"));
 
-// React Query 클라이언트 설정
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -23,7 +21,14 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <div style={{ fontFamily: 'Arial, sans-serif' , display: 'flex', flexDirection: 'column', height: '100dvh' }}>
+        <div style={{ 
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          height: '100dvh',
+          background: '#313647',
+          minHeight: '100vh',
+        }}>
           <Suspense fallback={<div>헤더 로딩 중...</div>}>
             <Header />
           </Suspense>
@@ -60,10 +65,12 @@ function App() {
           <footer style={{
             marginTop: '40px',
             padding: '20px',
-            backgroundColor: '#f0f0f0',
-            textAlign: 'center'
+            textAlign: 'center',
+            borderTop: '1px solid rgba(255, 248, 212, 0.2)',
           }}>
-            <p>Greenary - 플랜테리어 & 라이프스타일 쇼핑몰</p>
+            <p style={{ color: 'rgba(255, 248, 212, 0.8)', fontSize: '14px', fontWeight: 300 }}>
+              Between Lines - Like Real People Do
+            </p>
           </footer>
         </div>
       </BrowserRouter>

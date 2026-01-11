@@ -1,35 +1,35 @@
 import { http, HttpResponse } from 'msw';
-import { plants } from './data';
+import { emotions } from './data';
 
 export const handlers = [
-  // 전체 상품 목록 조회
-  http.get('/api/plants', ({ request }) => {
+  http.get("/api/emotions", ({ request }) => {
     const url = new URL(request.url);
-    const search = url.searchParams.get('search');
+    const search = url.searchParams.get("search");
 
-    let filteredPlants = plants;
+    let filteredEmotions = emotions;
 
-    // 검색어가 있으면 필터링
     if (search) {
-      filteredPlants = plants.filter(plant =>
-        plant.name.toLowerCase().includes(search.toLowerCase()) ||
-        plant.category.toLowerCase().includes(search.toLowerCase()) ||
-        plant.description.toLowerCase().includes(search.toLowerCase())
+      filteredEmotions = emotions.filter(
+        (emotion) =>
+          emotion.name.toLowerCase().includes(search.toLowerCase()) ||
+          emotion.category.toLowerCase().includes(search.toLowerCase()) ||
+          emotion.description.toLowerCase().includes(search.toLowerCase()) ||
+          emotion.story.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    return HttpResponse.json(filteredPlants);
+    return HttpResponse.json(filteredEmotions);
   }),
 
-  // 특정 상품 상세 조회
-  http.get('/api/plants/:id', ({ params }) => {
+  // 특정 감정 카드 상세 조회
+  http.get("/api/emotions/:id", ({ params }) => {
     const { id } = params;
-    const plant = plants.find(p => p.id === Number(id));
+    const emotion = emotions.find((e) => e.id === Number(id));
 
-    if (!plant) {
+    if (!emotion) {
       return new HttpResponse(null, { status: 404 });
     }
 
-    return HttpResponse.json(plant);
+    return HttpResponse.json(emotion);
   }),
 ];
