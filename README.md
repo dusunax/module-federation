@@ -16,7 +16,7 @@ test-claud-code/
 
 ## 주요 기능
 
-- **Module Federation**: 각 앱을 독립적으로 개발하고 배포
+- **Module Federation**: 각 앱을 독립적으로 개발하고 배포(예정)
 - **상태 공유**: Zustand store를 통한 앱 간 상태 동기화
 - **의존성 공유**: React, React Router, Zustand 등을 singleton으로 공유
 - **MSW**: API 모킹을 통한 개발 환경
