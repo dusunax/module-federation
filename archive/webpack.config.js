@@ -42,6 +42,7 @@ module.exports = {
         'react-dom': { singleton: true, requiredVersion: '^18.2.0' },
         'react-router-dom': { singleton: true, requiredVersion: '^7.12.0' },
         zustand: { singleton: true },
+        sonner: { singleton: true },
       },
     }),
     new HtmlWebpackPlugin({

@@ -1,34 +1,35 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useCartStore } from './store/cartStore';
+import { toast } from "sonner";
+import { useCartStore } from "./store/cartStore";
+import { useOrderStore } from "./store/orderStore";
 import { getStatusConfig } from "./utils/statusStyle";
 import { EMOTION_STATUS } from "./constants";
 
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [showAddedMessage, setShowAddedMessage] = useState(false);
-  const [showRefundModal, setShowRefundModal] = useState(false);
 
   const addToCart = useCartStore((state) => state.addToCart);
-  const removeFromCart = useCartStore((state) => state.removeFromCart);
   const items = useCartStore((state) => state.items);
 
   // 장바구니에 추가 핸들러
   const handleAddToCart = () => {
     addToCart(emotion);
-    setShowAddedMessage(true);
-    setTimeout(() => setShowAddedMessage(false), 2000);
-  };
+    // 추가 후 현재 수량 확인 (기억하는 중인 아이템 제외, 일반 장바구니 아이템만)
+    const cartState = useCartStore.getState();
+    const orderState = useOrderStore.getState();
+    const rememberingItemIds = orderState.rememberingItemIds;
 
-  // 환불 핸들러
-  const handleRefund = () => {
-    if (window.confirm("정말로 잊고 싶어요?")) {
-      removeFromCart(emotion.id);
-      setShowRefundModal(false);
-      alert("기억이 삭제되었습니다.");
-    }
+    const normalQuantity = Object.values(cartState.items)
+      .filter(
+        (item) =>
+          item.product.id === emotion.id &&
+          !rememberingItemIds.includes(item.id)
+      )
+      .reduce((sum, item) => sum + item.quantity, 0);
+    toast.success(`이 순간이 ${normalQuantity}만큼 담겨있어요`);
   };
 
   const {
@@ -46,7 +47,10 @@ function ProductDetail() {
     },
   });
 
-  const isInCart = emotion && items[emotion.id];
+  // 같은 productId를 가진 아이템이 있는지 확인
+  const isInCart =
+    emotion &&
+    Object.values(items).some((item) => item.product.id === emotion.id);
 
   if (isLoading) {
     return (
@@ -81,7 +85,9 @@ function ProductDetail() {
   }
 
   // 장바구니에 담겨있으면 held 상태로 표시
-  const currentStatus = isInCart ? EMOTION_STATUS.HELD : (emotion?.status || EMOTION_STATUS.NOTICING);
+  const currentStatus = isInCart
+    ? EMOTION_STATUS.HELD
+    : emotion?.status || EMOTION_STATUS.NOTICING;
   const statusStyle = getStatusConfig(currentStatus);
 
   return (
@@ -308,167 +314,35 @@ function ProductDetail() {
           </div>
         )}
 
-        {/* 장바구니 추가 버튼 / 환불 버튼 */}
-        {showAddedMessage && (
-          <div
+        {/* 장바구니 추가 버튼 */}
+        <div style={{ display: "flex", gap: "12px" }}>
+          <button
             style={{
-              padding: "12px",
-              marginBottom: "16px",
+              flex: 1,
+              padding: "16px",
+              fontSize: "15px",
+              fontWeight: 300,
               background: "rgba(163, 176, 135, 0.3)",
               color: "#FFF8D4",
+              border: "1px solid rgba(163, 176, 135, 0.5)",
               borderRadius: "4px",
-              textAlign: "center",
-              fontWeight: 300,
-              fontSize: "14px",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+              letterSpacing: "0.5px",
             }}
+            onMouseOver={(e) => {
+              e.target.style.background = "rgba(163, 176, 135, 0.5)";
+              e.target.style.borderColor = "rgba(163, 176, 135, 0.7)";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.background = "rgba(163, 176, 135, 0.3)";
+              e.target.style.borderColor = "rgba(163, 176, 135, 0.5)";
+            }}
+            onClick={handleAddToCart}
           >
-            ✓ 장바구니에 추가되었습니다
-          </div>
-        )}
-
-        <div style={{ display: "flex", gap: "12px" }}>
-          {!isInCart ? (
-            <button
-              style={{
-                flex: 1,
-                padding: "16px",
-                fontSize: "15px",
-                fontWeight: 300,
-                background: "rgba(163, 176, 135, 0.3)",
-                color: "#FFF8D4",
-                border: "1px solid rgba(163, 176, 135, 0.5)",
-                borderRadius: "4px",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                letterSpacing: "0.5px",
-              }}
-              onMouseOver={(e) => {
-                e.target.style.background = "rgba(163, 176, 135, 0.5)";
-                e.target.style.borderColor = "rgba(163, 176, 135, 0.7)";
-              }}
-              onMouseOut={(e) => {
-                e.target.style.background = "rgba(163, 176, 135, 0.3)";
-                e.target.style.borderColor = "rgba(163, 176, 135, 0.5)";
-              }}
-              onClick={handleAddToCart}
-            >
-              장바구니에 추가
-            </button>
-          ) : (
-            <button
-              style={{
-                flex: 1,
-                padding: "16px",
-                fontSize: "15px",
-                fontWeight: 300,
-                background: "rgba(67, 86, 99, 0.3)",
-                color: "#FFF8D4",
-                border: "1px solid rgba(255, 248, 212, 0.2)",
-                borderRadius: "4px",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                letterSpacing: "0.5px",
-              }}
-              onMouseOver={(e) => {
-                e.target.style.background = "rgba(67, 86, 99, 0.4)";
-              }}
-              onMouseOut={(e) => {
-                e.target.style.background = "rgba(67, 86, 99, 0.3)";
-              }}
-              onClick={() => setShowRefundModal(true)}
-            >
-              잊기
-            </button>
-          )}
+            {isInCart ? "더 담기" : "담기"}
+          </button>
         </div>
-
-        {/* 환불 모달 */}
-        {showRefundModal && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: "rgba(0, 0, 0, 0.7)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 1000,
-            }}
-            onClick={() => setShowRefundModal(false)}
-          >
-            <div
-              style={{
-                background: "#313647",
-                padding: "40px",
-                borderRadius: "4px",
-                border: "1px solid rgba(255, 248, 212, 0.2)",
-                maxWidth: "400px",
-                width: "90%",
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3
-                style={{
-                  margin: "0 0 20px 0",
-                  fontWeight: 300,
-                  color: "#FFF8D4",
-                  fontSize: "18px",
-                  letterSpacing: "0.5px",
-                }}
-              >
-                정말로 잊고 싶어요?
-              </h3>
-              <p
-                style={{
-                  margin: "0 0 30px 0",
-                  color: "rgba(255, 248, 212, 0.9)",
-                  fontSize: "14px",
-                  lineHeight: "1.6",
-                  fontWeight: 300,
-                }}
-              >
-                이 순간을 기억에서 삭제하시겠습니까? 되돌릴 수 없습니다.
-              </p>
-              <div style={{ display: "flex", gap: "12px" }}>
-                <button
-                  onClick={handleRefund}
-                  style={{
-                    flex: 1,
-                    padding: "12px",
-                    fontSize: "14px",
-                    fontWeight: 300,
-                    background: "rgba(163, 176, 135, 0.3)",
-                    color: "#FFF8D4",
-                    border: "1px solid rgba(163, 176, 135, 0.5)",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}
-                >
-                  삭제
-                </button>
-                <button
-                  onClick={() => setShowRefundModal(false)}
-                  style={{
-                    flex: 1,
-                    padding: "12px",
-                    fontSize: "14px",
-                    fontWeight: 300,
-                    background: "rgba(67, 86, 99, 0.3)",
-                    color: "#FFF8D4",
-                    border: "1px solid rgba(255, 248, 212, 0.2)",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}
-                >
-                  취소
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

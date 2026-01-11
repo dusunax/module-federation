@@ -44,6 +44,7 @@ module.exports = {
         "react-router-dom": { singleton: true, requiredVersion: "^7.12.0" },
         "@tanstack/react-query": { singleton: true },
         zustand: { singleton: true },
+        sonner: { singleton: true },
       },
     }),
     new HtmlWebpackPlugin({

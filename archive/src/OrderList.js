@@ -1,43 +1,62 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useOrderStore } from 'products/orderStore';
-import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
+import { toast } from "sonner";
+import { useOrderStore } from "products/orderStore";
+import { getStatusConfig, EMOTION_STATUS } from "products/utils/statusStyle";
 
 function OrderList() {
   const navigate = useNavigate();
   const orders = useOrderStore((state) => state.orders);
+  const removeOrder = useOrderStore((state) => state.removeOrder);
 
   if (orders.length === 0) {
     return (
-      <div style={{ padding: '40px 20px', maxWidth: '900px', margin: '0 auto', minHeight: '60vh' }}>
-        <div style={{
-          textAlign: 'center',
-          padding: '100px 20px',
-        }}>
-          <div style={{
-            fontSize: '80px',
-            marginBottom: '32px',
-            opacity: 0.5,
-            lineHeight: 1,
-          }}>📚</div>
-          <h2 style={{
-            fontWeight: 300,
-            letterSpacing: '1px',
-            marginBottom: '16px',
-            color: '#FFF8D4',
-            fontSize: '24px',
-          }}>
+      <div
+        style={{
+          padding: "40px 20px",
+          maxWidth: "900px",
+          margin: "0 auto",
+          minHeight: "60vh",
+        }}
+      >
+        <div
+          style={{
+            textAlign: "center",
+            padding: "100px 20px",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "80px",
+              marginBottom: "32px",
+              opacity: 0.5,
+              lineHeight: 1,
+            }}
+          >
+            📚
+          </div>
+          <h2
+            style={{
+              fontWeight: 300,
+              letterSpacing: "1px",
+              marginBottom: "16px",
+              color: "#FFF8D4",
+              fontSize: "24px",
+            }}
+          >
             아직 기록된 감정이 없어요
           </h2>
-          <p style={{
-            color: 'rgba(255, 248, 212, 0.7)',
-            fontSize: '14px',
-            fontWeight: 300,
-            letterSpacing: '0.3px',
-            lineHeight: 1.6,
-            maxWidth: '400px',
-            margin: '0 auto',
-          }}>
+          <p
+            style={{
+              color: "rgba(255, 248, 212, 0.7)",
+              fontSize: "14px",
+              fontWeight: 300,
+              letterSpacing: "0.3px",
+              lineHeight: 1.6,
+              maxWidth: "400px",
+              margin: "0 auto",
+            }}
+          >
             순간들을 기억으로 남기면 여기에 기록돼요
           </p>
         </div>
@@ -47,49 +66,55 @@ function OrderList() {
 
   const formatDate = (isoString) => {
     const date = new Date(isoString);
-    return date.toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleString("ko-KR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   return (
-    <div style={{ padding: '40px 20px', maxWidth: '900px', margin: '0 auto' }}>
+    <div style={{ padding: "40px 20px", maxWidth: "900px", margin: "0 auto" }}>
       {/* 헤더 */}
-      <div style={{
-        marginBottom: '40px',
-        paddingBottom: '24px',
-        borderBottom: '1px solid rgba(255, 248, 212, 0.15)',
-      }}>
-        <h1 style={{
-          margin: 0,
-          fontWeight: 300,
-          letterSpacing: '1px',
-          color: '#FFF8D4',
-          fontSize: '28px',
-          marginBottom: '8px',
-        }}>
+      <div
+        style={{
+          marginBottom: "40px",
+          paddingBottom: "24px",
+          borderBottom: "1px solid rgba(255, 248, 212, 0.15)",
+        }}
+      >
+        <h1
+          style={{
+            margin: 0,
+            fontWeight: 300,
+            letterSpacing: "1px",
+            color: "#FFF8D4",
+            fontSize: "28px",
+            marginBottom: "8px",
+          }}
+        >
           감정 기록
         </h1>
-        <p style={{
-          margin: 0,
-          color: 'rgba(255, 248, 212, 0.7)',
-          fontSize: '13px',
-          fontWeight: 300,
-          letterSpacing: '0.3px',
-        }}>
+        <p
+          style={{
+            margin: 0,
+            color: "rgba(255, 248, 212, 0.7)",
+            fontSize: "13px",
+            fontWeight: 300,
+            letterSpacing: "0.3px",
+          }}
+        >
           {orders.length}개의 기록이 있어요
         </p>
       </div>
 
       {/* 기록 목록 */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
         {orders.map((order) => {
           const statusConfig = getStatusConfig(EMOTION_STATUS.REMEMBERED);
-          
+
           return (
             <div
               key={order.id}
@@ -221,6 +246,120 @@ function OrderList() {
                     {order.totalItems}개
                   </p>
                 </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toast.custom((t) => (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "12px",
+                          padding: "16px",
+                          background: "rgba(67, 86, 99, 0.95)",
+                          border: "1px solid rgba(163, 176, 135, 0.3)",
+                          borderRadius: "8px",
+                          minWidth: "300px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            color: "#FFF8D4",
+                            fontSize: "14px",
+                            fontWeight: 300,
+                            letterSpacing: "0.3px",
+                          }}
+                        >
+                          정말로 잊고 싶어요?
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "8px",
+                            justifyContent: "flex-end",
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              toast.dismiss(t);
+                            }}
+                            style={{
+                              padding: "8px 16px",
+                              background: "rgba(67, 86, 99, 0.5)",
+                              color: "#FFF8D4",
+                              border: "1px solid rgba(255, 248, 212, 0.2)",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                              fontSize: "13px",
+                              fontWeight: 300,
+                              transition: "all 0.2s ease",
+                            }}
+                            onMouseOver={(e) => {
+                              e.target.style.background =
+                                "rgba(67, 86, 99, 0.7)";
+                            }}
+                            onMouseOut={(e) => {
+                              e.target.style.background =
+                                "rgba(67, 86, 99, 0.5)";
+                            }}
+                          >
+                            취소
+                          </button>
+                          <button
+                            onClick={() => {
+                              removeOrder(Number(order.id));
+                              toast.dismiss(t);
+                              toast.success("기억이 삭제되었습니다.");
+                            }}
+                            style={{
+                              padding: "8px 16px",
+                              background: "rgba(163, 176, 135, 0.3)",
+                              color: "#FFF8D4",
+                              border: "1px solid rgba(163, 176, 135, 0.5)",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                              fontSize: "13px",
+                              fontWeight: 300,
+                              transition: "all 0.2s ease",
+                            }}
+                            onMouseOver={(e) => {
+                              e.target.style.background =
+                                "rgba(163, 176, 135, 0.5)";
+                            }}
+                            onMouseOut={(e) => {
+                              e.target.style.background =
+                                "rgba(163, 176, 135, 0.3)";
+                            }}
+                          >
+                            잊기
+                          </button>
+                        </div>
+                      </div>
+                    ));
+                  }}
+                  style={{
+                    padding: "8px 14px",
+                    background: "rgba(67, 86, 99, 0.3)",
+                    color: "#FFF8D4",
+                    border: "1px solid rgba(255, 248, 212, 0.2)",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                    fontWeight: 300,
+                    letterSpacing: "0.3px",
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.background = "rgba(67, 86, 99, 0.4)";
+                    e.target.style.borderColor = "#A3B087";
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.background = "rgba(67, 86, 99, 0.3)";
+                    e.target.style.borderColor = "rgba(255, 248, 212, 0.2)";
+                  }}
+                >
+                  잊기
+                </button>
               </div>
             </div>
           );

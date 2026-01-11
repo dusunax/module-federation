@@ -12,6 +12,7 @@ export const useOrderStore = create((set, get) => ({
   progress: 0, // 프로그레스바 (0-100)
   orderStatuses: {}, // 각 아이템의 기억 상태 관리
   rememberingItemIds: [], // 현재 기억 중인 아이템 ID 목록
+  rememberingStartTime: null, // 기억 시작 시간
 
   // 기억 완료 (장바구니 내용을 기억 내역에 추가)
   completeOrder: () => {
@@ -110,16 +111,25 @@ export const useOrderStore = create((set, get) => ({
     return state.orders.find((order) => order.id === orderId);
   },
 
+  // 기억 삭제
+  removeOrder: (orderId) => {
+    set((state) => ({
+      orders: state.orders.filter((order) => order.id !== orderId),
+    }));
+  },
+
   // 기억 시작
   startRemembering: () => {
     const cartState = useCartStore.getState();
+    // 현재 장바구니의 모든 itemId 저장
     const currentItemIds = Object.keys(cartState.items).map(Number);
 
     set({
       isRemembering: true,
       progress: 0,
       orderStatuses: {},
-      rememberingItemIds: currentItemIds, // 현재 장바구니의 모든 아이템 ID 저장
+      rememberingItemIds: currentItemIds, // 현재 장바구니의 모든 itemId 저장
+      rememberingStartTime: Date.now(), // 기억 시작 시간 저장
     });
   },
 
@@ -150,6 +160,7 @@ export const useOrderStore = create((set, get) => ({
       progress: 0,
       orderStatuses: {},
       rememberingItemIds: [],
+      rememberingStartTime: null,
     });
   },
 
@@ -160,6 +171,7 @@ export const useOrderStore = create((set, get) => ({
       progress: 0,
       orderStatuses: {},
       rememberingItemIds: [],
+      rememberingStartTime: null,
     });
   },
 }));

@@ -142,7 +142,9 @@ function ProductList() {
         >
           {emotions?.map((emotion) => {
             // 장바구니에 담겨있으면 held 상태로 표시
-            const currentStatus = cartItems[emotion.id]
+            // 같은 productId를 가진 아이템이 있는지 확인
+            const hasInCart = Object.values(cartItems).some((item) => item.product.id === emotion.id);
+            const currentStatus = hasInCart
               ? EMOTION_STATUS.HELD
               : emotion.status;
             const statusStyle = getStatusConfig(currentStatus);

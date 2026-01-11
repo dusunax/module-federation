@@ -3,15 +3,15 @@ const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPl
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.js',
-  mode: 'development',
+  entry: "./src/index.js",
+  mode: "development",
   devServer: {
     port: 3000,
     open: true,
-    historyApiFallback: true, // SPA 라우팅을 위해 필요
+    historyApiFallback: true,
   },
   output: {
-    publicPath: 'http://localhost:3000/',
+    publicPath: "http://localhost:3000/",
   },
   module: {
     rules: [
@@ -19,18 +19,18 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
           options: {
-            presets: ['@babel/preset-react'],
+            presets: ["@babel/preset-react"],
           },
         },
       },
       {
         test: /\.css$/i,
         use: [
-          'style-loader',
+          "style-loader",
           {
-            loader: 'css-loader',
+            loader: "css-loader",
             options: {
               esModule: false,
             },
@@ -41,26 +41,51 @@ module.exports = {
   },
   plugins: [
     new ModuleFederationPlugin({
-      name: 'host',
+      name: "host",
       remotes: {
-        header: 'header@http://localhost:3001/remoteEntry.js',
-        products: 'products@http://localhost:3002/remoteEntry.js',
-        cart: 'cart@http://localhost:3003/remoteEntry.js',
-        archive: 'archive@http://localhost:3004/remoteEntry.js',
+        header: "header@http://localhost:3001/remoteEntry.js",
+        products: "products@http://localhost:3002/remoteEntry.js",
+        cart: "cart@http://localhost:3003/remoteEntry.js",
+        archive: "archive@http://localhost:3004/remoteEntry.js",
       },
       shared: {
-        react: { singleton: true, requiredVersion: '^18.2.0' },
-        'react-dom': { singleton: true, requiredVersion: '^18.2.0' },
-        'react-router-dom': { singleton: true, requiredVersion: '^7.12.0' },
-        '@tanstack/react-query': { singleton: true },
-        zustand: { singleton: true },
+        react: {
+          singleton: true,
+          requiredVersion: "^18.2.0",
+          strictVersion: false,
+        },
+        "react-dom": {
+          singleton: true,
+          requiredVersion: "^18.2.0",
+          strictVersion: false,
+        },
+        "react-router-dom": {
+          singleton: true,
+          requiredVersion: "^7.12.0",
+          strictVersion: false,
+        },
+        "@tanstack/react-query": {
+          singleton: true,
+          requiredVersion: "^5.90.16",
+          strictVersion: false,
+        },
+        zustand: {
+          singleton: true,
+          requiredVersion: "^4.4.0 || ^5.0.9",
+          strictVersion: false,
+        },
+        sonner: {
+          singleton: true,
+          requiredVersion: "^2.0.7",
+          strictVersion: false,
+        },
       },
     }),
     new HtmlWebpackPlugin({
-      template: './public/index.html',
+      template: "./public/index.html",
     }),
   ],
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: [".js", ".jsx"],
   },
 };

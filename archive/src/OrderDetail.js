@@ -1,59 +1,158 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useOrderStore } from 'products/orderStore';
-import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
+import React from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useOrderStore } from "products/orderStore";
+import { getStatusConfig, EMOTION_STATUS } from "products/utils/statusStyle";
 
 function OrderDetail() {
   const { orderId } = useParams();
   const navigate = useNavigate();
   const getOrder = useOrderStore((state) => state.getOrder);
+  const removeOrder = useOrderStore((state) => state.removeOrder);
 
   const order = getOrder(Number(orderId));
 
+  const handleForget = () => {
+    toast.custom((t) => (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "12px",
+          padding: "16px",
+          background: "rgba(67, 86, 99, 0.95)",
+          border: "1px solid rgba(163, 176, 135, 0.3)",
+          borderRadius: "8px",
+          minWidth: "300px",
+        }}
+      >
+        <div
+          style={{
+            color: "#FFF8D4",
+            fontSize: "14px",
+            fontWeight: 300,
+            letterSpacing: "0.3px",
+          }}
+        >
+          정말로 잊고 싶어요?
+        </div>
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+            justifyContent: "flex-end",
+          }}
+        >
+          <button
+            onClick={() => {
+              toast.dismiss(t);
+            }}
+            style={{
+              padding: "8px 16px",
+              background: "rgba(67, 86, 99, 0.5)",
+              color: "#FFF8D4",
+              border: "1px solid rgba(255, 248, 212, 0.2)",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "13px",
+              fontWeight: 300,
+              transition: "all 0.2s ease",
+            }}
+            onMouseOver={(e) => {
+              e.target.style.background = "rgba(67, 86, 99, 0.7)";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.background = "rgba(67, 86, 99, 0.5)";
+            }}
+          >
+            취소
+          </button>
+          <button
+            onClick={() => {
+              removeOrder(Number(orderId));
+              toast.dismiss(t);
+              toast.success("기억이 삭제되었습니다.");
+              navigate("/archive");
+            }}
+            style={{
+              padding: "8px 16px",
+              background: "rgba(163, 176, 135, 0.3)",
+              color: "#FFF8D4",
+              border: "1px solid rgba(163, 176, 135, 0.5)",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "13px",
+              fontWeight: 300,
+              transition: "all 0.2s ease",
+            }}
+            onMouseOver={(e) => {
+              e.target.style.background = "rgba(163, 176, 135, 0.5)";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.background = "rgba(163, 176, 135, 0.3)";
+            }}
+          >
+            잊기
+          </button>
+        </div>
+      </div>
+    ));
+  };
+
   if (!order) {
     return (
-      <div style={{ padding: '40px 20px', maxWidth: '900px', margin: '0 auto' }}>
+      <div
+        style={{ padding: "40px 20px", maxWidth: "900px", margin: "0 auto" }}
+      >
         <button
-          onClick={() => navigate('/archive')}
+          onClick={() => navigate("/archive")}
           style={{
-            marginBottom: '20px',
-            padding: '10px 18px',
-            fontSize: '13px',
-            background: 'rgba(67, 86, 99, 0.3)',
-            border: '1px solid rgba(255, 248, 212, 0.2)',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            color: '#FFF8D4',
+            marginBottom: "20px",
+            padding: "10px 18px",
+            fontSize: "13px",
+            background: "rgba(67, 86, 99, 0.3)",
+            border: "1px solid rgba(255, 248, 212, 0.2)",
+            borderRadius: "4px",
+            cursor: "pointer",
+            color: "#FFF8D4",
             fontWeight: 300,
-            letterSpacing: '0.3px',
-            transition: 'all 0.3s ease',
+            letterSpacing: "0.3px",
+            transition: "all 0.3s ease",
           }}
           onMouseOver={(e) => {
-            e.target.style.background = 'rgba(67, 86, 99, 0.4)';
-            e.target.style.borderColor = '#A3B087';
+            e.target.style.background = "rgba(67, 86, 99, 0.4)";
+            e.target.style.borderColor = "#A3B087";
           }}
           onMouseOut={(e) => {
-            e.target.style.background = 'rgba(67, 86, 99, 0.3)';
-            e.target.style.borderColor = 'rgba(255, 248, 212, 0.2)';
+            e.target.style.background = "rgba(67, 86, 99, 0.3)";
+            e.target.style.borderColor = "rgba(255, 248, 212, 0.2)";
           }}
         >
           ← 기록 목록으로
         </button>
-        <div style={{
-          textAlign: 'center',
-          padding: '80px 20px',
-          color: '#FFF8D4',
-        }}>
-          <div style={{
-            fontSize: '64px',
-            marginBottom: '24px',
-            opacity: 0.5,
-          }}>📝</div>
-          <p style={{
-            fontSize: '16px',
-            fontWeight: 300,
-            letterSpacing: '0.3px',
-          }}>
+        <div
+          style={{
+            textAlign: "center",
+            padding: "80px 20px",
+            color: "#FFF8D4",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "64px",
+              marginBottom: "24px",
+              opacity: 0.5,
+            }}
+          >
+            📝
+          </div>
+          <p
+            style={{
+              fontSize: "16px",
+              fontWeight: 300,
+              letterSpacing: "0.3px",
+            }}
+          >
             기록을 찾을 수 없어요
           </p>
         </div>
@@ -63,12 +162,12 @@ function OrderDetail() {
 
   const formatDate = (isoString) => {
     const date = new Date(isoString);
-    return date.toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleString("ko-KR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -76,33 +175,65 @@ function OrderDetail() {
 
   return (
     <div style={{ padding: "40px 20px", maxWidth: "900px", margin: "0 auto" }}>
-      {/* 뒤로가기 버튼 */}
-      <button
-        onClick={() => navigate("/archive")}
+      <div
         style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
           marginBottom: "30px",
-          padding: "10px 18px",
-          fontSize: "13px",
-          background: "rgba(67, 86, 99, 0.3)",
-          border: "1px solid rgba(255, 248, 212, 0.2)",
-          borderRadius: "4px",
-          cursor: "pointer",
-          color: "#FFF8D4",
-          fontWeight: 300,
-          letterSpacing: "0.3px",
-          transition: "all 0.3s ease",
-        }}
-        onMouseOver={(e) => {
-          e.target.style.background = "rgba(67, 86, 99, 0.4)";
-          e.target.style.borderColor = "#A3B087";
-        }}
-        onMouseOut={(e) => {
-          e.target.style.background = "rgba(67, 86, 99, 0.3)";
-          e.target.style.borderColor = "rgba(255, 248, 212, 0.2)";
         }}
       >
-        ← 기록 목록으로
-      </button>
+        <button
+          onClick={() => navigate("/archive")}
+          style={{
+            padding: "10px 18px",
+            fontSize: "13px",
+            background: "rgba(67, 86, 99, 0.3)",
+            border: "1px solid rgba(255, 248, 212, 0.2)",
+            borderRadius: "4px",
+            cursor: "pointer",
+            color: "#FFF8D4",
+            fontWeight: 300,
+            letterSpacing: "0.3px",
+            transition: "all 0.3s ease",
+          }}
+          onMouseOver={(e) => {
+            e.target.style.background = "rgba(67, 86, 99, 0.4)";
+            e.target.style.borderColor = "#A3B087";
+          }}
+          onMouseOut={(e) => {
+            e.target.style.background = "rgba(67, 86, 99, 0.3)";
+            e.target.style.borderColor = "rgba(255, 248, 212, 0.2)";
+          }}
+        >
+          ← 기록 목록으로
+        </button>
+        <button
+          onClick={handleForget}
+          style={{
+            padding: "10px 18px",
+            fontSize: "13px",
+            background: "rgba(67, 86, 99, 0.3)",
+            border: "1px solid rgba(255, 248, 212, 0.2)",
+            borderRadius: "4px",
+            cursor: "pointer",
+            color: "#FFF8D4",
+            fontWeight: 300,
+            letterSpacing: "0.3px",
+            transition: "all 0.3s ease",
+          }}
+          onMouseOver={(e) => {
+            e.target.style.background = "rgba(67, 86, 99, 0.4)";
+            e.target.style.borderColor = "#A3B087";
+          }}
+          onMouseOut={(e) => {
+            e.target.style.background = "rgba(67, 86, 99, 0.3)";
+            e.target.style.borderColor = "rgba(255, 248, 212, 0.2)";
+          }}
+        >
+          잊기
+        </button>
+      </div>
 
       {/* 기록 정보 */}
       <div

@@ -1,14 +1,17 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCartStore } from 'products/cartStore';
+import { useOrderStore } from 'products/orderStore';
 
 function Header() {
   const location = useLocation();
   const items = useCartStore((state) => state.items);
-  const totalItems = Object.values(items).reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const rememberingItemIds = useOrderStore((state) => state.rememberingItemIds);
+  
+  // 기억하는 중인 아이템을 제외한 장바구니 아이템 수량 계산
+  const totalItems = Object.values(items)
+    .filter((item) => !rememberingItemIds.includes(item.id))
+    .reduce((total, item) => total + item.quantity, 0);
 
   const isActive = (path) => {
     if (path === '/') {
