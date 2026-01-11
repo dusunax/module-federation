@@ -43,7 +43,7 @@ export const emotions = [
     story:
       '"고생했어"라는 한 마디가 그렇게 따뜻할 줄 몰랐다. 별거 아닌 말이었는데, 그 순간 정말 고마웠다. 지금도 그 말을 기억한다.',
     effects: ["감사", "위로", "기억"],
-    status: EMOTION_STATUS.REMEMBERED,
+    status: EMOTION_STATUS.NOTICING,
     image: null,
   },
   {
@@ -72,7 +72,7 @@ export const emotions = [
     story:
       "처음 만났을 때의 그 느낌. 손을 잡았을 때의 따뜻함. 지금 생각해도 가슴이 뛴다.",
     effects: ["설렘", "기억", "행복"],
-    status: EMOTION_STATUS.REMEMBERED,
+    status: EMOTION_STATUS.NOTICING,
     image: null,
   },
   {
@@ -87,7 +87,7 @@ export const emotions = [
     story:
       '마지막으로 한 인사. "잘 지내"라고 했던 그 말. 그게 정말 마지막이었다는 걸 나중에야 알았다.',
     effects: ["이별", "아쉬움", "기억"],
-    status: EMOTION_STATUS.REMEMBERED,
+    status: EMOTION_STATUS.NOTICING,
     image: null,
   },
 ];

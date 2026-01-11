@@ -11,7 +11,7 @@ export const EMOTION_STATUS_CONFIG = {
   [EMOTION_STATUS.NOTICING]: {
     color: "rgba(255, 248, 212, 0.7)",
     icon: "1️⃣",
-    label: "보이는 중이에요",
+    label: "눈에 들어오는 중",
     order: 1,
   },
   [EMOTION_STATUS.HELD]: {
