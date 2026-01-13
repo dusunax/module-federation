@@ -28,10 +28,7 @@ export const useOrderStore = create((set, get) => ({
       (total, item) => total + item.product.price * item.quantity,
       0
     );
-    const totalItems = cartItems.reduce(
-      (total, item) => total + item.quantity,
-      0
-    );
+    const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
 
     // 새 기억 생성
     const newOrder = {
@@ -40,7 +37,7 @@ export const useOrderStore = create((set, get) => ({
       totalPrice,
       totalItems,
       orderDate: new Date().toISOString(),
-      status: "completed",
+      status: 'completed',
     };
 
     // 기억 추가 및 장바구니 비우기
@@ -77,10 +74,7 @@ export const useOrderStore = create((set, get) => ({
       (total, item) => total + item.product.price * item.quantity,
       0
     );
-    const totalItems = rememberingItems.reduce(
-      (total, item) => total + item.quantity,
-      0
-    );
+    const totalItems = rememberingItems.reduce((total, item) => total + item.quantity, 0);
 
     // 새 기억 생성
     const newOrder = {
@@ -89,7 +83,7 @@ export const useOrderStore = create((set, get) => ({
       totalPrice,
       totalItems,
       orderDate: new Date().toISOString(),
-      status: "completed",
+      status: 'completed',
     };
 
     // 기억된 아이템을 장바구니에서 제거

@@ -1,21 +1,15 @@
-import { useEffect, useRef } from "react";
-import { toast } from "sonner";
-import { useOrderStore } from "products/orderStore";
-import { EMOTION_STATUS } from "products/utils/statusStyle";
+import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
+import { useOrderStore } from 'products/orderStore';
+import { EMOTION_STATUS } from 'products/utils/statusStyle';
 
 export function useRememberProgress() {
   const isRemembering = useOrderStore((state) => state.isRemembering);
   const progress = useOrderStore((state) => state.progress);
   const updateProgress = useOrderStore((state) => state.updateProgress);
-  const updateAllOrderStatuses = useOrderStore(
-    (state) => state.updateAllOrderStatuses
-  );
-  const completeRememberingItems = useOrderStore(
-    (state) => state.completeRememberingItems
-  );
-  const completeRemembering = useOrderStore(
-    (state) => state.completeRemembering
-  );
+  const updateAllOrderStatuses = useOrderStore((state) => state.updateAllOrderStatuses);
+  const completeRememberingItems = useOrderStore((state) => state.completeRememberingItems);
+  const completeRemembering = useOrderStore((state) => state.completeRemembering);
   const intervalRef = useRef(null);
 
   useEffect(() => {
@@ -65,7 +59,7 @@ export function useRememberProgress() {
         const order = completeRememberingItems();
         if (order) {
           completeRemembering();
-          toast.success("기억으로 남았어요.");
+          toast.success('기억으로 남았어요.');
         }
       }
     }, interval);

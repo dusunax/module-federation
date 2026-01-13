@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from "sonner";
-import { useCartStore } from "./store/cartStore";
-import { useOrderStore } from "./store/orderStore";
-import { getStatusConfig } from "./utils/statusStyle";
-import { EMOTION_STATUS } from "./constants";
+import { toast } from 'sonner';
+import { useCartStore } from './store/cartStore';
+import { useOrderStore } from './store/orderStore';
+import { getStatusConfig } from './utils/statusStyle';
+import { EMOTION_STATUS } from './constants';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -23,11 +23,7 @@ function ProductDetail() {
     const rememberingItemIds = orderState.rememberingItemIds;
 
     const normalQuantity = Object.values(cartState.items)
-      .filter(
-        (item) =>
-          item.product.id === emotion.id &&
-          !rememberingItemIds.includes(item.id)
-      )
+      .filter((item) => item.product.id === emotion.id && !rememberingItemIds.includes(item.id))
       .reduce((sum, item) => sum + item.quantity, 0);
     toast.success(`이 순간이 ${normalQuantity}만큼 담겨있어요`);
   };
@@ -37,46 +33,34 @@ function ProductDetail() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["emotion", id],
+    queryKey: ['emotion', id],
     queryFn: async () => {
       const response = await fetch(`/api/emotions/${id}`);
       if (!response.ok) {
-        throw new Error("순간 정보를 불러오는데 실패했습니다.");
+        throw new Error('순간 정보를 불러오는데 실패했습니다.');
       }
       return response.json();
     },
   });
 
   // 같은 productId를 가진 아이템이 있는지 확인
-  const isInCart =
-    emotion &&
-    Object.values(items).some((item) => item.product.id === emotion.id);
+  const isInCart = emotion && Object.values(items).some((item) => item.product.id === emotion.id);
 
   if (isLoading) {
     return (
-      <div style={{ padding: "40px", textAlign: "center" }}>
-        <p style={{ color: "#FFF8D4", fontWeight: 300 }}>로딩 중...</p>
+      <div className="p-10 text-center">
+        <p className="font-light text-[#FFF8D4]">로딩 중...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ padding: "40px", textAlign: "center", color: "#FFF8D4" }}>
+      <div className="p-10 text-center text-[#FFF8D4]">
         <p>에러: {error.message}</p>
         <button
-          onClick={() => navigate("/")}
-          style={{
-            marginTop: "20px",
-            padding: "12px 24px",
-            fontSize: "14px",
-            cursor: "pointer",
-            border: "1px solid rgba(255, 248, 212, 0.2)",
-            borderRadius: "4px",
-            background: "rgba(67, 86, 99, 0.3)",
-            color: "#FFF8D4",
-            fontWeight: 300,
-          }}
+          onClick={() => navigate('/')}
+          className="mt-5 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-6 py-3 text-sm font-light text-[#FFF8D4]"
         >
           목록으로 돌아가기
         </button>
@@ -85,195 +69,61 @@ function ProductDetail() {
   }
 
   // 장바구니에 담겨있으면 held 상태로 표시
-  const currentStatus = isInCart
-    ? EMOTION_STATUS.HELD
-    : emotion?.status || EMOTION_STATUS.NOTICING;
+  const currentStatus = isInCart ? EMOTION_STATUS.HELD : emotion?.status || EMOTION_STATUS.NOTICING;
   const statusStyle = getStatusConfig(currentStatus);
 
   return (
-    <div style={{ padding: "20px", maxWidth: "900px", margin: "0 auto" }}>
+    <div className="mx-auto max-w-[900px] p-5">
       {/* 뒤로가기 버튼 */}
       <button
-        onClick={() => navigate("/")}
-        style={{
-          marginBottom: "24px",
-          padding: "10px 20px",
-          fontSize: "13px",
-          background: "rgba(67, 86, 99, 0.3)",
-          border: "1px solid rgba(255, 248, 212, 0.2)",
-          borderRadius: "4px",
-          cursor: "pointer",
-          color: "#FFF8D4",
-          fontWeight: 300,
-          transition: "all 0.3s ease",
-        }}
-        onMouseOver={(e) => {
-          e.target.style.background = "rgba(67, 86, 99, 0.4)";
-          e.target.style.borderColor = "#A3B087";
-        }}
-        onMouseOut={(e) => {
-          e.target.style.background = "rgba(67, 86, 99, 0.3)";
-          e.target.style.borderColor = "rgba(255, 248, 212, 0.2)";
-        }}
+        onClick={() => navigate('/')}
+        className="mb-6 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-5 py-2.5 text-[13px] font-light text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
       >
         ← 목록으로
       </button>
 
       {/* 순간 상세 정보 */}
-      <div
-        style={{
-          border: "1px solid rgba(255, 248, 212, 0.2)",
-          borderRadius: "4px",
-          padding: "40px",
-          background: "rgba(67, 86, 99, 0.2)",
-          backdropFilter: "blur(10px)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            gap: "40px",
-            marginBottom: "40px",
-            flexWrap: "wrap",
-          }}
-        >
+      <div className="rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-10 backdrop-blur-[10px]">
+        <div className="mb-10 flex flex-wrap gap-10">
           {/* 이모지 영역 */}
-          <div
-            style={{
-              flex: "0 0 180px",
-              textAlign: "center",
-            }}
-          >
-            <div
-              style={{
-                fontSize: "100px",
-                lineHeight: "1",
-                marginBottom: "16px",
-                opacity: 0.9,
-              }}
-            >
-              {emotion?.emoji}
-            </div>
+          <div className="flex-[0_0_180px] text-center">
+            <div className="mb-4 text-[100px] leading-none opacity-90">{emotion?.emoji}</div>
             {/* 상태 표시 */}
             <div
-              style={{
-                display: "inline-block",
-                fontSize: "11px",
-                color: statusStyle.color,
-                fontWeight: 300,
-                letterSpacing: "0.5px",
-                padding: "6px 12px",
-                border: "1px solid rgba(255, 248, 212, 0.2)",
-                borderRadius: "2px",
-                background: "rgba(67, 86, 99, 0.3)",
-              }}
+              className="inline-block rounded-sm border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-3 py-1.5 text-[11px] font-light tracking-wider"
+              style={{ color: statusStyle.color }}
             >
               {statusStyle.icon} {statusStyle.label}
             </div>
           </div>
 
           {/* 기본 정보 */}
-          <div style={{ flex: "1", minWidth: "300px" }}>
-            <h1
-              style={{
-                marginTop: 0,
-                marginBottom: "16px",
-                fontWeight: 300,
-                letterSpacing: "0.5px",
-                color: "#FFF8D4",
-                fontSize: "28px",
-                lineHeight: "1.4",
-              }}
-            >
+          <div className="min-w-[300px] flex-1">
+            <h1 className="mb-4 mt-0 text-[28px] font-light leading-snug tracking-wider text-[#FFF8D4]">
               {emotion?.name}
             </h1>
-            <p
-              style={{
-                fontSize: "18px",
-                color: "#FFF8D4",
-                fontWeight: 300,
-                marginBottom: "20px",
-                letterSpacing: "0.3px",
-              }}
-            >
-              {emotion?.price === 0
-                ? "무료"
-                : `${emotion?.price.toLocaleString()}원`}
+            <p className="mb-5 text-lg font-light tracking-wide text-[#FFF8D4]">
+              {emotion?.price === 0 ? '무료' : `${emotion?.price.toLocaleString()}원`}
             </p>
-            <span
-              style={{
-                display: "inline-block",
-                background: "rgba(67, 86, 99, 0.3)",
-                color: "rgba(255, 248, 212, 0.9)",
-                padding: "6px 14px",
-                borderRadius: "2px",
-                fontSize: "12px",
-                fontWeight: 300,
-                marginBottom: "20px",
-                letterSpacing: "0.5px",
-              }}
-            >
+            <span className="mb-5 inline-block rounded-sm bg-[rgba(67,86,99,0.3)] px-3.5 py-1.5 text-xs font-light tracking-wider text-[rgba(255,248,212,0.9)]">
               {emotion?.category}
             </span>
           </div>
         </div>
 
         {/* 설명 */}
-        <div style={{ marginBottom: "30px" }}>
-          <h2
-            style={{
-              fontSize: "16px",
-              marginBottom: "12px",
-              fontWeight: 300,
-              color: "#FFF8D4",
-              letterSpacing: "0.5px",
-            }}
-          >
-            설명
-          </h2>
-          <p
-            style={{
-              lineHeight: "1.8",
-              color: "rgba(255, 248, 212, 0.9)",
-              fontSize: "15px",
-              fontWeight: 300,
-            }}
-          >
+        <div className="mb-[30px]">
+          <h2 className="mb-3 text-base font-light tracking-wider text-[#FFF8D4]">설명</h2>
+          <p className="text-[15px] font-light leading-[1.8] text-[rgba(255,248,212,0.9)]">
             {emotion?.description}
           </p>
         </div>
 
         {/* 상황 스토리 */}
-        <div style={{ marginBottom: "30px" }}>
-          <h2
-            style={{
-              fontSize: "16px",
-              marginBottom: "12px",
-              fontWeight: 300,
-              color: "#FFF8D4",
-              letterSpacing: "0.5px",
-            }}
-          >
-            상황 스토리
-          </h2>
-          <div
-            style={{
-              background: "rgba(67, 86, 99, 0.3)",
-              padding: "24px",
-              borderRadius: "4px",
-              borderLeft: "2px solid #A3B087",
-            }}
-          >
-            <p
-              style={{
-                lineHeight: "1.9",
-                color: "#FFF8D4",
-                fontStyle: "italic",
-                margin: 0,
-                fontSize: "15px",
-                fontWeight: 300,
-              }}
-            >
+        <div className="mb-[30px]">
+          <h2 className="mb-3 text-base font-light tracking-wider text-[#FFF8D4]">상황 스토리</h2>
+          <div className="rounded border-l-2 border-[#A3B087] bg-[rgba(67,86,99,0.3)] p-6">
+            <p className="m-0 text-[15px] font-light italic leading-[1.9] text-[#FFF8D4]">
               "{emotion?.story}"
             </p>
           </div>
@@ -281,31 +131,13 @@ function ProductDetail() {
 
         {/* 효과 */}
         {emotion?.effects && emotion.effects.length > 0 && (
-          <div style={{ marginBottom: "30px" }}>
-            <h2
-              style={{
-                fontSize: "16px",
-                marginBottom: "12px",
-                fontWeight: 300,
-                color: "#FFF8D4",
-                letterSpacing: "0.5px",
-              }}
-            >
-              효과
-            </h2>
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <div className="mb-[30px]">
+            <h2 className="mb-3 text-base font-light tracking-wider text-[#FFF8D4]">효과</h2>
+            <div className="flex flex-wrap gap-2.5">
               {emotion.effects.map((effect, index) => (
                 <span
                   key={index}
-                  style={{
-                    padding: "6px 14px",
-                    background: "rgba(67, 86, 99, 0.3)",
-                    color: "#A3B087",
-                    borderRadius: "2px",
-                    fontSize: "12px",
-                    fontWeight: 300,
-                    letterSpacing: "0.3px",
-                  }}
+                  className="rounded-sm bg-[rgba(67,86,99,0.3)] px-3.5 py-1.5 text-xs font-light tracking-wide text-[#A3B087]"
                 >
                   {effect}
                 </span>
@@ -315,32 +147,12 @@ function ProductDetail() {
         )}
 
         {/* 장바구니 추가 버튼 */}
-        <div style={{ display: "flex", gap: "12px" }}>
+        <div className="flex gap-3">
           <button
-            style={{
-              flex: 1,
-              padding: "16px",
-              fontSize: "15px",
-              fontWeight: 300,
-              background: "rgba(163, 176, 135, 0.3)",
-              color: "#FFF8D4",
-              border: "1px solid rgba(163, 176, 135, 0.5)",
-              borderRadius: "4px",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              letterSpacing: "0.5px",
-            }}
-            onMouseOver={(e) => {
-              e.target.style.background = "rgba(163, 176, 135, 0.5)";
-              e.target.style.borderColor = "rgba(163, 176, 135, 0.7)";
-            }}
-            onMouseOut={(e) => {
-              e.target.style.background = "rgba(163, 176, 135, 0.3)";
-              e.target.style.borderColor = "rgba(163, 176, 135, 0.5)";
-            }}
+            className="flex-1 cursor-pointer rounded border border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] px-4 py-4 text-[15px] font-light tracking-wider text-[#FFF8D4] transition-all duration-300 hover:border-[rgba(163,176,135,0.7)] hover:bg-[rgba(163,176,135,0.5)]"
             onClick={handleAddToCart}
           >
-            {isInCart ? "더 담기" : "담기"}
+            {isInCart ? '더 담기' : '담기'}
           </button>
         </div>
       </div>

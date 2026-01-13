@@ -2,9 +2,9 @@ import { http, HttpResponse } from 'msw';
 import { emotions } from './data';
 
 export const handlers = [
-  http.get("/api/emotions", ({ request }) => {
+  http.get('/api/emotions', ({ request }) => {
     const url = new URL(request.url);
-    const search = url.searchParams.get("search");
+    const search = url.searchParams.get('search');
 
     let filteredEmotions = emotions;
 
@@ -22,7 +22,7 @@ export const handlers = [
   }),
 
   // 특정 감정 카드 상세 조회
-  http.get("/api/emotions/:id", ({ params }) => {
+  http.get('/api/emotions/:id', ({ params }) => {
     const { id } = params;
     const emotion = emotions.find((e) => e.id === Number(id));
 

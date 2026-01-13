@@ -25,6 +25,7 @@ test-claud-code/
 ## 아키텍처
 
 ### 의존성 방향
+
 ```
 Host
  ├── Header → Products (cartStore, orderStore)
@@ -34,6 +35,7 @@ Host
 ```
 
 ### 상태 관리
+
 - **products/cartStore**: 장바구니 아이템 관리 (itemId 기반, 같은 productId를 가진 여러 아이템 저장 가능)
 - **products/orderStore**: 기억 진행 상태 및 완료된 기억 내역 관리
 - 모든 앱이 동일한 store 인스턴스를 공유하여 실시간 동기화
@@ -84,6 +86,7 @@ npm start
 ## 각 모듈 상세
 
 각 모듈의 상세 정보는 해당 폴더의 README.md를 참조하세요:
+
 - [Host App](./host/README.md)
 - [Header App](./header/README.md)
 - [Products App](./products/README.md) - cartStore, orderStore 제공

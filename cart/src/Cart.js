@@ -1,12 +1,12 @@
-import React from "react";
-import { EmptyCart } from "./features/cart-management/components/EmptyCart/EmptyCart";
-import { CartList } from "./features/cart-management/components/CartList/CartList";
-import { RememberingSection } from "./features/remembering/components/RememberingSection/RememberingSection";
-import { CartSummary } from "./features/remembering/components/CartSummary/CartSummary";
-import { useCartItems } from "./features/cart-management/hooks/useCartItems";
-import { useCartActions } from "./features/cart-management/hooks/useCartActions";
-import { useCartTimer } from "./features/cart-management/hooks/useCartTimer";
-import { useRememberingState } from "./features/remembering/hooks/useRememberingState";
+import React from 'react';
+import { EmptyCart } from './features/cart-management/components/EmptyCart/EmptyCart';
+import { CartList } from './features/cart-management/components/CartList/CartList';
+import { RememberingSection } from './features/remembering/components/RememberingSection/RememberingSection';
+import { CartSummary } from './features/remembering/components/CartSummary/CartSummary';
+import { useCartItems } from './features/cart-management/hooks/useCartItems';
+import { useCartActions } from './features/cart-management/hooks/useCartActions';
+import { useCartTimer } from './features/cart-management/hooks/useCartTimer';
+import { useRememberingState } from './features/remembering/hooks/useRememberingState';
 
 function Cart() {
   const {
@@ -35,7 +35,7 @@ function Cart() {
   }
 
   return (
-    <div style={{ padding: "20px", maxWidth: "900px", margin: "0 auto" }}>
+    <div className="mx-auto max-w-[900px] p-5">
       <CartList
         normalItems={normalItems}
         normalTotalItems={normalTotalItems}

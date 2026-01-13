@@ -16,12 +16,28 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
+        include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, '../shared')],
         use: {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-react'],
           },
         },
+      },
+      {
+        test: /\.css$/i,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              import: false, // PostCSS가 @import를 처리하도록 함
+            },
+          },
+          {
+            loader: 'postcss-loader',
+          },
+        ],
       },
     ],
   },
@@ -34,7 +50,8 @@ module.exports = {
       },
       exposes: {
         './Cart': './src/Cart',
-        './features/remembering/hooks/useRememberProgress': './src/features/remembering/hooks/useRememberProgress',
+        './features/remembering/hooks/useRememberProgress':
+          './src/features/remembering/hooks/useRememberProgress',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },
@@ -50,5 +67,6 @@ module.exports = {
   ],
   resolve: {
     extensions: ['.js', '.jsx'],
+    modules: ['node_modules', path.resolve(__dirname, 'node_modules')],
   },
 };

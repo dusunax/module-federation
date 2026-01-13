@@ -1,4 +1,4 @@
-import { useOrderStore } from "products/orderStore";
+import { useOrderStore } from 'products/orderStore';
 
 export function useRememberingState() {
   const isRemembering = useOrderStore((state) => state.isRemembering);
@@ -7,9 +7,7 @@ export function useRememberingState() {
   const rememberingItemIds = useOrderStore((state) => state.rememberingItemIds);
   const rememberingStartTime = useOrderStore((state) => state.rememberingStartTime);
   const startRemembering = useOrderStore((state) => state.startRemembering);
-  const updateAllOrderStatuses = useOrderStore(
-    (state) => state.updateAllOrderStatuses
-  );
+  const updateAllOrderStatuses = useOrderStore((state) => state.updateAllOrderStatuses);
 
   return {
     isRemembering,

@@ -3,36 +3,46 @@ const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPl
 const path = require('path');
 
 module.exports = {
-  entry: "./src/index.js",
-  mode: "development",
+  entry: './src/index.js',
+  mode: 'development',
   devServer: {
     port: 3000,
     open: true,
     historyApiFallback: true,
   },
   output: {
-    publicPath: "http://localhost:3000/",
+    publicPath: 'http://localhost:3000/',
   },
   module: {
     rules: [
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
+        include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, '../shared')],
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: ["@babel/preset-react"],
+            presets: ['@babel/preset-react'],
           },
         },
       },
       {
         test: /\.css$/i,
         use: [
-          "style-loader",
+          'style-loader',
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
               esModule: false,
+              import: false, // PostCSS가 @import를 처리하도록 함
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                config: path.resolve(__dirname, 'postcss.config.js'),
+              },
             },
           },
         ],
@@ -41,51 +51,56 @@ module.exports = {
   },
   plugins: [
     new ModuleFederationPlugin({
-      name: "host",
+      name: 'host',
       remotes: {
-        header: "header@http://localhost:3001/remoteEntry.js",
-        products: "products@http://localhost:3002/remoteEntry.js",
-        cart: "cart@http://localhost:3003/remoteEntry.js",
-        archive: "archive@http://localhost:3004/remoteEntry.js",
+        header: 'header@http://localhost:3001/remoteEntry.js',
+        products: 'products@http://localhost:3002/remoteEntry.js',
+        cart: 'cart@http://localhost:3003/remoteEntry.js',
+        archive: 'archive@http://localhost:3004/remoteEntry.js',
       },
       shared: {
         react: {
           singleton: true,
-          requiredVersion: "^18.2.0",
+          requiredVersion: '^18.2.0',
           strictVersion: false,
         },
-        "react-dom": {
+        'react-dom': {
           singleton: true,
-          requiredVersion: "^18.2.0",
+          requiredVersion: '^18.2.0',
           strictVersion: false,
         },
-        "react-router-dom": {
+        'react-router-dom': {
           singleton: true,
-          requiredVersion: "^7.12.0",
+          requiredVersion: '^7.12.0',
           strictVersion: false,
         },
-        "@tanstack/react-query": {
+        '@tanstack/react-query': {
           singleton: true,
-          requiredVersion: "^5.90.16",
+          requiredVersion: '^5.90.16',
           strictVersion: false,
         },
         zustand: {
           singleton: true,
-          requiredVersion: "^4.4.0 || ^5.0.9",
+          requiredVersion: '^4.4.0 || ^5.0.9',
           strictVersion: false,
         },
         sonner: {
           singleton: true,
-          requiredVersion: "^2.0.7",
+          requiredVersion: '^2.0.7',
           strictVersion: false,
         },
       },
     }),
     new HtmlWebpackPlugin({
-      template: "./public/index.html",
+      template: './public/index.html',
     }),
   ],
   resolve: {
-    extensions: [".js", ".jsx"],
+    extensions: ['.js', '.jsx'],
+    modules: [
+      'node_modules',
+      path.resolve(__dirname, 'node_modules'),
+      path.resolve(__dirname, '../node_modules'),
+    ],
   },
 };

@@ -1,6 +1,6 @@
-import React from "react";
-import { toast } from "sonner";
-import { getStatusConfig, EMOTION_STATUS } from "products/utils/statusStyle";
+import React from 'react';
+import { toast } from 'sonner';
+import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
 
 export function CartItem({
   product,
@@ -17,217 +17,63 @@ export function CartItem({
   const timer = item?.addedAt ? timeRemaining[itemId] : null;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "20px",
-        padding: "24px",
-        marginBottom: "16px",
-        background: "rgba(67, 86, 99, 0.2)",
-        border: "1px solid rgba(255, 248, 212, 0.2)",
-        borderRadius: "4px",
-        backdropFilter: "blur(10px)",
-      }}
-    >
-      <div
-        style={{
-          fontSize: "48px",
-          opacity: 0.9,
-        }}
-      >
-        {product.emoji}
-      </div>
-      <div style={{ flex: 1 }}>
-        <h3
-          style={{
-            margin: "0 0 8px 0",
-            fontSize: "16px",
-            fontWeight: 300,
-            color: "#FFF8D4",
-            letterSpacing: "0.3px",
-          }}
-        >
+    <div className="mb-4 flex items-center gap-5 rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-6 backdrop-blur-[10px]">
+      <div className="text-5xl opacity-90">{product.emoji}</div>
+      <div className="flex-1">
+        <h3 className="my-0 mb-2 text-base font-light tracking-wide text-[#FFF8D4]">
           {product.name}
         </h3>
-        <p
-          style={{
-            margin: "0 0 6px 0",
-            color: "#FFF8D4",
-            fontWeight: 300,
-            fontSize: "14px",
-            letterSpacing: "0.3px",
-          }}
-        >
-          {product.price === 0
-            ? "무료"
-            : `${product.price.toLocaleString()}원`}
+        <p className="my-0 mb-1.5 text-sm font-light tracking-wide text-[#FFF8D4]">
+          {product.price === 0 ? '무료' : `${product.price.toLocaleString()}원`}
         </p>
         <div>
           <div
-            style={{
-              fontSize: "11px",
-              color: statusStyle.color,
-              fontWeight: 300,
-              letterSpacing: "0.3px",
-              marginTop: "4px",
-            }}
+            className="mt-1 text-[11px] font-light tracking-wide"
+            style={{ color: statusStyle.color }}
           >
             {statusStyle.icon} {statusStyle.label}
           </div>
           {timer && (
-            <div
-              style={{
-                fontSize: "10px",
-                color: "rgba(163, 176, 135, 0.8)",
-                fontWeight: 300,
-                letterSpacing: "0.3px",
-                marginTop: "4px",
-              }}
-            >
-              남은 시간: {String(timer.hours).padStart(2, "0")}:
-              {String(timer.minutes).padStart(2, "0")}:
-              {String(timer.seconds).padStart(2, "0")}
+            <div className="mt-1 text-[10px] font-light tracking-wide text-[rgba(163,176,135,0.8)]">
+              남은 시간: {String(timer.hours).padStart(2, '0')}:
+              {String(timer.minutes).padStart(2, '0')}:{String(timer.seconds).padStart(2, '0')}
             </div>
           )}
         </div>
       </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "12px",
-        }}
-      >
+      <div className="flex items-center gap-3">
         <button
           onClick={() => updateQuantity(itemId, quantity - 1)}
-          style={{
-            width: "32px",
-            height: "32px",
-            fontSize: "18px",
-            background: "rgba(67, 86, 99, 0.3)",
-            border: "1px solid rgba(255, 248, 212, 0.2)",
-            borderRadius: "4px",
-            cursor: "pointer",
-            color: "#FFF8D4",
-            fontWeight: 300,
-            transition: "all 0.3s ease",
-          }}
-          onMouseOver={(e) => {
-            e.target.style.background = "rgba(67, 86, 99, 0.4)";
-            e.target.style.borderColor = "#A3B087";
-          }}
-          onMouseOut={(e) => {
-            e.target.style.background = "rgba(67, 86, 99, 0.3)";
-            e.target.style.borderColor = "rgba(255, 248, 212, 0.2)";
-          }}
+          className="h-8 w-8 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] text-lg font-light text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
         >
           −
         </button>
-        <span
-          style={{
-            minWidth: "40px",
-            textAlign: "center",
-            fontSize: "15px",
-            fontWeight: 300,
-            color: "#FFF8D4",
-          }}
-        >
+        <span className="min-w-[40px] text-center text-[15px] font-light text-[#FFF8D4]">
           {quantity}
         </span>
         <button
           onClick={() => updateQuantity(itemId, quantity + 1)}
-          style={{
-            width: "32px",
-            height: "32px",
-            fontSize: "18px",
-            background: "rgba(67, 86, 99, 0.3)",
-            border: "1px solid rgba(255, 248, 212, 0.2)",
-            borderRadius: "4px",
-            cursor: "pointer",
-            color: "#FFF8D4",
-            fontWeight: 300,
-            transition: "all 0.3s ease",
-          }}
-          onMouseOver={(e) => {
-            e.target.style.background = "rgba(67, 86, 99, 0.4)";
-            e.target.style.borderColor = "#A3B087";
-          }}
-          onMouseOut={(e) => {
-            e.target.style.background = "rgba(67, 86, 99, 0.3)";
-            e.target.style.borderColor = "rgba(255, 248, 212, 0.2)";
-          }}
+          className="h-8 w-8 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] text-lg font-light text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
         >
           +
         </button>
       </div>
-      <div
-        style={{
-          minWidth: "100px",
-          textAlign: "right",
-          fontSize: "16px",
-          fontWeight: 300,
-          color: "#FFF8D4",
-          letterSpacing: "0.3px",
-        }}
-      >
-        {product.price === 0
-          ? "무료"
-          : `${(product.price * quantity).toLocaleString()}원`}
+      <div className="min-w-[100px] text-right text-base font-light tracking-wide text-[#FFF8D4]">
+        {product.price === 0 ? '무료' : `${(product.price * quantity).toLocaleString()}원`}
       </div>
       <button
         onClick={() => {
           toast.custom((t) => (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "12px",
-                padding: "16px",
-                background: "rgba(67, 86, 99, 0.95)",
-                border: "1px solid rgba(163, 176, 135, 0.3)",
-                borderRadius: "8px",
-                minWidth: "300px",
-              }}
-            >
-              <div
-                style={{
-                  color: "#FFF8D4",
-                  fontSize: "14px",
-                  fontWeight: 300,
-                  letterSpacing: "0.3px",
-                }}
-              >
+            <div className="flex min-w-[300px] flex-col gap-3 rounded-lg border border-[rgba(163,176,135,0.3)] bg-[rgba(67,86,99,0.95)] p-4">
+              <div className="text-sm font-light tracking-wide text-[#FFF8D4]">
                 이 기억을 그냥 넘어갈까요?
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  gap: "8px",
-                  justifyContent: "flex-end",
-                }}
-              >
+              <div className="flex justify-end gap-2">
                 <button
                   onClick={() => {
                     toast.dismiss(t);
                   }}
-                  style={{
-                    padding: "8px 16px",
-                    background: "rgba(67, 86, 99, 0.5)",
-                    color: "#FFF8D4",
-                    border: "1px solid rgba(255, 248, 212, 0.2)",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "13px",
-                    fontWeight: 300,
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseOver={(e) => {
-                    e.target.style.background = "rgba(67, 86, 99, 0.7)";
-                  }}
-                  onMouseOut={(e) => {
-                    e.target.style.background = "rgba(67, 86, 99, 0.5)";
-                  }}
+                  className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.5)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(67,86,99,0.7)]"
                 >
                   취소
                 </button>
@@ -235,25 +81,9 @@ export function CartItem({
                   onClick={() => {
                     removeFromCart(itemId);
                     toast.dismiss(t);
-                    toast.success("기억이 삭제되었습니다.");
+                    toast.success('기억이 삭제되었습니다.');
                   }}
-                  style={{
-                    padding: "8px 16px",
-                    background: "rgba(163, 176, 135, 0.3)",
-                    color: "#FFF8D4",
-                    border: "1px solid rgba(163, 176, 135, 0.5)",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "13px",
-                    fontWeight: 300,
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseOver={(e) => {
-                    e.target.style.background = "rgba(163, 176, 135, 0.5)";
-                  }}
-                  onMouseOut={(e) => {
-                    e.target.style.background = "rgba(163, 176, 135, 0.3)";
-                  }}
+                  className="cursor-pointer rounded border border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(163,176,135,0.5)]"
                 >
                   웃어 넘기기
                 </button>
@@ -261,26 +91,7 @@ export function CartItem({
             </div>
           ));
         }}
-        style={{
-          padding: "8px 14px",
-          background: "rgba(67, 86, 99, 0.3)",
-          color: "#FFF8D4",
-          border: "1px solid rgba(255, 248, 212, 0.2)",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "12px",
-          fontWeight: 300,
-          letterSpacing: "0.3px",
-          transition: "all 0.3s ease",
-        }}
-        onMouseOver={(e) => {
-          e.target.style.background = "rgba(67, 86, 99, 0.4)";
-          e.target.style.borderColor = "#A3B087";
-        }}
-        onMouseOut={(e) => {
-          e.target.style.background = "rgba(67, 86, 99, 0.3)";
-          e.target.style.borderColor = "rgba(255, 248, 212, 0.2)";
-        }}
+        className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-3.5 py-2 text-xs font-light tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
       >
         웃어 넘기기
       </button>

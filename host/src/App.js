@@ -3,14 +3,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { useRememberProgress } from 'cart/features/remembering/hooks/useRememberProgress';
-import './styles/globals.css';
+import './styles/tailwind.css';
 
-const Header = lazy(() => import("header/Header"));
-const ProductList = lazy(() => import("products/ProductList"));
-const ProductDetail = lazy(() => import("products/ProductDetail"));
-const Cart = lazy(() => import("cart/Cart"));
-const OrderList = lazy(() => import("archive/OrderList"));
-const OrderDetail = lazy(() => import("archive/OrderDetail"));
+const Header = lazy(() => import('header/Header'));
+const ProductList = lazy(() => import('products/ProductList'));
+const ProductDetail = lazy(() => import('products/ProductDetail'));
+const Cart = lazy(() => import('cart/Cart'));
+const OrderList = lazy(() => import('archive/OrderList'));
+const OrderDetail = lazy(() => import('archive/OrderDetail'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,25 +28,15 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Toaster position="top-center" richColors />
-        <div
-          style={{
-            fontFamily:
-              '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            display: "flex",
-            flexDirection: "column",
-            height: "100dvh",
-            background: "#313647",
-            minHeight: "100vh",
-          }}
-        >
+        <div className="flex h-[100dvh] min-h-screen flex-col bg-[var(--color-bg-primary)]">
           <Suspense fallback={<div>헤더 로딩 중...</div>}>
             <Header />
           </Suspense>
 
-          <main style={{ padding: "20px 4px", flex: 1 }}>
+          <main className="flex-1 px-1 py-5">
             <Routes>
               <Route
-                path='/'
+                path="/"
                 element={
                   <Suspense fallback={<div>제품 목록 로딩 중...</div>}>
                     <ProductList />
@@ -54,7 +44,7 @@ function App() {
                 }
               />
               <Route
-                path='/detail/:id'
+                path="/detail/:id"
                 element={
                   <Suspense fallback={<div>상품 상세 로딩 중...</div>}>
                     <ProductDetail />
@@ -62,7 +52,7 @@ function App() {
                 }
               />
               <Route
-                path='/cart'
+                path="/cart"
                 element={
                   <Suspense fallback={<div>장바구니 로딩 중...</div>}>
                     <Cart />
@@ -70,7 +60,7 @@ function App() {
                 }
               />
               <Route
-                path='/archive'
+                path="/archive"
                 element={
                   <Suspense fallback={<div>감정 기록 로딩 중...</div>}>
                     <OrderList />
@@ -78,7 +68,7 @@ function App() {
                 }
               />
               <Route
-                path='/archive/:orderId'
+                path="/archive/:orderId"
                 element={
                   <Suspense fallback={<div>기억 상세 로딩 중...</div>}>
                     <OrderDetail />
@@ -88,21 +78,8 @@ function App() {
             </Routes>
           </main>
 
-          <footer
-            style={{
-              marginTop: "40px",
-              padding: "20px",
-              textAlign: "center",
-              borderTop: "1px solid rgba(255, 248, 212, 0.2)",
-            }}
-          >
-            <p
-              style={{
-                color: "rgba(255, 248, 212, 0.8)",
-                fontSize: "14px",
-                fontWeight: 300,
-              }}
-            >
+          <footer className="mt-10 border-t border-[var(--color-border-primary)] p-5 text-center">
+            <p className="text-sm font-light text-[var(--color-text-secondary)]">
               Between Lines - Like Real People Do
             </p>
           </footer>

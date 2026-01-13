@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
-import { useCartStore } from "products/cartStore";
+import { useState, useEffect, useMemo } from 'react';
+import { useCartStore } from 'products/cartStore';
 
 export function useCartTimer() {
   const items = useCartStore((state) => state.items);
@@ -29,9 +29,7 @@ export function useCartTimer() {
             removeFromCart(id); // 24시간 지나면 삭제
           } else {
             const hours = Math.floor(remaining / (1000 * 60 * 60));
-            const minutes = Math.floor(
-              (remaining % (1000 * 60 * 60)) / (1000 * 60)
-            );
+            const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
             newTimeRemaining[id] = { hours, minutes, seconds };
           }

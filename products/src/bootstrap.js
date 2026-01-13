@@ -16,15 +16,17 @@ const queryClient = new QueryClient({
 });
 
 // MSW 시작 후 앱 렌더링
-worker.start({
-  onUnhandledRequest: 'bypass',
-}).then(() => {
-  const root = ReactDOM.createRoot(document.getElementById('root'));
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </QueryClientProvider>
-  );
-});
+worker
+  .start({
+    onUnhandledRequest: 'bypass',
+  })
+  .then(() => {
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </QueryClientProvider>
+    );
+  });

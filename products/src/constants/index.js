@@ -4,4 +4,4 @@ export {
   isValidStatus,
   getStatusConfig,
   getAllStatuses,
-} from "./emotionStatus";
+} from './emotionStatus';

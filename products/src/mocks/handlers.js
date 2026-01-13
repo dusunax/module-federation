@@ -11,11 +11,12 @@ export const handlers = [
 
     // 검색어가 있으면 필터링
     if (search) {
-      filteredEmotions = emotions.filter(emotion =>
-        emotion.name.toLowerCase().includes(search.toLowerCase()) ||
-        emotion.category.toLowerCase().includes(search.toLowerCase()) ||
-        emotion.description.toLowerCase().includes(search.toLowerCase()) ||
-        emotion.story.toLowerCase().includes(search.toLowerCase())
+      filteredEmotions = emotions.filter(
+        (emotion) =>
+          emotion.name.toLowerCase().includes(search.toLowerCase()) ||
+          emotion.category.toLowerCase().includes(search.toLowerCase()) ||
+          emotion.description.toLowerCase().includes(search.toLowerCase()) ||
+          emotion.story.toLowerCase().includes(search.toLowerCase())
       );
     }
 
@@ -25,7 +26,7 @@ export const handlers = [
   // 특정 감정 카드 상세 조회
   http.get('/api/emotions/:id', ({ params }) => {
     const { id } = params;
-    const emotion = emotions.find(e => e.id === Number(id));
+    const emotion = emotions.find((e) => e.id === Number(id));
 
     if (!emotion) {
       return new HttpResponse(null, { status: 404 });

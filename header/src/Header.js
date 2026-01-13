@@ -7,7 +7,7 @@ function Header() {
   const location = useLocation();
   const items = useCartStore((state) => state.items);
   const rememberingItemIds = useOrderStore((state) => state.rememberingItemIds);
-  
+
   // 기억하는 중인 아이템을 제외한 장바구니 아이템 수량 계산
   const totalItems = Object.values(items)
     .filter((item) => !rememberingItemIds.includes(item.id))
@@ -21,63 +21,27 @@ function Header() {
   };
 
   return (
-    <header
-      style={{
-        background: "rgba(49, 54, 71, 0.95)",
-        padding: "20px",
-        color: "#FFF8D4",
-        borderBottom: "1px solid rgba(255, 248, 212, 0.2)",
-        backdropFilter: "blur(10px)",
-      }}
-    >
-      <nav
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Link to="/" style={{ textDecoration: "none", color: "#FFF8D4" }}>
-          <h1 style={{ margin: 0, fontWeight: 300, letterSpacing: "1px" }}>
-            Between Lines
-          </h1>
-          <p
-            style={{
-              margin: "4px 0 0 0",
-              fontSize: "12px",
-              color: "rgba(255, 248, 212, 0.85)",
-              fontWeight: 300,
-            }}
-          >
+    <header className="border-b border-[var(--color-border-primary)] bg-[rgba(49,54,71,0.95)] p-5 text-[var(--color-text-primary)] backdrop-blur-[10px]">
+      <nav className="flex items-center justify-between">
+        <Link to="/" className="text-[var(--color-text-primary)] no-underline">
+          <h1 className="m-0 font-light tracking-[1px]">Between Lines</h1>
+          <p className="mb-0 mt-1 text-xs font-light text-[var(--color-text-secondary)]">
             Like Real People Do
           </p>
         </Link>
-        <ul
-          style={{
-            display: "flex",
-            listStyle: "none",
-            gap: "20px",
-            margin: 0,
-            padding: 0,
-            alignItems: "center",
-          }}
-        >
+        <ul className="m-0 flex list-none items-center gap-5 p-0">
           <li>
             <Link
               to="/"
-              style={{
-                color: "#FFF8D4",
-                textDecoration: "none",
-                padding: "8px 12px",
-                borderRadius: "4px",
-                background: isActive("/")
-                  ? "rgba(163, 176, 135, 0.3)"
-                  : "transparent",
-                borderBottom: isActive("/")
-                  ? "2px solid #A3B087"
-                  : "2px solid transparent",
-                transition: "all 0.3s ease",
-              }}
+              className={`
+                rounded border-b-2 px-3 py-2 text-[var(--color-text-primary)]
+                no-underline transition-all duration-300 ease-in-out
+                ${
+                  isActive('/')
+                    ? 'border-[var(--color-accent-green)] bg-[var(--color-green-overlay-3)]'
+                    : 'border-transparent bg-transparent'
+                }
+              `}
             >
               홈
             </Link>
@@ -85,40 +49,19 @@ function Header() {
           <li>
             <Link
               to="/cart"
-              style={{
-                color: "#FFF8D4",
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                position: "relative",
-                padding: "8px 12px",
-                borderRadius: "4px",
-                background: isActive("/cart")
-                  ? "rgba(163, 176, 135, 0.3)"
-                  : "transparent",
-                borderBottom: isActive("/cart")
-                  ? "2px solid #A3B087"
-                  : "2px solid transparent",
-                transition: "all 0.3s ease",
-              }}
+              className={`
+                relative flex items-center gap-2 rounded
+                border-b-2 px-3 py-2 text-[var(--color-text-primary)] no-underline transition-all duration-300 ease-in-out
+                ${
+                  isActive('/cart')
+                    ? 'border-[var(--color-accent-green)] bg-[var(--color-green-overlay-3)]'
+                    : 'border-transparent bg-transparent'
+                }
+              `}
             >
               🛒 장바구니
               {totalItems > 0 && (
-                <span
-                  style={{
-                    backgroundColor: "#FF9800",
-                    color: "white",
-                    borderRadius: "50%",
-                    width: "24px",
-                    height: "24px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                  }}
-                >
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-accent-orange)] text-xs font-bold text-white">
                   {totalItems}
                 </span>
               )}
@@ -127,22 +70,15 @@ function Header() {
           <li>
             <Link
               to="/archive"
-              style={{
-                color: "#FFF8D4",
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "8px 12px",
-                borderRadius: "4px",
-                background: isActive("/archive")
-                  ? "rgba(163, 176, 135, 0.3)"
-                  : "transparent",
-                borderBottom: isActive("/archive")
-                  ? "2px solid #A3B087"
-                  : "2px solid transparent",
-                transition: "all 0.3s ease",
-              }}
+              className={`
+                flex items-center gap-2 rounded border-b-2
+                px-3 py-2 text-[var(--color-text-primary)] no-underline transition-all duration-300 ease-in-out
+                ${
+                  isActive('/archive')
+                    ? 'border-[var(--color-accent-green)] bg-[var(--color-green-overlay-3)]'
+                    : 'border-transparent bg-transparent'
+                }
+              `}
             >
               📚 감정 기록
             </Link>

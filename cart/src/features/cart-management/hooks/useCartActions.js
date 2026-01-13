@@ -1,4 +1,4 @@
-import { useCartStore } from "products/cartStore";
+import { useCartStore } from 'products/cartStore';
 
 export function useCartActions() {
   const updateQuantity = useCartStore((state) => state.updateQuantity);

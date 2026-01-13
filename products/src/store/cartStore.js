@@ -17,7 +17,7 @@ export const useCartStore = create((set, get) => ({
       // orderStore에서 기억하는 중인 아이템 ID 목록 확인
       const orderState = useOrderStore.getState();
       const rememberingItemIds = orderState.rememberingItemIds;
-      
+
       // 같은 productId를 가진 아이템 중 기억하는 중이 아닌 아이템 찾기
       const existingNormalItem = Object.values(state.items).find(
         (item) => item.product.id === product.id && !rememberingItemIds.includes(item.id)
@@ -67,9 +67,9 @@ export const useCartStore = create((set, get) => ({
       set((state) => {
         const existingItem = state.items[itemId];
         if (!existingItem) return state;
-        
+
         const isIncreasing = quantity > existingItem.quantity;
-        
+
         return {
           items: {
             ...state.items,
@@ -102,10 +102,7 @@ export const useCartStore = create((set, get) => ({
   // 총 아이템 개수 계산
   getTotalItems: () => {
     const state = get();
-    return Object.values(state.items).reduce(
-      (total, item) => total + item.quantity,
-      0
-    );
+    return Object.values(state.items).reduce((total, item) => total + item.quantity, 0);
   },
 
   // 총 가격 계산

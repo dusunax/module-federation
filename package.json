@@ -1,0 +1,14 @@
+{
+  "name": "test-claud-code",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Module Federation monorepo",
+  "scripts": {
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.7.4",
+    "prettier-plugin-tailwindcss": "^0.5.14"
+  }
+}
