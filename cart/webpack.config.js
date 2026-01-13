@@ -34,6 +34,7 @@ module.exports = {
       },
       exposes: {
         './Cart': './src/Cart',
+        './features/remembering/hooks/useRememberProgress': './src/features/remembering/hooks/useRememberProgress',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },

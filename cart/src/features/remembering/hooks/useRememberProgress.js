@@ -1,11 +1,9 @@
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useOrderStore } from "products/orderStore";
 import { EMOTION_STATUS } from "products/utils/statusStyle";
 
 export function useRememberProgress() {
-  const navigate = useNavigate();
   const isRemembering = useOrderStore((state) => state.isRemembering);
   const progress = useOrderStore((state) => state.progress);
   const updateProgress = useOrderStore((state) => state.updateProgress);
@@ -68,7 +66,6 @@ export function useRememberProgress() {
         if (order) {
           completeRemembering();
           toast.success("기억으로 남았어요.");
-          navigate("/archive");
         }
       }
     }, interval);
@@ -86,6 +83,5 @@ export function useRememberProgress() {
     updateAllOrderStatuses,
     completeRememberingItems,
     completeRemembering,
-    navigate,
   ]);
 }

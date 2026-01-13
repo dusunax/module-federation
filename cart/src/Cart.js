@@ -6,7 +6,6 @@ import { CartSummary } from "./features/remembering/components/CartSummary/CartS
 import { useCartItems } from "./features/cart-management/hooks/useCartItems";
 import { useCartActions } from "./features/cart-management/hooks/useCartActions";
 import { useCartTimer } from "./features/cart-management/hooks/useCartTimer";
-import { useRememberProgress } from "./features/remembering/hooks/useRememberProgress";
 import { useRememberingState } from "./features/remembering/hooks/useRememberingState";
 
 function Cart() {
@@ -30,8 +29,6 @@ function Cart() {
     startRemembering,
     updateAllOrderStatuses,
   } = useRememberingState();
-
-  useRememberProgress();
 
   if (cartItems.length === 0) {
     return <EmptyCart />;
