@@ -32,6 +32,11 @@
 - `zustand` (singleton)
 - `sonner` (singleton)
 
+## 스타일링
+
+- **Tailwind CSS 4**: `src/styles/tailwind.css`에서 Tailwind 엔진을 import하고 `shared/styles/globals.css`를 포함합니다.
+- **공통 레이아웃**: 독립 실행 시 `shared/components/AppLayout` 컴포넌트를 사용합니다.
+
 ## 주요 기능
 
 - **기억 내역 목록**: 완료된 모든 기억을 시간순으로 표시

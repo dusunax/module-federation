@@ -12,7 +12,10 @@ test-claud-code/
 ├── header/        # 헤더 앱 (포트 3001) - 네비게이션
 ├── products/      # 상품 앱 (포트 3002) - 상품 목록/상세 + 상태 관리
 ├── cart/          # 장바구니 앱 (포트 3003) - 장바구니 페이지
-└── archive/       # 기록 앱 (포트 3004) - 감정 기록(상품 내역) 페이지
+├── archive/       # 기록 앱 (포트 3004) - 감정 기록(상품 내역) 페이지
+└── shared/        # 공유 리소스
+    ├── components/  # 공통 컴포넌트 (AppLayout 등)
+    └── styles/      # 공통 스타일 (globals.css)
 ```
 
 ## 주요 기능
@@ -78,6 +81,7 @@ npm start
 - **React 18.2.0**
 - **Webpack 5** (Module Federation)
 - **React Router 7.12.0**
+- **Tailwind CSS 4** (CSS 프레임워크): 자세한 내용 [shared/styles/README.md](./shared/styles/README.md)
 - **Zustand** (상태 관리)
 - **React Query** (데이터 페칭)
 - **MSW** (API 모킹)
