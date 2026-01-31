@@ -1,16 +1,16 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCartStore } from 'products/cartStore';
-import { useOrderStore } from 'products/orderStore';
 import { useAuthStore } from 'auth/authStore';
 import { useEnergyStore } from 'auth/energyStore';
+import { useRememberingStore } from 'auth/rememberingStore';
 
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const items = useCartStore((state) => state.items);
-  const itemProgress = useOrderStore((state) => state.itemProgress);
-  const rememberingItemIds = Object.keys(itemProgress).map(Number);
+  const rememberingItems = useRememberingStore((state) => state.rememberingItems);
+  const rememberingItemIds = Object.keys(rememberingItems).map(Number);
   const { user, signOut } = useAuthStore();
   const { current: currentEnergy, maxEnergy } = useEnergyStore();
 
@@ -104,15 +104,9 @@ function Header() {
                 ⚡ {currentEnergy}/{maxEnergy}
               </span>
               {user.photoURL && (
-                <img
-                  src={user.photoURL}
-                  alt={user.displayName}
-                  className="h-8 w-8 rounded-full"
-                />
+                <img src={user.photoURL} alt={user.displayName} className="h-8 w-8 rounded-full" />
               )}
-              <span className="text-sm text-[var(--color-text-secondary)]">
-                {user.displayName}
-              </span>
+              <span className="text-sm text-[var(--color-text-secondary)]">{user.displayName}</span>
               <button
                 onClick={handleSignOut}
                 className="rounded border border-[var(--color-border-primary)] bg-transparent px-3 py-1 text-sm text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"

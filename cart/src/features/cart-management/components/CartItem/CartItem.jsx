@@ -12,19 +12,27 @@ export function CartItem({
   updateQuantity,
   removeFromCart,
 }) {
-  const currentStatus = orderStatuses[product.id] || EMOTION_STATUS.HELD;
+  // If product metadata is missing (rehydrated from cookie), use a local placeholder.
+  const displayProduct =
+    product && product.name
+      ? product
+      : product && (product.id || product.productId)
+      ? { id: product.id || product.productId, name: '알 수 없는 순간', emoji: '❓', energyCost: 1 }
+      : { id: null, name: '알 수 없는 순간', emoji: '❓', energyCost: 1 };
+
+  const currentStatus = orderStatuses[displayProduct.id] || EMOTION_STATUS.HELD;
   const statusStyle = getStatusConfig(currentStatus);
   const timer = item?.addedAt ? timeRemaining[itemId] : null;
 
   return (
     <div className="mb-4 flex items-center gap-5 rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-6 backdrop-blur-[10px]">
-      <div className="text-5xl opacity-90">{product.emoji}</div>
+    <div className="text-5xl opacity-90">{displayProduct.emoji}</div>
       <div className="flex-1">
         <h3 className="my-0 mb-2 text-base font-light tracking-wide text-[#FFF8D4]">
-          {product.name}
+      {displayProduct.name}
         </h3>
         <p className="my-0 mb-1.5 text-sm font-light tracking-wide text-[#A3B087]">
-          ⚡ {product.energyCost || 1}
+      ⚡ {displayProduct.energyCost || 1}
         </p>
         <div>
           <div
@@ -59,7 +67,7 @@ export function CartItem({
         </button>
       </div>
       <div className="min-w-[100px] text-right text-base font-light tracking-wide text-[#A3B087]">
-        ⚡ {(product.energyCost || 1) * quantity}
+        ⚡ {(displayProduct.energyCost || 1) * quantity}
       </div>
       <button
         onClick={() => {

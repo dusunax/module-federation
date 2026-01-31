@@ -1,5 +1,55 @@
 import { create } from 'zustand';
-import { useOrderStore } from './orderStore';
+import { useRememberingStore } from 'auth/rememberingStore';
+import { emotions as mockEmotions } from '../mocks/data';
+
+// Simple cookie helpers (no external deps)
+function readCookie(name) {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  if (!match) return null;
+  try {
+    return JSON.parse(decodeURIComponent(match[2]));
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeCookie(name, value, days = 30) {
+  if (typeof document === 'undefined') return;
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  const v = encodeURIComponent(JSON.stringify(value));
+  document.cookie = `${name}=${v}; expires=${expires}; path=/; samesite=lax`;
+}
+
+const CART_COOKIE = 'sentimo_cart_v1';
+
+function minimalFromItems(items) {
+  // items: { [id]: { id, product?, quantity, addedAt } }
+  return Object.values(items).map((it) => ({
+    id: it.id,
+    productId: it.product?.id ?? it.productId ?? null,
+    quantity: it.quantity,
+    addedAt: it.addedAt,
+  }));
+}
+
+function itemsFromMinimal(minimal) {
+  // Create lightweight items with product placeholder (only id) — full product info should be mapped by UI
+  const items = {};
+  let nextId = 1;
+  minimal.forEach((m) => {
+    const id = m.id ?? nextId++;
+    const productSnapshot = mockEmotions.find((e) => Number(e.id) === Number(m.productId));
+    items[id] = {
+      id,
+      product: productSnapshot ? { ...productSnapshot } : m.productId ? { id: m.productId } : undefined,
+      productId: m.productId ?? undefined,
+      quantity: m.quantity || 1,
+      addedAt: m.addedAt || Date.now(),
+    };
+  });
+  return { items, nextItemId: Object.keys(items).reduce((n, k) => Math.max(n, Number(k)), 0) + 1 };
+}
 
 // 장바구니 상태를 관리하는 Zustand store
 // Module Federation을 통해 모든 앱에서 동일한 store 인스턴스를 공유합니다
@@ -9,49 +59,74 @@ export const useCartStore = create((set, get) => ({
   // 장바구니 아이템 (key: itemId, value: {id, product, quantity, addedAt})
   // 각 아이템은 고유한 ID를 가져서 같은 productId를 가진 여러 아이템을 저장할 수 있음
   items: {},
-  nextItemId: 1, // 다음 아이템 ID
+  nextItemId: 1,
 
-  // 장바구니에 아이템 추가
+  // Rehydrate from cookie on init
+  __rehydrate: () => {
+    try {
+      const minimal = readCookie(CART_COOKIE) || [];
+      if (minimal && minimal.length > 0) {
+        const { items, nextItemId } = itemsFromMinimal(minimal);
+        set({ items, nextItemId });
+      }
+    } catch (e) {
+      // ignore
+    }
+  },
+
   addToCart: (product) => {
-    set((state) => {
-      // orderStore에서 기억하는 중인 아이템 ID 목록 확인
-      const orderState = useOrderStore.getState();
-      const rememberingItemIds = Object.keys(orderState.itemProgress).map(Number);
+  set((state) => {
+      const rememberingState = useRememberingStore.getState();
+      const rememberingItemIds = Object.keys(rememberingState.rememberingItems).map(Number);
 
-      // 같은 productId를 가진 아이템 중 기억하는 중이 아닌 아이템 찾기
       const existingNormalItem = Object.values(state.items).find(
         (item) => item.product.id === product.id && !rememberingItemIds.includes(item.id)
       );
 
       if (existingNormalItem) {
-        // 이미 있고, 기억하는 중이 아니면 수량 증가 (마지막 추가 시점으로 업데이트)
         return {
           items: {
             ...state.items,
             [existingNormalItem.id]: {
               ...existingNormalItem,
               quantity: existingNormalItem.quantity + 1,
-              addedAt: Date.now(), // 마지막 추가 시점으로 업데이트
+              addedAt: Date.now(),
             },
           },
+          // persist minimal
+          nextItemId: state.nextItemId,
         };
       } else {
-        // 새로운 아이템 추가 (기억하는 중인 아이템을 다시 담는 경우도 포함)
         const newItemId = state.nextItemId;
-        return {
+        const next = {
           items: {
             ...state.items,
             [newItemId]: {
               id: newItemId,
               product,
               quantity: 1,
-              addedAt: Date.now(), // 장바구니에 추가된 시간
+              addedAt: Date.now(),
             },
           },
           nextItemId: state.nextItemId + 1,
         };
+
+        // persist minimal representation to cookie
+        try {
+          const minimal = minimalFromItems(next.items);
+          writeCookie(CART_COOKIE, minimal);
+        } catch (e) {
+          // ignore cookie write failures
+        }
+
+        return next;
       }
     });
+    // persist current minimal state after mutation
+    try {
+      const minimal = minimalFromItems(get().items);
+      writeCookie(CART_COOKIE, minimal);
+    } catch (e) {}
   },
 
   // 수량 변경 (itemId 사용)
@@ -70,7 +145,7 @@ export const useCartStore = create((set, get) => ({
 
         const isIncreasing = quantity > existingItem.quantity;
 
-        return {
+        const nextState = {
           items: {
             ...state.items,
             [itemId]: {
@@ -81,6 +156,13 @@ export const useCartStore = create((set, get) => ({
             },
           },
         };
+
+        try {
+          const minimal = minimalFromItems(nextState.items);
+          writeCookie(CART_COOKIE, minimal);
+        } catch (e) {}
+
+        return nextState;
       });
     }
   },
@@ -90,6 +172,10 @@ export const useCartStore = create((set, get) => ({
     set((state) => {
       const newItems = { ...state.items };
       delete newItems[itemId];
+      try {
+        const minimal = minimalFromItems(newItems);
+        writeCookie(CART_COOKIE, minimal);
+      } catch (e) {}
       return { items: newItems };
     });
   },
@@ -97,6 +183,9 @@ export const useCartStore = create((set, get) => ({
   // 장바구니 비우기
   clearCart: () => {
     set({ items: {} });
+    try {
+      writeCookie(CART_COOKIE, []);
+    } catch (e) {}
   },
 
   // 총 아이템 개수 계산
@@ -104,13 +193,14 @@ export const useCartStore = create((set, get) => ({
     const state = get();
     return Object.values(state.items).reduce((total, item) => total + item.quantity, 0);
   },
-
-  // 총 가격 계산
-  getTotalPrice: () => {
-    const state = get();
-    return Object.values(state.items).reduce(
-      (total, item) => total + item.product.price * item.quantity,
-      0
-    );
-  },
 }));
+
+// Rehydrate from cookie on module load (client-side only)
+try {
+  const state = useCartStore.getState();
+  if (typeof window !== 'undefined' && state && typeof state.__rehydrate === 'function') {
+    state.__rehydrate();
+  }
+} catch (e) {
+  // ignore
+}

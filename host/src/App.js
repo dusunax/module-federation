@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { useRememberProgress } from 'cart/features/remembering/hooks/useRememberProgress';
+import { useRememberingSync } from 'cart/features/remembering/hooks/useRememberingSync';
 import ProtectedRoute from './components/ProtectedRoute';
 import './styles/tailwind.css';
 
@@ -24,6 +25,7 @@ const queryClient = new QueryClient({
 });
 
 function AppContent() {
+  useRememberingSync();
   useRememberProgress();
 
   return (

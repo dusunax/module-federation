@@ -49,7 +49,7 @@ export function CartSummary({
           <button
             onClick={async () => {
               try {
-                await startRemembering(null, normalTotalEnergyCost);
+                await startRemembering();
 
                 const newStatuses = {};
                 normalItems.forEach((item) => {

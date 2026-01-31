@@ -9,33 +9,30 @@ import { useCartTimer } from './features/cart-management/hooks/useCartTimer';
 import { useRememberingState } from './features/remembering/hooks/useRememberingState';
 import { useAuthStore } from 'auth/authStore';
 import { useEnergyStore } from 'auth/energyStore';
+import { useRememberingStore } from 'auth/rememberingStore';
 
 function Cart() {
-  const {
-    cartItems,
-    normalItems,
-    rememberingItems,
-    normalTotalItems,
-    normalTotalEnergyCost,
-    rememberingTotalItems,
-  } = useCartItems();
+  const { cartItems, normalItems, normalTotalItems, normalTotalEnergyCost } = useCartItems();
 
   const user = useAuthStore((state) => state.user);
   const currentEnergy = useEnergyStore((state) => state.current);
+  const firestoreRememberingItems = useRememberingStore((state) => state.rememberingItems);
 
   const { items, updateQuantity, removeFromCart } = useCartActions();
   const timeRemaining = useCartTimer();
 
   const {
     isRemembering,
-    itemProgress,
     orderStatuses,
     startRemembering,
     updateAllOrderStatuses,
     cancelItemRemembering,
   } = useRememberingState();
 
-  if (cartItems.length === 0) {
+  const hasRememberingItems = Object.keys(firestoreRememberingItems).length > 0;
+
+  // 장바구니도 비어있고 remembering 아이템도 없을 때만 EmptyCart 표시
+  if (cartItems.length === 0 && !hasRememberingItems) {
     return <EmptyCart />;
   }
 
@@ -52,10 +49,6 @@ function Cart() {
       />
 
       <RememberingSection
-        rememberingItems={rememberingItems}
-        rememberingTotalItems={rememberingTotalItems}
-        isRemembering={isRemembering}
-        itemProgress={itemProgress}
         orderStatuses={orderStatuses}
         cancelItemRemembering={cancelItemRemembering}
       />

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
+import { useRememberingStore } from 'auth/rememberingStore';
 
 const DURATION = 60000; // 1분
 
@@ -12,11 +13,40 @@ function formatRemainingTime(progress) {
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-function RememberingItemCard({ item, itemProgressData, orderStatuses, cancelItemRemembering }) {
-  const { product, quantity } = item;
-  const currentStatus = orderStatuses[product.id] || EMOTION_STATUS.HELD;
+function useRealtimeProgress(startTime, duration) {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (!startTime) {
+      setProgress(0);
+      return;
+    }
+
+    const updateProgress = () => {
+      const elapsed = Date.now() - startTime;
+      const newProgress = Math.min((elapsed / duration) * 100, 100);
+      setProgress(newProgress);
+    };
+
+    updateProgress();
+    const interval = setInterval(updateProgress, 100);
+
+    return () => clearInterval(interval);
+  }, [startTime, duration]);
+
+  return progress;
+}
+
+function RememberingItemCard({ firestoreItem, orderStatuses, cancelItemRemembering }) {
+  const productInfo = firestoreItem.productInfo;
+  const currentStatus = orderStatuses[productInfo.id] || EMOTION_STATUS.BEING_UNDERSTOOD;
   const statusStyle = getStatusConfig(currentStatus);
-  const progress = itemProgressData?.progress || 0;
+
+  const startTime = firestoreItem.startTime;
+  const duration = firestoreItem.duration || DURATION;
+  const energyCost = firestoreItem.energyCost;
+
+  const progress = useRealtimeProgress(startTime, duration);
 
   const handleCancel = () => {
     toast.custom((t) => (
@@ -25,7 +55,7 @@ function RememberingItemCard({ item, itemProgressData, orderStatuses, cancelItem
           이 아이템의 기억하기를 취소할까요?
         </div>
         <div className="text-xs font-light text-[rgba(163,176,135,0.8)]">
-          ⚡ {itemProgressData?.energyCost || 0} 에너지가 회복됩니다
+          ⚡ {energyCost} 에너지가 회복됩니다
         </div>
         <div className="flex justify-end gap-2">
           <button
@@ -36,9 +66,9 @@ function RememberingItemCard({ item, itemProgressData, orderStatuses, cancelItem
           </button>
           <button
             onClick={async () => {
-              await cancelItemRemembering(item.id);
+              await cancelItemRemembering(firestoreItem.cartItemId);
               toast.dismiss(t);
-              toast.success(`기억하기가 취소되었습니다. (⚡ ${itemProgressData?.energyCost || 0} 회복)`);
+              toast.success(`기억하기가 취소되었습니다. (⚡ ${energyCost} 회복)`);
             }}
             className="cursor-pointer rounded border border-[rgba(229,115,115,0.5)] bg-[rgba(229,115,115,0.2)] px-4 py-2 text-[13px] font-light text-[#E57373] transition-all duration-200 hover:bg-[rgba(229,115,115,0.3)]"
           >
@@ -52,13 +82,13 @@ function RememberingItemCard({ item, itemProgressData, orderStatuses, cancelItem
   return (
     <div className="mb-4 rounded border border-[rgba(163,176,135,0.3)] bg-[rgba(163,176,135,0.1)] p-6 backdrop-blur-[10px]">
       <div className="flex items-center gap-5">
-        <div className="text-5xl opacity-90">{product.emoji}</div>
+        <div className="text-5xl opacity-90">{productInfo.emoji}</div>
         <div className="flex-1">
           <h3 className="my-0 mb-2 text-base font-light tracking-wide text-[#FFF8D4]">
-            {product.name}
+            {productInfo.name}
           </h3>
           <p className="my-0 mb-1.5 text-sm font-light tracking-wide text-[#A3B087]">
-            ⚡ {product.energyCost || 1}
+            ⚡ {productInfo.energyCost || 1}
           </p>
           <div
             className="mt-1 text-[11px] font-light tracking-wide"
@@ -67,11 +97,8 @@ function RememberingItemCard({ item, itemProgressData, orderStatuses, cancelItem
             {statusStyle.icon} {statusStyle.label}
           </div>
         </div>
-        <div className="min-w-[40px] rounded bg-[rgba(67,86,99,0.3)] px-4 py-2 text-center text-[15px] font-light text-[rgba(255,248,212,0.7)]">
-          {quantity}개
-        </div>
         <div className="min-w-[100px] text-right text-base font-light tracking-wide text-[#A3B087]">
-          ⚡ {(product.energyCost || 1) * quantity}
+          ⚡ {energyCost}
         </div>
       </div>
 
@@ -108,36 +135,33 @@ function RememberingItemCard({ item, itemProgressData, orderStatuses, cancelItem
   );
 }
 
-export function RememberingSection({
-  rememberingItems,
-  rememberingTotalItems,
-  isRemembering,
-  itemProgress,
-  orderStatuses,
-  cancelItemRemembering,
-}) {
-  if (rememberingItems.length === 0) {
+export function RememberingSection({ orderStatuses, cancelItemRemembering }) {
+  const firestoreItems = useRememberingStore((state) => state.rememberingItems);
+  const firestoreItemsList = Object.values(firestoreItems);
+
+  if (firestoreItemsList.length === 0) {
     return null;
   }
+
+  const totalItems = firestoreItemsList.length;
 
   return (
     <div className="mb-10">
       <div className="mb-5 border-b border-[rgba(163,176,135,0.3)] pb-4">
         <h2 className="m-0 text-xl font-light tracking-wider text-[#A3B087]">
-          이해되는 중 ({rememberingTotalItems}개)
+          이해되는 중 ({totalItems}개)
         </h2>
         <p className="mb-0 mt-1 text-xs font-light tracking-wide text-[rgba(163,176,135,0.8)]">
           기억으로 남기는 중입니다
         </p>
       </div>
 
-      {/* 이해되는 중인 아이템 목록 - 개별 프로그레스바 */}
+      {/* 이해되는 중인 아이템 목록 - Firestore 데이터 직접 사용 */}
       <div className="mb-5">
-        {rememberingItems.map((item) => (
+        {firestoreItemsList.map((firestoreItem) => (
           <RememberingItemCard
-            key={item.id}
-            item={item}
-            itemProgressData={itemProgress[item.id]}
+            key={firestoreItem.visibleItemId}
+            firestoreItem={firestoreItem}
             orderStatuses={orderStatuses}
             cancelItemRemembering={cancelItemRemembering}
           />

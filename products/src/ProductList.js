@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from './store/cartStore';
+import { useOrderStore } from './store/orderStore';
 import { getStatusConfig } from './utils/statusStyle';
 import { EMOTION_STATUS } from './constants';
 
@@ -9,6 +10,7 @@ function ProductList() {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
   const cartItems = useCartStore((state) => state.items);
+  const orderStatuses = useOrderStore((state) => state.orderStatuses);
 
   const {
     data: emotions,
@@ -83,7 +85,13 @@ function ProductList() {
             const hasInCart = Object.values(cartItems).some(
               (item) => item.product.id === emotion.id
             );
-            const currentStatus = hasInCart ? EMOTION_STATUS.HELD : emotion.status;
+            // Prefer DB-driven status if available
+            const dbStatus = orderStatuses ? orderStatuses[emotion.id] : undefined;
+            const currentStatus = dbStatus
+              ? dbStatus
+              : hasInCart
+                ? EMOTION_STATUS.HELD
+                : emotion.status;
             const statusStyle = getStatusConfig(currentStatus);
             return (
               <div

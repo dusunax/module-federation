@@ -51,6 +51,8 @@ module.exports = {
         './authStore': './src/store/authStore.js',
         './firebase': './src/firebase/index.js',
         './energyStore': './src/store/energyStore.js',
+        './rememberingStore': './src/store/rememberingStore.js',
+        './services/orderService': './src/services/orderService.js',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },

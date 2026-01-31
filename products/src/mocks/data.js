@@ -4,7 +4,6 @@ export const emotions = [
   {
     id: 1,
     name: '답장이 0.2초 늦었던 순간',
-    price: 0,
     emoji: '💬',
     rarity: 'common',
     energyCost: 1,
@@ -20,7 +19,6 @@ export const emotions = [
   {
     id: 2,
     name: '이해받았다고 착각한 밤',
-    price: 0,
     emoji: '🌙',
     rarity: 'rare',
     energyCost: 2,
@@ -36,7 +34,6 @@ export const emotions = [
   {
     id: 3,
     name: '고마웠던 말',
-    price: 0,
     emoji: '💝',
     rarity: 'epic',
     energyCost: 3,
@@ -51,7 +48,6 @@ export const emotions = [
   {
     id: 4,
     name: '못 했던 질문',
-    price: 0,
     emoji: '❓',
     rarity: 'common',
     energyCost: 1,
@@ -67,7 +63,6 @@ export const emotions = [
   {
     id: 5,
     name: '첫 만남의 그 순간',
-    price: 0,
     emoji: '✨',
     rarity: 'rare',
     energyCost: 2,
@@ -81,7 +76,6 @@ export const emotions = [
   {
     id: 6,
     name: '마지막 인사',
-    price: 0,
     emoji: '👋',
     rarity: 'epic',
     energyCost: 3,

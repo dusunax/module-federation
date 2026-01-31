@@ -53,6 +53,8 @@ module.exports = {
         './Cart': './src/Cart',
         './features/remembering/hooks/useRememberProgress':
           './src/features/remembering/hooks/useRememberProgress',
+        './features/remembering/hooks/useRememberingSync':
+          './src/features/remembering/hooks/useRememberingSync',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },

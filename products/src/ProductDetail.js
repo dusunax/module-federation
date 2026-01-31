@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useCartStore } from './store/cartStore';
+import { useRememberingStore } from 'auth/rememberingStore';
 import { useOrderStore } from './store/orderStore';
 import { getStatusConfig } from './utils/statusStyle';
 import { EMOTION_STATUS } from './constants';
@@ -13,14 +14,16 @@ function ProductDetail() {
 
   const addToCart = useCartStore((state) => state.addToCart);
   const items = useCartStore((state) => state.items);
+  const rememberingItems = useRememberingStore((state) => state.rememberingItems);
+  const orderStatuses = useOrderStore((state) => state.orderStatuses);
 
   // 장바구니에 추가 핸들러
   const handleAddToCart = () => {
     addToCart(emotion);
     // 추가 후 현재 수량 확인 (기억하는 중인 아이템 제외, 일반 장바구니 아이템만)
     const cartState = useCartStore.getState();
-    const orderState = useOrderStore.getState();
-    const rememberingItemIds = Object.keys(orderState.itemProgress).map(Number);
+    const rememberingState = useRememberingStore.getState();
+    const rememberingItemIds = Object.keys(rememberingState.rememberingItems).map(Number);
 
     const normalQuantity = Object.values(cartState.items)
       .filter((item) => item.product.id === emotion.id && !rememberingItemIds.includes(item.id))
@@ -68,8 +71,13 @@ function ProductDetail() {
     );
   }
 
-  // 장바구니에 담겨있으면 held 상태로 표시
-  const currentStatus = isInCart ? EMOTION_STATUS.HELD : emotion?.status || EMOTION_STATUS.NOTICING;
+  // Prefer DB-driven status if available
+  const dbStatus = emotion?.id ? orderStatuses?.[emotion.id] : undefined;
+  const currentStatus = dbStatus
+    ? dbStatus
+    : isInCart
+      ? EMOTION_STATUS.HELD
+      : emotion?.status || EMOTION_STATUS.NOTICING;
   const statusStyle = getStatusConfig(currentStatus);
 
   return (

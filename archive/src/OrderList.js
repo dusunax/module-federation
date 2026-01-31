@@ -2,12 +2,30 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useOrderStore } from 'products/orderStore';
+import { useAuthStore } from 'auth/authStore';
+import { subscribeToUserOrders, deleteUserOrder } from 'auth/services/orderService';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
 
 function OrderList() {
   const navigate = useNavigate();
-  const orders = useOrderStore((state) => state.orders);
+  const ordersFromStore = useOrderStore((state) => state.orders);
   const removeOrder = useOrderStore((state) => state.removeOrder);
+  const user = useAuthStore((state) => state.user);
+
+  const [orders, setOrders] = React.useState(ordersFromStore || []);
+
+  React.useEffect(() => {
+    // keep local store in sync initially
+    setOrders(ordersFromStore || []);
+  }, [ordersFromStore]);
+
+  React.useEffect(() => {
+    if (!user || !user.uid) return;
+    const unsubscribe = subscribeToUserOrders(user.uid, (dbOrders) => {
+      setOrders(dbOrders || []);
+    });
+    return () => unsubscribe && unsubscribe();
+  }, [user?.uid]);
 
   if (orders.length === 0) {
     return (
@@ -115,9 +133,24 @@ function OrderList() {
                           </button>
                           <button
                             onClick={() => {
-                              removeOrder(Number(order.id));
-                              toast.dismiss(t);
-                              toast.success('기억이 삭제되었습니다.');
+                              // delete from Firestore (and local store will update via subscription)
+                              (async () => {
+                                try {
+                                  const userObj = useAuthStore.getState().user;
+                                  if (userObj && userObj.uid) {
+                                    await deleteUserOrder(userObj.uid, order.id);
+                                  } else {
+                                    // fallback to local removal
+                                    removeOrder(Number(order.id));
+                                  }
+                                  toast.dismiss(t);
+                                  toast.success('기억이 삭제되었습니다.');
+                                } catch (err) {
+                                  console.error('Failed to delete order:', err);
+                                  toast.dismiss(t);
+                                  toast.error('삭제 실패');
+                                }
+                              })();
                             }}
                             className="cursor-pointer rounded border border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(163,176,135,0.5)]"
                           >

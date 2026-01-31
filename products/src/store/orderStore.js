@@ -21,9 +21,9 @@ export const useOrderStore = create((set, get) => ({
       return null;
     }
 
-    // 총 가격과 수량 계산
-    const totalPrice = cartItems.reduce(
-      (total, item) => total + item.product.price * item.quantity,
+    // 총 에너지와 수량 계산 (가격은 더 이상 사용하지 않음)
+    const totalEnergy = cartItems.reduce(
+      (total, item) => total + (item.product.energyCost || 1) * item.quantity,
       0
     );
     const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
@@ -32,7 +32,7 @@ export const useOrderStore = create((set, get) => ({
     const newOrder = {
       id: Date.now(), // 간단한 ID 생성
       items: cartItems,
-      totalPrice,
+      totalEnergy,
       totalItems,
       orderDate: new Date().toISOString(),
       status: 'completed',
@@ -67,9 +67,9 @@ export const useOrderStore = create((set, get) => ({
       return null;
     }
 
-    // 기억할 아이템들의 총 가격과 수량 계산
-    const totalPrice = rememberingItems.reduce(
-      (total, item) => total + item.product.price * item.quantity,
+    // 기억할 아이템들의 총 에너지와 수량 계산
+    const totalEnergy = rememberingItems.reduce(
+      (total, item) => total + (item.product.energyCost || 1) * item.quantity,
       0
     );
     const totalItems = rememberingItems.reduce((total, item) => total + item.quantity, 0);
@@ -78,7 +78,7 @@ export const useOrderStore = create((set, get) => ({
     const newOrder = {
       id: Date.now(),
       items: rememberingItems,
-      totalPrice,
+      totalEnergy,
       totalItems,
       orderDate: new Date().toISOString(),
       status: 'completed',
@@ -186,7 +186,7 @@ export const useOrderStore = create((set, get) => ({
     const newOrder = {
       id: Date.now(),
       items: [item],
-      totalPrice: item.product.price * item.quantity,
+      totalEnergy: (item.product.energyCost || 1) * item.quantity,
       totalItems: item.quantity,
       orderDate: new Date().toISOString(),
       status: 'completed',
@@ -284,9 +284,6 @@ export const useOrderStore = create((set, get) => ({
   // 헬퍼: 총 에너지 비용 계산
   getTotalEnergyCost: () => {
     const state = get();
-    return Object.values(state.itemProgress).reduce(
-      (total, item) => total + item.energyCost,
-      0
-    );
+    return Object.values(state.itemProgress).reduce((total, item) => total + item.energyCost, 0);
   },
 }));
