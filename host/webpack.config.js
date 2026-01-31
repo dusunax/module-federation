@@ -57,6 +57,7 @@ module.exports = {
         products: 'products@http://localhost:3002/remoteEntry.js',
         cart: 'cart@http://localhost:3003/remoteEntry.js',
         archive: 'archive@http://localhost:3004/remoteEntry.js',
+        auth: 'auth@http://localhost:3005/remoteEntry.js',
       },
       shared: {
         react: {

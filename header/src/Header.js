@@ -1,12 +1,15 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCartStore } from 'products/cartStore';
 import { useOrderStore } from 'products/orderStore';
+import { useAuthStore } from 'auth/authStore';
 
 function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
   const items = useCartStore((state) => state.items);
   const rememberingItemIds = useOrderStore((state) => state.rememberingItemIds);
+  const { user, signOut } = useAuthStore();
 
   // 기억하는 중인 아이템을 제외한 장바구니 아이템 수량 계산
   const totalItems = Object.values(items)
@@ -18,6 +21,15 @@ function Header() {
       return location.pathname === '/';
     }
     return location.pathname.startsWith(path);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/login');
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
 
   return (
@@ -83,6 +95,26 @@ function Header() {
               📚 감정 기록
             </Link>
           </li>
+          {user && (
+            <li className="ml-4 flex items-center gap-3 border-l border-[var(--color-border-primary)] pl-4">
+              {user.photoURL && (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName}
+                  className="h-8 w-8 rounded-full"
+                />
+              )}
+              <span className="text-sm text-[var(--color-text-secondary)]">
+                {user.displayName}
+              </span>
+              <button
+                onClick={handleSignOut}
+                className="rounded border border-[var(--color-border-primary)] bg-transparent px-3 py-1 text-sm text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
+              >
+                로그아웃
+              </button>
+            </li>
+          )}
         </ul>
       </nav>
     </header>

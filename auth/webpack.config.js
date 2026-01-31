@@ -1,15 +1,16 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
+const Dotenv = require('dotenv-webpack');
 const path = require('path');
 
 module.exports = {
   entry: './src/index.js',
   mode: 'development',
   devServer: {
-    port: 3001,
+    port: 3005,
   },
   output: {
-    publicPath: 'http://localhost:3001/',
+    publicPath: 'http://localhost:3005/',
   },
   module: {
     rules: [
@@ -31,7 +32,7 @@ module.exports = {
           {
             loader: 'css-loader',
             options: {
-              import: false, // PostCSS가 @import를 처리하도록 함
+              import: false,
             },
           },
           {
@@ -42,15 +43,13 @@ module.exports = {
     ],
   },
   plugins: [
+    new Dotenv(),
     new ModuleFederationPlugin({
-      name: 'header',
+      name: 'auth',
       filename: 'remoteEntry.js',
-      remotes: {
-        products: 'products@http://localhost:3002/remoteEntry.js',
-        auth: 'auth@http://localhost:3005/remoteEntry.js',
-      },
       exposes: {
-        './Header': './src/Header',
+        './authStore': './src/store/authStore.js',
+        './firebase': './src/firebase/index.js',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },
