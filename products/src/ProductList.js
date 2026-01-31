@@ -89,7 +89,7 @@ function ProductList() {
               <div
                 key={emotion.id}
                 onClick={() => handleProductClick(emotion.id)}
-                className="relative cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-6 text-left backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.3)]"
+                className="relative flex cursor-pointer flex-col rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-6 text-left backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.3)]"
               >
                 {/* 상태 표시 */}
                 <div
@@ -100,18 +100,18 @@ function ProductList() {
                 </div>
 
                 <div className="mb-4 text-5xl opacity-90">{emotion.emoji}</div>
-                <h3 className="my-0 mb-3 text-base font-light leading-6 tracking-wide text-[#FFF8D4]">
+                <h3 className="mb-1 text-base font-light leading-6 tracking-wide ">
                   {emotion.name}
                 </h3>
-                <p className="mb-4 min-h-[40px] text-[13px] font-light leading-relaxed text-[rgba(255,248,212,0.85)]">
+                <p className="mb-4 line-clamp-5 min-h-0 flex-1 text-[13px] font-light leading-relaxed text-[rgba(255,248,212,0.85)]">
                   {emotion.description}
                 </p>
                 <div className="mt-5 flex items-center justify-between border-t border-[rgba(255,248,212,0.1)] pt-4">
                   <span className="rounded-sm bg-[rgba(67,86,99,0.3)] px-2.5 py-1 text-[11px] font-light tracking-wider text-[rgba(255,248,212,0.75)]">
                     {emotion.category}
                   </span>
-                  <span className="text-sm font-light tracking-wider text-[#FFF8D4]">
-                    {emotion.price === 0 ? '무료' : `${emotion.price}원`}
+                  <span className="text-sm font-light tracking-wider text-[#A3B087]">
+                    ⚡ {emotion.energyCost}
                   </span>
                 </div>
               </div>

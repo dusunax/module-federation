@@ -3,13 +3,16 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCartStore } from 'products/cartStore';
 import { useOrderStore } from 'products/orderStore';
 import { useAuthStore } from 'auth/authStore';
+import { useEnergyStore } from 'auth/energyStore';
 
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const items = useCartStore((state) => state.items);
-  const rememberingItemIds = useOrderStore((state) => state.rememberingItemIds);
+  const itemProgress = useOrderStore((state) => state.itemProgress);
+  const rememberingItemIds = Object.keys(itemProgress).map(Number);
   const { user, signOut } = useAuthStore();
+  const { current: currentEnergy, maxEnergy } = useEnergyStore();
 
   // 기억하는 중인 아이템을 제외한 장바구니 아이템 수량 계산
   const totalItems = Object.values(items)
@@ -97,6 +100,9 @@ function Header() {
           </li>
           {user && (
             <li className="ml-4 flex items-center gap-3 border-l border-[var(--color-border-primary)] pl-4">
+              <span className="flex items-center gap-1.5 rounded-full bg-[var(--color-green-overlay-3)] px-3 py-1 text-sm text-[var(--color-accent-green)]">
+                ⚡ {currentEnergy}/{maxEnergy}
+              </span>
               {user.photoURL && (
                 <img
                   src={user.photoURL}

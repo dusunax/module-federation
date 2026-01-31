@@ -20,7 +20,7 @@ function ProductDetail() {
     // 추가 후 현재 수량 확인 (기억하는 중인 아이템 제외, 일반 장바구니 아이템만)
     const cartState = useCartStore.getState();
     const orderState = useOrderStore.getState();
-    const rememberingItemIds = orderState.rememberingItemIds;
+    const rememberingItemIds = Object.keys(orderState.itemProgress).map(Number);
 
     const normalQuantity = Object.values(cartState.items)
       .filter((item) => item.product.id === emotion.id && !rememberingItemIds.includes(item.id))
@@ -102,8 +102,8 @@ function ProductDetail() {
             <h1 className="mb-4 mt-0 text-[28px] font-light leading-snug tracking-wider text-[#FFF8D4]">
               {emotion?.name}
             </h1>
-            <p className="mb-5 text-lg font-light tracking-wide text-[#FFF8D4]">
-              {emotion?.price === 0 ? '무료' : `${emotion?.price.toLocaleString()}원`}
+            <p className="mb-5 text-lg font-light tracking-wide text-[#A3B087]">
+              ⚡ {emotion?.energyCost} 에너지
             </p>
             <span className="mb-5 inline-block rounded-sm bg-[rgba(67,86,99,0.3)] px-3.5 py-1.5 text-xs font-light tracking-wider text-[rgba(255,248,212,0.9)]">
               {emotion?.category}

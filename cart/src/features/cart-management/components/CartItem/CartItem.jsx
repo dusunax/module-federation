@@ -23,8 +23,8 @@ export function CartItem({
         <h3 className="my-0 mb-2 text-base font-light tracking-wide text-[#FFF8D4]">
           {product.name}
         </h3>
-        <p className="my-0 mb-1.5 text-sm font-light tracking-wide text-[#FFF8D4]">
-          {product.price === 0 ? '무료' : `${product.price.toLocaleString()}원`}
+        <p className="my-0 mb-1.5 text-sm font-light tracking-wide text-[#A3B087]">
+          ⚡ {product.energyCost || 1}
         </p>
         <div>
           <div
@@ -58,8 +58,8 @@ export function CartItem({
           +
         </button>
       </div>
-      <div className="min-w-[100px] text-right text-base font-light tracking-wide text-[#FFF8D4]">
-        {product.price === 0 ? '무료' : `${(product.price * quantity).toLocaleString()}원`}
+      <div className="min-w-[100px] text-right text-base font-light tracking-wide text-[#A3B087]">
+        ⚡ {(product.energyCost || 1) * quantity}
       </div>
       <button
         onClick={() => {

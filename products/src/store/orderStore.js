@@ -7,12 +7,10 @@ export const useOrderStore = create((set, get) => ({
   // 기억 내역 (완료된 기억들)
   orders: [],
 
-  // 기억 진행 상태
-  isRemembering: false, // 기억 중인지 여부
-  progress: 0, // 프로그레스바 (0-100)
+  // 기억 진행 상태 - 개별 아이템별 프로그레스
+  // { [itemId]: { progress: number, startTime: number, energyCost: number } }
+  itemProgress: {},
   orderStatuses: {}, // 각 아이템의 기억 상태 관리
-  rememberingItemIds: [], // 현재 기억 중인 아이템 ID 목록
-  rememberingStartTime: null, // 기억 시작 시간
 
   // 기억 완료 (장바구니 내용을 기억 내역에 추가)
   completeOrder: () => {
@@ -49,10 +47,10 @@ export const useOrderStore = create((set, get) => ({
     return newOrder;
   },
 
-  // 특정 아이템만 기억 완료 (rememberingItemIds에 있는 아이템만)
+  // 특정 아이템만 기억 완료 (itemProgress에 있는 아이템만) - 하위 호환용
   completeRememberingItems: () => {
     const state = get();
-    const { rememberingItemIds } = state;
+    const rememberingItemIds = Object.keys(state.itemProgress).map(Number);
     const cartState = useCartStore.getState();
     const { items } = cartState;
 
@@ -91,9 +89,10 @@ export const useOrderStore = create((set, get) => ({
       cartState.removeFromCart(id);
     });
 
-    // 기억 추가
+    // 기억 추가 및 itemProgress 초기화
     set({
       orders: [newOrder, ...state.orders],
+      itemProgress: {},
     });
 
     return newOrder;
@@ -112,24 +111,115 @@ export const useOrderStore = create((set, get) => ({
     }));
   },
 
-  // 기억 시작
-  startRemembering: () => {
+  // 기억 시작 - 개별 아이템 프로그레스 초기화 (에너지 차감은 호출하는 쪽에서 처리)
+  startRemembering: (itemIds) => {
     const cartState = useCartStore.getState();
-    // 현재 장바구니의 모든 itemId 저장
-    const currentItemIds = Object.keys(cartState.items).map(Number);
 
-    set({
-      isRemembering: true,
-      progress: 0,
+    // itemIds가 없으면 현재 장바구니의 모든 아이템
+    const targetItemIds = itemIds || Object.keys(cartState.items).map(Number);
+    const startTime = Date.now();
+
+    // 각 아이템의 energyCost 계산 및 itemProgress 초기화
+    const newItemProgress = {};
+
+    targetItemIds.forEach((itemId) => {
+      const item = cartState.items[itemId];
+      if (item) {
+        const energyCost = (item.product.energyCost || 1) * item.quantity;
+        newItemProgress[itemId] = {
+          progress: 0,
+          startTime,
+          energyCost,
+        };
+      }
+    });
+
+    set((state) => ({
+      itemProgress: { ...state.itemProgress, ...newItemProgress },
       orderStatuses: {},
-      rememberingItemIds: currentItemIds, // 현재 장바구니의 모든 itemId 저장
-      rememberingStartTime: Date.now(), // 기억 시작 시간 저장
+    }));
+  },
+
+  // 개별 아이템 프로그레스 업데이트
+  updateItemProgress: (itemId, progress) => {
+    set((state) => {
+      const item = state.itemProgress[itemId];
+      if (!item) return state;
+
+      return {
+        itemProgress: {
+          ...state.itemProgress,
+          [itemId]: {
+            ...item,
+            progress: Math.min(Math.max(progress, 0), 100),
+          },
+        },
+      };
     });
   },
 
-  // 프로그레스 업데이트
+  // 개별 아이템 기억 취소 (에너지 회복은 호출하는 쪽에서 처리)
+  cancelItemRemembering: (itemId) => {
+    const state = get();
+    const itemData = state.itemProgress[itemId];
+
+    if (!itemData) return null;
+
+    // itemProgress에서 해당 아이템 제거
+    set((state) => {
+      const { [itemId]: removed, ...rest } = state.itemProgress;
+      return { itemProgress: rest };
+    });
+
+    return itemData; // energyCost 반환하여 호출하는 쪽에서 에너지 회복 가능
+  },
+
+  // 개별 아이템 기억 완료 - 장바구니에서 제거, 기억 내역에 추가
+  completeItemRemembering: (itemId) => {
+    const state = get();
+    const cartState = useCartStore.getState();
+    const item = cartState.items[itemId];
+
+    if (!item) return null;
+
+    // 새 기억 생성 (단일 아이템)
+    const newOrder = {
+      id: Date.now(),
+      items: [item],
+      totalPrice: item.product.price * item.quantity,
+      totalItems: item.quantity,
+      orderDate: new Date().toISOString(),
+      status: 'completed',
+    };
+
+    // 장바구니에서 제거
+    cartState.removeFromCart(itemId);
+
+    // itemProgress에서 제거 및 기억 내역에 추가
+    set((state) => {
+      const { [itemId]: removed, ...rest } = state.itemProgress;
+      return {
+        itemProgress: rest,
+        orders: [newOrder, ...state.orders],
+      };
+    });
+
+    return newOrder;
+  },
+
+  // 전체 프로그레스 업데이트 (하위 호환성)
   updateProgress: (newProgress) => {
-    set({ progress: Math.min(Math.max(newProgress, 0), 100) });
+    // 모든 아이템에 동일한 프로그레스 적용 (하위 호환용)
+    set((state) => {
+      const updatedProgress = {};
+      Object.keys(state.itemProgress).forEach((itemId) => {
+        updatedProgress[itemId] = {
+          ...state.itemProgress[itemId],
+          progress: Math.min(Math.max(newProgress, 0), 100),
+        };
+      });
+      return { itemProgress: updatedProgress };
+    });
   },
 
   // 아이템 상태 업데이트
@@ -150,22 +240,53 @@ export const useOrderStore = create((set, get) => ({
   // 기억 완료 및 초기화
   completeRemembering: () => {
     set({
-      isRemembering: false,
-      progress: 0,
+      itemProgress: {},
       orderStatuses: {},
-      rememberingItemIds: [],
-      rememberingStartTime: null,
     });
   },
 
   // 기억 상태 초기화
   resetRemembering: () => {
     set({
-      isRemembering: false,
-      progress: 0,
+      itemProgress: {},
       orderStatuses: {},
-      rememberingItemIds: [],
-      rememberingStartTime: null,
     });
+  },
+
+  // 전체 기억 취소 (에너지 회복은 호출하는 쪽에서 처리)
+  cancelRemembering: () => {
+    const state = get();
+    const totalEnergyCost = Object.values(state.itemProgress).reduce(
+      (total, item) => total + item.energyCost,
+      0
+    );
+
+    set({
+      itemProgress: {},
+      orderStatuses: {},
+    });
+
+    return totalEnergyCost; // 호출하는 쪽에서 에너지 회복 가능
+  },
+
+  // 헬퍼: 기억 중인지 여부
+  getIsRemembering: () => {
+    const state = get();
+    return Object.keys(state.itemProgress).length > 0;
+  },
+
+  // 헬퍼: 기억 중인 아이템 ID 목록
+  getRememberingItemIds: () => {
+    const state = get();
+    return Object.keys(state.itemProgress).map(Number);
+  },
+
+  // 헬퍼: 총 에너지 비용 계산
+  getTotalEnergyCost: () => {
+    const state = get();
+    return Object.values(state.itemProgress).reduce(
+      (total, item) => total + item.energyCost,
+      0
+    );
   },
 }));

@@ -5,8 +5,9 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
 } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { useEnergyStore } from './energyStore';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -61,6 +62,7 @@ const useAuthStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       await firebaseSignOut(auth);
+      useEnergyStore.getState().clearEnergy();
       set({ user: null, loading: false });
     } catch (error) {
       set({ error: error.message, loading: false });
@@ -71,7 +73,7 @@ const useAuthStore = create((set) => ({
   initAuthListener: () => {
     set({ loading: true });
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         set({
           user: {
@@ -82,7 +84,16 @@ const useAuthStore = create((set) => ({
           },
           loading: false,
         });
+
+        try {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          const plan = userDoc.exists() ? userDoc.data().plan || 'free' : 'free';
+          await useEnergyStore.getState().initializeEnergy(user.uid, plan);
+        } catch (error) {
+          console.error('Energy initialization error:', error);
+        }
       } else {
+        useEnergyStore.getState().clearEnergy();
         set({ user: null, loading: false });
       }
     });

@@ -47,6 +47,7 @@ module.exports = {
       filename: 'remoteEntry.js',
       remotes: {
         products: 'products@http://localhost:3002/remoteEntry.js',
+        auth: 'auth@http://localhost:3005/remoteEntry.js',
       },
       exposes: {
         './Cart': './src/Cart',

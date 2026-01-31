@@ -7,6 +7,8 @@ import { useCartItems } from './features/cart-management/hooks/useCartItems';
 import { useCartActions } from './features/cart-management/hooks/useCartActions';
 import { useCartTimer } from './features/cart-management/hooks/useCartTimer';
 import { useRememberingState } from './features/remembering/hooks/useRememberingState';
+import { useAuthStore } from 'auth/authStore';
+import { useEnergyStore } from 'auth/energyStore';
 
 function Cart() {
   const {
@@ -14,20 +16,23 @@ function Cart() {
     normalItems,
     rememberingItems,
     normalTotalItems,
-    normalTotalPrice,
+    normalTotalEnergyCost,
     rememberingTotalItems,
   } = useCartItems();
+
+  const user = useAuthStore((state) => state.user);
+  const currentEnergy = useEnergyStore((state) => state.current);
 
   const { items, updateQuantity, removeFromCart } = useCartActions();
   const timeRemaining = useCartTimer();
 
   const {
     isRemembering,
-    progress,
+    itemProgress,
     orderStatuses,
-    rememberingStartTime,
     startRemembering,
     updateAllOrderStatuses,
+    cancelItemRemembering,
   } = useRememberingState();
 
   if (cartItems.length === 0) {
@@ -50,15 +55,17 @@ function Cart() {
         rememberingItems={rememberingItems}
         rememberingTotalItems={rememberingTotalItems}
         isRemembering={isRemembering}
-        progress={progress}
+        itemProgress={itemProgress}
         orderStatuses={orderStatuses}
-        rememberingStartTime={rememberingStartTime}
+        cancelItemRemembering={cancelItemRemembering}
       />
 
       <CartSummary
         normalItems={normalItems}
         normalTotalItems={normalTotalItems}
-        normalTotalPrice={normalTotalPrice}
+        normalTotalEnergyCost={normalTotalEnergyCost}
+        currentEnergy={currentEnergy}
+        isLoggedIn={!!user}
         startRemembering={startRemembering}
         updateAllOrderStatuses={updateAllOrderStatuses}
       />

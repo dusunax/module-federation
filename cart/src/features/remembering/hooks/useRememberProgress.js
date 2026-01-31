@@ -3,13 +3,14 @@ import { toast } from 'sonner';
 import { useOrderStore } from 'products/orderStore';
 import { EMOTION_STATUS } from 'products/utils/statusStyle';
 
+const DURATION = 60000; // 1분
+const INTERVAL = 100; // 100ms마다 업데이트
+
 export function useRememberProgress() {
-  const isRemembering = useOrderStore((state) => state.isRemembering);
-  const progress = useOrderStore((state) => state.progress);
-  const updateProgress = useOrderStore((state) => state.updateProgress);
-  const updateAllOrderStatuses = useOrderStore((state) => state.updateAllOrderStatuses);
-  const completeRememberingItems = useOrderStore((state) => state.completeRememberingItems);
-  const completeRemembering = useOrderStore((state) => state.completeRemembering);
+  const itemProgress = useOrderStore((state) => state.itemProgress);
+  const updateItemProgress = useOrderStore((state) => state.updateItemProgress);
+  const updateOrderStatus = useOrderStore((state) => state.updateOrderStatus);
+  const completeItemRemembering = useOrderStore((state) => state.completeItemRemembering);
   const intervalRef = useRef(null);
 
   useEffect(() => {
@@ -21,7 +22,9 @@ export function useRememberProgress() {
   }, []);
 
   useEffect(() => {
-    if (!isRemembering) {
+    const rememberingItemIds = Object.keys(itemProgress).map(Number);
+
+    if (rememberingItemIds.length === 0) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -33,36 +36,36 @@ export function useRememberProgress() {
       return;
     }
 
-    const duration = 60000; // 1분
-    const interval = 100; // 100ms마다 업데이트
-    const steps = duration / interval; // 총 600단계
-    let currentStep = Math.floor((progress / 100) * steps);
-
     intervalRef.current = setInterval(() => {
-      currentStep += 1;
-      const newProgress = Math.min((currentStep / steps) * 100, 100);
-      updateProgress(newProgress);
+      const currentState = useOrderStore.getState();
+      const currentItemProgress = currentState.itemProgress;
+      const itemIds = Object.keys(currentItemProgress).map(Number);
 
-      if (currentStep >= steps) {
+      if (itemIds.length === 0) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
-
-        const currentState = useOrderStore.getState();
-        const { rememberingItemIds: currentRememberingIds } = currentState;
-
-        const finalStatuses = {};
-        currentRememberingIds.forEach((productId) => {
-          finalStatuses[productId] = EMOTION_STATUS.REMEMBERED;
-        });
-        updateAllOrderStatuses(finalStatuses);
-
-        const order = completeRememberingItems();
-        if (order) {
-          completeRemembering();
-          toast.success('기억으로 남았어요.');
-        }
+        return;
       }
-    }, interval);
+
+      itemIds.forEach((itemId) => {
+        const item = currentItemProgress[itemId];
+        if (!item) return;
+
+        const elapsed = Date.now() - item.startTime;
+        const newProgress = Math.min((elapsed / DURATION) * 100, 100);
+
+        if (newProgress >= 100 && item.progress < 100) {
+          updateOrderStatus(itemId, EMOTION_STATUS.REMEMBERED);
+          const order = completeItemRemembering(itemId);
+          if (order) {
+            const energyCost = item.energyCost;
+            toast.success(`기억으로 남았어요. (⚡ ${energyCost} 소모)`);
+          }
+        } else if (newProgress < 100) {
+          updateItemProgress(itemId, newProgress);
+        }
+      });
+    }, INTERVAL);
 
     return () => {
       if (intervalRef.current) {
@@ -70,12 +73,5 @@ export function useRememberProgress() {
         intervalRef.current = null;
       }
     };
-  }, [
-    isRemembering,
-    progress,
-    updateProgress,
-    updateAllOrderStatuses,
-    completeRememberingItems,
-    completeRemembering,
-  ]);
+  }, [itemProgress, updateItemProgress, updateOrderStatus, completeItemRemembering]);
 }

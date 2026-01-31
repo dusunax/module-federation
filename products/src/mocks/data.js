@@ -7,6 +7,7 @@ export const emotions = [
     price: 0,
     emoji: '💬',
     rarity: 'common',
+    energyCost: 1,
     category: '불안',
     description:
       '메시지를 보냈는데 읽음 표시만 뜨고 답장이 없다. 0.2초가 지나고, 1초가 지나고, 5초가 지나도 아무 반응이 없다.',
@@ -22,6 +23,7 @@ export const emotions = [
     price: 0,
     emoji: '🌙',
     rarity: 'rare',
+    energyCost: 2,
     category: '행복',
     description:
       '오늘 밤, 누군가가 내 말을 진심으로 들어주는 것 같았다. 하지만 그것도 착각일 수 있다는 걸 알고 있다.',
@@ -37,6 +39,7 @@ export const emotions = [
     price: 0,
     emoji: '💝',
     rarity: 'epic',
+    energyCost: 3,
     category: '감사',
     description: '별거 아닌 말이었는데, 그 순간 정말 고마웠다. 지금도 그 말을 기억한다.',
     story:
@@ -51,6 +54,7 @@ export const emotions = [
     price: 0,
     emoji: '❓',
     rarity: 'common',
+    energyCost: 1,
     category: '후회',
     description:
       '그때 물어봤어야 했는데. 지금은 이미 늦었다. 그 질문은 영원히 답을 얻지 못할 것 같다.',
@@ -66,6 +70,7 @@ export const emotions = [
     price: 0,
     emoji: '✨',
     rarity: 'rare',
+    energyCost: 2,
     category: '기대',
     description: '처음 만났을 때의 그 느낌. 지금 생각해도 가슴이 뛴다.',
     story: '처음 만났을 때의 그 느낌. 손을 잡았을 때의 따뜻함. 지금 생각해도 가슴이 뛴다.',
@@ -79,6 +84,7 @@ export const emotions = [
     price: 0,
     emoji: '👋',
     rarity: 'epic',
+    energyCost: 3,
     category: '이별',
     description: '마지막으로 한 인사. 그게 정말 마지막이었다는 걸 나중에야 알았다.',
     story:

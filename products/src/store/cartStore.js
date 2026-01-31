@@ -16,7 +16,7 @@ export const useCartStore = create((set, get) => ({
     set((state) => {
       // orderStore에서 기억하는 중인 아이템 ID 목록 확인
       const orderState = useOrderStore.getState();
-      const rememberingItemIds = orderState.rememberingItemIds;
+      const rememberingItemIds = Object.keys(orderState.itemProgress).map(Number);
 
       // 같은 productId를 가진 아이템 중 기억하는 중이 아닌 아이템 찾기
       const existingNormalItem = Object.values(state.items).find(

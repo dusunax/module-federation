@@ -50,6 +50,7 @@ module.exports = {
       exposes: {
         './authStore': './src/store/authStore.js',
         './firebase': './src/firebase/index.js',
+        './energyStore': './src/store/energyStore.js',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },
