@@ -29,7 +29,7 @@ function AppContent() {
   useRememberProgress();
 
   return (
-    <div className="flex h-[100dvh] min-h-screen flex-col bg-[var(--color-bg-primary)]">
+    <div className="flex min-h-[100dvh] flex-col bg-[var(--color-bg-primary)]">
       <Suspense fallback={<div>헤더 로딩 중...</div>}>
         <Header />
       </Suspense>

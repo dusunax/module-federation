@@ -190,9 +190,13 @@ function Header() {
               )}
             </li>
           ) : (
-            <div className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border text-2xl no-underline transition-colors hover:bg-[var(--color-overlay-3)]">
+            <Link
+              to="/login"
+              state={{ from: location }}
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border text-2xl no-underline transition-colors hover:bg-[var(--color-overlay-3)]"
+            >
               <UserIcon className="h-4 w-4" />
-            </div>
+            </Link>
           )}
         </ul>
       </nav>

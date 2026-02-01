@@ -1,15 +1,18 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from 'auth/authStore';
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { signInWithGoogle, loading, error, clearError } = useAuthStore();
 
   const handleGoogleLogin = async () => {
     try {
       await signInWithGoogle();
-      navigate('/');
+      const from =
+        location.state && location.state.from ? location.state.from.pathname || '/' : '/';
+      navigate(from, { replace: true });
     } catch (err) {
       console.error('Login error:', err);
     }
@@ -19,19 +22,16 @@ function Login() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-[var(--color-bg-primary)]">
       <div className="w-full max-w-md rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-bg-secondary)] p-8">
         <h1 className="mb-2 text-center text-2xl font-light text-[var(--color-text-primary)]">
-          Between Lines
+          Login
         </h1>
-        <p className="mb-8 text-center text-sm text-[var(--color-text-secondary)]">
-          Like Real People Do
+        <p className="mb-4 text-center text-lg text-[var(--color-text-secondary)]">
+          로그인 방법을 선택하세요
         </p>
 
         {error && (
           <div className="mb-4 rounded border border-red-500 bg-red-500/10 p-3 text-sm text-red-400">
             {error}
-            <button
-              onClick={clearError}
-              className="ml-2 text-red-300 hover:text-red-100"
-            >
+            <button onClick={clearError} className="ml-2 text-red-300 hover:text-red-100">
               닫기
             </button>
           </div>

@@ -10,7 +10,7 @@ function ProtectedRoute({ children }) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[var(--color-bg-primary)]">
         <div className="text-center">
-          <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-accent-green)] border-t-transparent mx-auto" />
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-accent-green)] border-t-transparent" />
           <p className="text-[var(--color-text-secondary)]">인증 확인 중...</p>
         </div>
       </div>
@@ -18,6 +18,10 @@ function ProtectedRoute({ children }) {
   }
 
   if (!user) {
+    // allow unauthenticated access to the main homepage
+    if (location.pathname === '/' || location.pathname === '') {
+      return children;
+    }
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
