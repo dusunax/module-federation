@@ -59,9 +59,9 @@ function Header() {
     >
       <nav className="flex items-center justify-between">
         <Link to="/" className="text-[var(--color-text-primary)] no-underline">
-          <h1 className="m-0 font-light tracking-[1px]">Between Lines</h1>
+          <h2 className="m-0 font-light tracking-[1px]">Love at First Sight</h2>
           <p className="mb-0 mt-1 text-xs font-light text-[var(--color-text-secondary)]">
-            Like Real People Do
+            기억하고, 저장하며, 마음에 남겨두세요
           </p>
         </Link>
         <ul className="m-0 flex list-none items-center gap-3 p-0">

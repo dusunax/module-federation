@@ -38,11 +38,6 @@ function ProductList() {
 
   return (
     <div className="mx-auto max-w-[1400px] p-5">
-      <h2 className="mb-2 font-light tracking-wider text-[#FFF8D4]">사랑에 대한 순간들</h2>
-      <p className="mb-[30px] text-sm font-light text-[rgba(255,248,212,0.85)]">
-        기억하고, 저장하며, 마음에 남겨두세요
-      </p>
-
       {/* 검색 입력창 */}
       <div className="mb-[30px]">
         <input
