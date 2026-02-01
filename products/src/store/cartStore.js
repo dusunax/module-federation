@@ -136,10 +136,14 @@ export const useCartStore = create((set, get) => ({
   // 수량 변경 (itemId 사용)
   updateQuantity: (itemId, quantity) => {
     if (quantity <= 0) {
-      // 수량이 0 이하면 제거
+      // 수량이 0 이하면 제거 및 쿠키에 반영
       set((state) => {
         const newItems = { ...state.items };
         delete newItems[itemId];
+        try {
+          const minimal = minimalFromItems(newItems);
+          writeCookie(CART_COOKIE, minimal);
+        } catch (e) {}
         return { items: newItems };
       });
     } else {

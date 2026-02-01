@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, increment } from 'firebase/firestore';
 import { db } from '../firebase';
+import { getDailyUsage } from '../services/energyService';
 
 const MAX_ENERGY_FREE = 5;
 const MAX_ENERGY_PREMIUM = 10;
@@ -85,7 +86,7 @@ const useEnergyStore = create((set, get) => ({
     return current >= cost;
   },
 
-  deductEnergy: async (cost) => {
+  deductEnergy: async (cost, count = 0) => {
     const { current, userId } = get();
 
     if (!userId) {
@@ -109,6 +110,25 @@ const useEnergyStore = create((set, get) => ({
         { merge: true }
       );
 
+      // record today's usage (generalized 'usage' collection) with energy and count
+      try {
+        const todayDate = getTodayDateString();
+        const usageRef = doc(db, 'users', userId, 'usage', todayDate);
+        await setDoc(
+          usageRef,
+          {
+            used: increment(cost),
+            count: increment(count),
+            date: todayDate,
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+      } catch (usageErr) {
+        // non-fatal: log usage write failures but don't block the main flow
+        console.error('Failed to record usage:', usageErr);
+      }
+
       set({ current: newEnergy });
       return newEnergy;
     } catch (error) {
@@ -117,7 +137,7 @@ const useEnergyStore = create((set, get) => ({
     }
   },
 
-  restoreEnergy: async (amount) => {
+  restoreEnergy: async (amount, count = 0) => {
     const { current, maxEnergy, userId } = get();
 
     if (!userId) {
@@ -136,6 +156,26 @@ const useEnergyStore = create((set, get) => ({
         },
         { merge: true }
       );
+
+      // also decrement today's usage so restores are reflected in daily aggregation
+      try {
+        const todayDate = getTodayDateString();
+        const usageRef = doc(db, 'users', userId, 'usage', todayDate);
+        // decrement by amount and decrement count by provided value
+        await setDoc(
+          usageRef,
+          {
+            used: increment(-amount),
+            count: increment(-count),
+            date: todayDate,
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+        // Note: Firestore increment can make fields negative; UI should clamp to 0 when displaying.
+      } catch (usageErr) {
+        console.error('Failed to update usage on restore:', usageErr);
+      }
 
       set({ current: newEnergy });
       return newEnergy;
@@ -184,6 +224,18 @@ const useEnergyStore = create((set, get) => ({
     } catch (error) {
       console.error('Energy reset error:', error);
       throw error;
+    }
+  },
+
+  // fetch recent daily usage for dashboard
+  fetchDailyUsage: async (days = 30) => {
+    const { userId } = get();
+    if (!userId) return [];
+    try {
+      return await getDailyUsage(userId, days);
+    } catch (err) {
+      console.error('Failed to fetch daily usage:', err);
+      return [];
     }
   },
 }));

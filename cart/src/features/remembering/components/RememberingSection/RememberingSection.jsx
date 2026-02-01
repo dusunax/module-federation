@@ -45,7 +45,7 @@ function RememberingItemCard({ firestoreItem, cancelItemRemembering }) {
     status = EMOTION_STATUS.IN_PROGRESS,
     startTime,
     energyCost = 1,
-    id,
+    visibleItemId,
   } = firestoreItem;
   const statusStyle = getStatusConfig(status);
   const progress = useRealtimeProgress(startTime);
@@ -58,7 +58,8 @@ function RememberingItemCard({ firestoreItem, cancelItemRemembering }) {
       cancelLabel: '닫기',
       onConfirm: async () => {
         try {
-          await cancelItemRemembering(id);
+          // pass the Firestore-visible id (doc id) to cancel
+          await cancelItemRemembering(visibleItemId || String(id));
           toast.success('기억이 취소되었습니다.');
         } catch (err) {
           console.error('cancelItemRemembering failed', err);

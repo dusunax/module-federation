@@ -72,10 +72,10 @@ export function useRememberingState() {
       // 새 아이템의 에너지 비용만 계산
       const newEnergyCost = newItemsToSave.reduce((total, item) => total + item.energyCost, 0);
 
-      // 에너지 선차감
+      // 에너지 선차감 (사용한 아이템 개수도 함께 기록)
       if (newEnergyCost > 0) {
         try {
-          await deductEnergy(newEnergyCost);
+          await deductEnergy(newEnergyCost, newItemsToSave.length);
         } catch (error) {
           console.error('Energy deduction failed:', error);
           throw error;
@@ -94,7 +94,8 @@ export function useRememberingState() {
 
     if (totalEnergyCost > 0) {
       try {
-        await restoreEnergy(totalEnergyCost);
+        // restoreEnergy: amount and count (we don't know count here; use totalEnergyCost as amount and 0 for count)
+        await restoreEnergy(totalEnergyCost, 0);
       } catch (error) {
         console.error('Energy restore failed:', error);
       }
@@ -108,7 +109,8 @@ export function useRememberingState() {
 
       if (itemData && itemData.energyCost > 0) {
         try {
-          await restoreEnergy(itemData.energyCost);
+          // restore the energy and decrement the count by 1
+          await restoreEnergy(itemData.energyCost, 1);
         } catch (error) {
           console.error('Energy restore failed:', error);
         }
