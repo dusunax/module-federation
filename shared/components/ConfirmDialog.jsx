@@ -20,7 +20,13 @@ export default function ConfirmDialog({
         <div className="flex justify-end gap-2">
           <button
             onClick={() => {
-              toast.dismiss();
+              if (typeof toast === 'function') {
+                // fallback
+                toast.dismiss();
+              } else {
+                // sonner exposes dismiss on the imported toast
+                toast.dismiss && toast.dismiss();
+              }
               onCancel && onCancel();
             }}
             className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.5)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(67,86,99,0.7)]"
@@ -29,7 +35,11 @@ export default function ConfirmDialog({
           </button>
           <button
             onClick={() => {
-              toast.dismiss();
+              if (typeof toast === 'function') {
+                toast.dismiss();
+              } else {
+                toast.dismiss && toast.dismiss();
+              }
               onConfirm && onConfirm();
             }}
             className="cursor-pointer rounded border border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(163,176,135,0.5)]"

@@ -5,10 +5,11 @@ import ConfirmDialog from './ConfirmDialog';
 // options: { title, description, confirmLabel, cancelLabel, onConfirm, onCancel }
 export default function showConfirmToast(options) {
   const { title, description, confirmLabel, cancelLabel, onConfirm, onCancel } = options || {};
-  // keep the toast until user interacts
+  // keep the toast until user interacts (use 0 so sonner treats it as persistent)
   toast.custom(
     (t) => (
       <ConfirmDialog
+        toastId={t?.id}
         title={title}
         description={description}
         confirmLabel={confirmLabel}
@@ -17,6 +18,6 @@ export default function showConfirmToast(options) {
         onCancel={() => onCancel && onCancel()}
       />
     ),
-    { duration: Infinity }
+    { duration: 0 }
   );
 }

@@ -4,7 +4,8 @@
   "private": true,
   "description": "Module Federation monorepo",
   "dependencies": {
-    "sonner": "^2.0.7"
+    "sonner": "^2.0.7",
+    "lucide-react": "^0.278.0"
   },
   "scripts": {
     "start:auth": "cd auth && npm start",

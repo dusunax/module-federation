@@ -4,6 +4,14 @@ import { useCartStore } from 'products/cartStore';
 import { useAuthStore } from 'auth/authStore';
 import { useEnergyStore } from 'auth/energyStore';
 import { useRememberingStore } from 'auth/rememberingStore';
+import {
+  HomeIcon,
+  ShoppingCartIcon,
+  LogOutIcon,
+  BookOpenIcon,
+  XIcon,
+  UserIcon,
+} from 'lucide-react';
 
 function Header() {
   const location = useLocation();
@@ -80,7 +88,7 @@ function Header() {
               }`}
               aria-label="홈 페이지로 이동"
             >
-              📋
+              <HomeIcon className="h-4 w-4" />
             </Link>
           </li>
           <li>
@@ -93,7 +101,7 @@ function Header() {
               }`}
               aria-label="장바구니 페이지로 이동"
             >
-              🛒
+              <ShoppingCartIcon className="h-4 w-4" />
               {totalItems > 0 && (
                 <span className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-accent-orange)] text-xs font-bold text-white">
                   {totalItems}
@@ -125,9 +133,9 @@ function Header() {
                     onClick={() => setIsProfileOpen(false)}
                     className="absolute right-2 top-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-transparent text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-overlay-3)] hover:text-[var(--color-text-primary)]"
                   >
-                    ✕
+                    <XIcon className="h-4 w-4" />
                   </button>
-                  <div className="flex flex-col border-b border-[var(--color-border-primary)] px-4 py-3">
+                  <div className="flex flex-col border-b border-[var(--color-border-primary)] px-4 pb-4 pt-3">
                     <div className="flex flex-col items-center gap-2">
                       <img
                         src={user.photoURL}
@@ -166,16 +174,16 @@ function Header() {
                         isActive('/archive') ? 'bg-[var(--color-green-overlay-3)]' : ''
                       }`}
                     >
-                      📚 감정 기록
+                      <BookOpenIcon className="h-4 w-4" /> 감정 기록
                     </Link>
                   </div>
 
                   <div className="border-t border-[var(--color-border-primary)] py-1">
                     <button
                       onClick={handleSignOut}
-                      className="flex w-full items-center gap-2 bg-transparent px-4 py-2 text-left text-sm text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
+                      className="flex w-full cursor-pointer items-center gap-2 bg-transparent px-4 py-2 text-left text-sm text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
                     >
-                      🚪 로그아웃
+                      <LogOutIcon className="h-4 w-4" /> 로그아웃
                     </button>
                   </div>
                 </div>
@@ -183,7 +191,7 @@ function Header() {
             </li>
           ) : (
             <div className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border text-2xl no-underline transition-colors hover:bg-[var(--color-overlay-3)]">
-              👤
+              <UserIcon className="h-4 w-4" />
             </div>
           )}
         </ul>
