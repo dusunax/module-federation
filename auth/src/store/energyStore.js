@@ -18,7 +18,7 @@ const useEnergyStore = create((set, get) => ({
   error: null,
   userId: null,
 
-  initializeEnergy: async (userId, plan = 'free') => {
+  initializeEnergy: async (userId, plan = 'none') => {
     if (!userId) {
       set({ loading: false, error: 'User ID is required' });
       return;

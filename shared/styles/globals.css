@@ -52,6 +52,15 @@
   --card-gap-sm: 1rem; /* 16px - Tailwind gap-4 */
   --card-gap-md: 1.5rem; /* 24px - Tailwind gap-6 */
   --card-gap-lg: 2rem; /* 32px - Tailwind gap-8 */
+
+  /* Z-Index 시스템 */
+  --z-base: 0;
+  --z-dropdown: 50;
+  --z-sticky: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+  --z-tooltip: 500;
 }
 
 html {
@@ -258,12 +267,7 @@ h6 {
 p {
   color: var(--color-text-secondary);
   font-weight: 400;
-  font-size: 1rem; /* text-base */
   line-height: 1.625;
-  margin-bottom: 1rem; /* mb-4 */
-}
-
-p:last-child {
   margin-bottom: 0;
 }
 

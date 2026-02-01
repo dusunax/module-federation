@@ -28,7 +28,7 @@ const useAuthStore = create((set) => ({
           email: user.email,
           displayName: user.displayName,
           photoURL: user.photoURL,
-          plan: 'free',
+          plan: 'none',
           lastLoginAt: serverTimestamp(),
         },
         { merge: true }
@@ -41,12 +41,16 @@ const useAuthStore = create((set) => ({
         }, { merge: true });
       }
 
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const plan = userDoc.exists() ? userDoc.data().plan || 'none' : 'none';
+
       set({
         user: {
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
           photoURL: user.photoURL,
+          plan,
         },
         loading: false,
       });
@@ -75,22 +79,34 @@ const useAuthStore = create((set) => ({
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        set({
-          user: {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-          },
-          loading: false,
-        });
-
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
-          const plan = userDoc.exists() ? userDoc.data().plan || 'free' : 'free';
+          const plan = userDoc.exists() ? userDoc.data().plan || 'none' : 'none';
+
+          set({
+            user: {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              plan,
+            },
+            loading: false,
+          });
+
           await useEnergyStore.getState().initializeEnergy(user.uid, plan);
         } catch (error) {
-          console.error('Energy initialization error:', error);
+          console.error('Auth initialization error:', error);
+          set({
+            user: {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              plan: 'none',
+            },
+            loading: false,
+          });
         }
       } else {
         useEnergyStore.getState().clearEnergy();
