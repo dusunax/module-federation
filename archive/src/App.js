@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import AppLayout from '../../shared/components/AppLayout';
+import AppLayout from '@shared/components/AppLayout';
 import OrderList from './OrderList';
 import OrderDetail from './OrderDetail';
 import './styles/tailwind.css';

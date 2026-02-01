@@ -5,6 +5,7 @@ import { useOrderStore } from 'products/orderStore';
 import { useAuthStore } from 'auth/authStore';
 import { subscribeToUserOrders, deleteUserOrder } from 'auth/services/orderService';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
+import showConfirmToast from '@shared/components/showConfirmToast';
 
 function OrderList() {
   const navigate = useNavigate();
@@ -29,13 +30,13 @@ function OrderList() {
 
   if (orders.length === 0) {
     return (
-      <div className="mx-auto min-h-[60vh] max-w-[900px] px-5 py-10">
+      <div className="max-w-225 mx-auto min-h-[60vh] px-5 py-10">
         <div className="py-25 px-5 text-center">
           <div className="mb-8 text-[80px] leading-none opacity-50">📚</div>
           <h2 className="mb-4 text-2xl font-light tracking-wider text-[#FFF8D4]">
             아직 기록된 감정이 없어요
           </h2>
-          <p className="mx-auto my-0 max-w-[400px] text-sm font-light leading-relaxed tracking-wide text-[rgba(255,248,212,0.7)]">
+          <p className="max-w-100 mx-auto my-0 text-sm font-light leading-relaxed tracking-wide text-[rgba(255,248,212,0.7)]">
             순간들을 기억으로 남기면 여기에 기록돼요
           </p>
         </div>
@@ -55,7 +56,7 @@ function OrderList() {
   };
 
   return (
-    <div className="mx-auto max-w-[900px] px-5 py-10">
+    <div className="max-w-225 mx-auto px-5 py-10">
       {/* 헤더 */}
       <div className="mb-10 border-b border-[rgba(255,248,212,0.15)] pb-6">
         <h1 className="m-0 mb-2 text-[28px] font-light tracking-wider text-[#FFF8D4]">감정 기록</h1>
@@ -117,48 +118,25 @@ function OrderList() {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    toast.custom((t) => (
-                      <div className="flex min-w-[300px] flex-col gap-3 rounded-lg border border-[rgba(163,176,135,0.3)] bg-[rgba(67,86,99,0.95)] p-4">
-                        <div className="text-sm font-light tracking-wide text-[#FFF8D4]">
-                          정말로 잊고 싶어요?
-                        </div>
-                        <div className="flex justify-end gap-2">
-                          <button
-                            onClick={() => {
-                              toast.dismiss(t);
-                            }}
-                            className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.5)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(67,86,99,0.7)]"
-                          >
-                            취소
-                          </button>
-                          <button
-                            onClick={() => {
-                              // delete from Firestore (and local store will update via subscription)
-                              (async () => {
-                                try {
-                                  const userObj = useAuthStore.getState().user;
-                                  if (userObj && userObj.uid) {
-                                    await deleteUserOrder(userObj.uid, order.id);
-                                  } else {
-                                    // fallback to local removal
-                                    removeOrder(Number(order.id));
-                                  }
-                                  toast.dismiss(t);
-                                  toast.success('기억이 삭제되었습니다.');
-                                } catch (err) {
-                                  console.error('Failed to delete order:', err);
-                                  toast.dismiss(t);
-                                  toast.error('삭제 실패');
-                                }
-                              })();
-                            }}
-                            className="cursor-pointer rounded border border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(163,176,135,0.5)]"
-                          >
-                            잊기
-                          </button>
-                        </div>
-                      </div>
-                    ));
+                    showConfirmToast({
+                      title: '정말로 삭제하시겠어요?',
+                      confirmLabel: '삭제',
+                      cancelLabel: '취소',
+                      onConfirm: async () => {
+                        try {
+                          const userObj = useAuthStore.getState().user;
+                          if (userObj && userObj.uid) {
+                            await deleteUserOrder(userObj.uid, order.id);
+                          } else {
+                            removeOrder(Number(order.id));
+                          }
+                          toast.success('기억이 삭제되었습니다.');
+                        } catch (err) {
+                          console.error('Failed to delete order:', err);
+                          toast.error('삭제 실패');
+                        }
+                      },
+                    });
                   }}
                   className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-3.5 py-2 text-xs font-light tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
                 >

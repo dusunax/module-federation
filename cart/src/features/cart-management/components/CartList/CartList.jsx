@@ -1,5 +1,6 @@
 import React from 'react';
 import { toast } from 'sonner';
+import showConfirmToast from '@shared/components/showConfirmToast';
 import { CartItem } from '../CartItem/CartItem';
 
 export function CartList({
@@ -12,35 +13,15 @@ export function CartList({
   removeFromCart,
 }) {
   const handleClearAll = () => {
-    toast.custom((t) => (
-      <div className="flex min-w-[300px] flex-col gap-3 rounded-lg border border-[rgba(163,176,135,0.3)] bg-[rgba(67,86,99,0.95)] p-4">
-        <div className="text-sm font-light tracking-wide text-[#FFF8D4]">
-          장바구니를 비우시겠습니까?
-        </div>
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={() => {
-              toast.dismiss(t);
-            }}
-            className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.5)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(67,86,99,0.7)]"
-          >
-            취소
-          </button>
-          <button
-            onClick={() => {
-              normalItems.forEach((item) => {
-                removeFromCart(item.id);
-              });
-              toast.dismiss(t);
-              toast.success('장바구니가 비워졌습니다.');
-            }}
-            className="cursor-pointer rounded border border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(163,176,135,0.5)]"
-          >
-            비우기
-          </button>
-        </div>
-      </div>
-    ));
+    showConfirmToast({
+      title: '장바구니를 비우시겠어요?',
+      confirmLabel: '비우기',
+      cancelLabel: '취소',
+      onConfirm: () => {
+        normalItems.forEach((item) => removeFromCart(item.id));
+        toast.success('장바구니가 비워졌습니다.');
+      },
+    });
   };
 
   if (normalItems.length === 0) {

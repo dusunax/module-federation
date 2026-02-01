@@ -1,5 +1,6 @@
 import React from 'react';
 import { toast } from 'sonner';
+import showConfirmToast from '@shared/components/showConfirmToast';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
 
 export function CartItem({
@@ -17,8 +18,13 @@ export function CartItem({
     product && product.name
       ? product
       : product && (product.id || product.productId)
-      ? { id: product.id || product.productId, name: '알 수 없는 순간', emoji: '❓', energyCost: 1 }
-      : { id: null, name: '알 수 없는 순간', emoji: '❓', energyCost: 1 };
+        ? {
+            id: product.id || product.productId,
+            name: '알 수 없는 순간',
+            emoji: '❓',
+            energyCost: 1,
+          }
+        : { id: null, name: '알 수 없는 순간', emoji: '❓', energyCost: 1 };
 
   const currentStatus = orderStatuses[displayProduct.id] || EMOTION_STATUS.HELD;
   const statusStyle = getStatusConfig(currentStatus);
@@ -26,13 +32,13 @@ export function CartItem({
 
   return (
     <div className="mb-4 flex items-center gap-5 rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-6 backdrop-blur-[10px]">
-    <div className="text-5xl opacity-90">{displayProduct.emoji}</div>
+      <div className="text-5xl opacity-90">{displayProduct.emoji}</div>
       <div className="flex-1">
         <h3 className="my-0 mb-2 text-base font-light tracking-wide text-[#FFF8D4]">
-      {displayProduct.name}
+          {displayProduct.name}
         </h3>
         <p className="my-0 mb-1.5 text-sm font-light tracking-wide text-[#A3B087]">
-      ⚡ {displayProduct.energyCost || 1}
+          ⚡ {displayProduct.energyCost || 1}
         </p>
         <div>
           <div
@@ -71,33 +77,15 @@ export function CartItem({
       </div>
       <button
         onClick={() => {
-          toast.custom((t) => (
-            <div className="flex min-w-[300px] flex-col gap-3 rounded-lg border border-[rgba(163,176,135,0.3)] bg-[rgba(67,86,99,0.95)] p-4">
-              <div className="text-sm font-light tracking-wide text-[#FFF8D4]">
-                이 기억을 그냥 넘어갈까요?
-              </div>
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={() => {
-                    toast.dismiss(t);
-                  }}
-                  className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.5)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(67,86,99,0.7)]"
-                >
-                  취소
-                </button>
-                <button
-                  onClick={() => {
-                    removeFromCart(itemId);
-                    toast.dismiss(t);
-                    toast.success('기억이 삭제되었습니다.');
-                  }}
-                  className="cursor-pointer rounded border border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(163,176,135,0.5)]"
-                >
-                  웃어 넘기기
-                </button>
-              </div>
-            </div>
-          ));
+          showConfirmToast({
+            title: '이 기억을 그냥 넘어갈까요?',
+            confirmLabel: '웃어 넘기기',
+            cancelLabel: '취소',
+            onConfirm: () => {
+              removeFromCart(itemId);
+              toast.success('기억이 삭제되었습니다.');
+            },
+          });
         }}
         className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-3.5 py-2 text-xs font-light tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
       >

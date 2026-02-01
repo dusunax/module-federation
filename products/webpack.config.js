@@ -82,5 +82,8 @@ module.exports = {
       path.resolve(__dirname, 'node_modules'),
       path.resolve(__dirname, '../node_modules'),
     ],
+    alias: {
+      '@shared': path.resolve(__dirname, '../shared'),
+    },
   },
 };

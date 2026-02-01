@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import showConfirmToast from '@shared/components/showConfirmToast';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
 import { useRememberingStore } from 'auth/rememberingStore';
 
-const DURATION = 60000; // 1분
+const DURATION = 60000; // 1 minute
 
 function formatRemainingTime(progress) {
   const remainingMs = ((100 - progress) / 100) * DURATION;
@@ -13,7 +14,7 @@ function formatRemainingTime(progress) {
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-function useRealtimeProgress(startTime, duration) {
+function useRealtimeProgress(startTime) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -22,73 +23,61 @@ function useRealtimeProgress(startTime, duration) {
       return;
     }
 
-    const updateProgress = () => {
-      const elapsed = Date.now() - startTime;
-      const newProgress = Math.min((elapsed / duration) * 100, 100);
-      setProgress(newProgress);
+    const start = new Date(startTime).getTime();
+    const tick = () => {
+      const now = Date.now();
+      const elapsed = Math.max(0, now - start);
+      const p = Math.min(100, (elapsed / DURATION) * 100);
+      setProgress(p);
     };
 
-    updateProgress();
-    const interval = setInterval(updateProgress, 100);
-
-    return () => clearInterval(interval);
-  }, [startTime, duration]);
+    tick();
+    const id = setInterval(tick, 500);
+    return () => clearInterval(id);
+  }, [startTime]);
 
   return progress;
 }
 
-function RememberingItemCard({ firestoreItem, orderStatuses, cancelItemRemembering }) {
-  const productInfo = firestoreItem.productInfo;
-  const currentStatus = orderStatuses[productInfo.id] || EMOTION_STATUS.BEING_UNDERSTOOD;
-  const statusStyle = getStatusConfig(currentStatus);
-
-  const startTime = firestoreItem.startTime;
-  const duration = firestoreItem.duration || DURATION;
-  const energyCost = firestoreItem.energyCost;
-
-  const progress = useRealtimeProgress(startTime, duration);
+function RememberingItemCard({ firestoreItem, cancelItemRemembering }) {
+  const {
+    productInfo = {},
+    status = EMOTION_STATUS.IN_PROGRESS,
+    startTime,
+    energyCost = 1,
+    id,
+  } = firestoreItem;
+  const statusStyle = getStatusConfig(status);
+  const progress = useRealtimeProgress(startTime);
 
   const handleCancel = () => {
-    toast.custom((t) => (
-      <div className="flex min-w-[300px] flex-col gap-3 rounded-lg border border-[rgba(163,176,135,0.3)] bg-[rgba(67,86,99,0.95)] p-4">
-        <div className="text-sm font-light tracking-wide text-[#FFF8D4]">
-          이 아이템의 기억하기를 취소할까요?
-        </div>
-        <div className="text-xs font-light text-[rgba(163,176,135,0.8)]">
-          ⚡ {energyCost} 에너지가 회복됩니다
-        </div>
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={() => toast.dismiss(t)}
-            className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.5)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(67,86,99,0.7)]"
-          >
-            계속하기
-          </button>
-          <button
-            onClick={async () => {
-              await cancelItemRemembering(firestoreItem.cartItemId);
-              toast.dismiss(t);
-              toast.success(`기억하기가 취소되었습니다. (⚡ ${energyCost} 회복)`);
-            }}
-            className="cursor-pointer rounded border border-[rgba(229,115,115,0.5)] bg-[rgba(229,115,115,0.2)] px-4 py-2 text-[13px] font-light text-[#E57373] transition-all duration-200 hover:bg-[rgba(229,115,115,0.3)]"
-          >
-            취소하기
-          </button>
-        </div>
-      </div>
-    ));
+    showConfirmToast({
+      title: '정말로 취소하시겠어요?',
+      description: '이 작업은 진행 중이던 기억을 취소합니다.',
+      confirmLabel: '취소',
+      cancelLabel: '닫기',
+      onConfirm: async () => {
+        try {
+          await cancelItemRemembering(id);
+          toast.success('기억이 취소되었습니다.');
+        } catch (err) {
+          console.error('cancelItemRemembering failed', err);
+          toast.error('취소에 실패했습니다.');
+        }
+      },
+    });
   };
 
   return (
     <div className="mb-4 rounded border border-[rgba(163,176,135,0.3)] bg-[rgba(163,176,135,0.1)] p-6 backdrop-blur-[10px]">
       <div className="flex items-center gap-5">
-        <div className="text-5xl opacity-90">{productInfo.emoji}</div>
+        <div className="text-5xl opacity-90">{productInfo.emoji || '🧠'}</div>
         <div className="flex-1">
           <h3 className="my-0 mb-2 text-base font-light tracking-wide text-[#FFF8D4]">
-            {productInfo.name}
+            {productInfo.name || '알 수 없는 항목'}
           </h3>
           <p className="my-0 mb-1.5 text-sm font-light tracking-wide text-[#A3B087]">
-            ⚡ {productInfo.energyCost || 1}
+            ⚡ {productInfo.energyCost ?? energyCost}
           </p>
           <div
             className="mt-1 text-[11px] font-light tracking-wide"
@@ -97,12 +86,11 @@ function RememberingItemCard({ firestoreItem, orderStatuses, cancelItemRememberi
             {statusStyle.icon} {statusStyle.label}
           </div>
         </div>
-        <div className="min-w-[100px] text-right text-base font-light tracking-wide text-[#A3B087]">
+        <div className="min-w-25 text-right text-base font-light tracking-wide text-[#A3B087]">
           ⚡ {energyCost}
         </div>
       </div>
 
-      {/* 개별 프로그레스바 */}
       <div className="mt-4 rounded bg-[rgba(67,86,99,0.3)] p-3">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-[12px] font-light tracking-wide text-[rgba(255,248,212,0.8)]">
@@ -136,12 +124,10 @@ function RememberingItemCard({ firestoreItem, orderStatuses, cancelItemRememberi
 }
 
 export function RememberingSection({ orderStatuses, cancelItemRemembering }) {
-  const firestoreItems = useRememberingStore((state) => state.rememberingItems);
+  const firestoreItems = useRememberingStore((state) => state.rememberingItems || {});
   const firestoreItemsList = Object.values(firestoreItems);
 
-  if (firestoreItemsList.length === 0) {
-    return null;
-  }
+  if (firestoreItemsList.length === 0) return null;
 
   const totalItems = firestoreItemsList.length;
 
@@ -156,13 +142,11 @@ export function RememberingSection({ orderStatuses, cancelItemRemembering }) {
         </p>
       </div>
 
-      {/* 이해되는 중인 아이템 목록 - Firestore 데이터 직접 사용 */}
       <div className="mb-5">
         {firestoreItemsList.map((firestoreItem) => (
           <RememberingItemCard
-            key={firestoreItem.visibleItemId}
+            key={firestoreItem.visibleItemId || firestoreItem.id}
             firestoreItem={firestoreItem}
-            orderStatuses={orderStatuses}
             cancelItemRemembering={cancelItemRemembering}
           />
         ))}

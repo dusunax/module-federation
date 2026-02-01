@@ -42,7 +42,11 @@ function itemsFromMinimal(minimal) {
     const productSnapshot = mockEmotions.find((e) => Number(e.id) === Number(m.productId));
     items[id] = {
       id,
-      product: productSnapshot ? { ...productSnapshot } : m.productId ? { id: m.productId } : undefined,
+      product: productSnapshot
+        ? { ...productSnapshot }
+        : m.productId
+          ? { id: m.productId }
+          : undefined,
       productId: m.productId ?? undefined,
       quantity: m.quantity || 1,
       addedAt: m.addedAt || Date.now(),
@@ -75,7 +79,7 @@ export const useCartStore = create((set, get) => ({
   },
 
   addToCart: (product) => {
-  set((state) => {
+    set((state) => {
       const rememberingState = useRememberingStore.getState();
       const rememberingItemIds = Object.keys(rememberingState.rememberingItems).map(Number);
 

@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from 'sonner';
+import ToastHost from './components/ToastHost';
 import { useRememberProgress } from 'cart/features/remembering/hooks/useRememberProgress';
 import { useRememberingSync } from 'cart/features/remembering/hooks/useRememberingSync';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -102,7 +102,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Toaster position="top-center" richColors />
+        <ToastHost />
         <Routes>
           <Route
             path="/login"

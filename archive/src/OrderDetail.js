@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useOrderStore } from 'products/orderStore';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
+import showConfirmToast from '@shared/components/showConfirmToast';
 
 function OrderDetail() {
   const { orderId } = useParams();
@@ -13,37 +14,21 @@ function OrderDetail() {
   const order = getOrder(Number(orderId));
 
   const handleForget = () => {
-    toast.custom((t) => (
-      <div className="flex min-w-[300px] flex-col gap-3 rounded-lg border border-[rgba(163,176,135,0.3)] bg-[rgba(67,86,99,0.95)] p-4">
-        <div className="text-sm font-light tracking-wide text-[#FFF8D4]">정말로 잊고 싶어요?</div>
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={() => {
-              toast.dismiss(t);
-            }}
-            className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.5)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(67,86,99,0.7)]"
-          >
-            취소
-          </button>
-          <button
-            onClick={() => {
-              removeOrder(Number(orderId));
-              toast.dismiss(t);
-              toast.success('기억이 삭제되었습니다.');
-              navigate('/archive');
-            }}
-            className="cursor-pointer rounded border border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] px-4 py-2 text-[13px] font-light text-[#FFF8D4] transition-all duration-200 hover:bg-[rgba(163,176,135,0.5)]"
-          >
-            잊기
-          </button>
-        </div>
-      </div>
-    ));
+    showConfirmToast({
+      title: '정말로 삭제하시겠어요?',
+      confirmLabel: '삭제',
+      cancelLabel: '취소',
+      onConfirm: () => {
+        removeOrder(Number(orderId));
+        toast.success('기억이 삭제되었습니다.');
+        navigate('/archive');
+      },
+    });
   };
 
   if (!order) {
     return (
-      <div className="mx-auto max-w-[900px] px-5 py-10">
+      <div className="max-w-225 mx-auto px-5 py-10">
         <button
           onClick={() => navigate('/archive')}
           className="mb-5 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-4 py-2.5 text-[13px] font-light tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
@@ -72,8 +57,8 @@ function OrderDetail() {
   const statusConfig = getStatusConfig(EMOTION_STATUS.REMEMBERED);
 
   return (
-    <div className="mx-auto max-w-[900px] px-5 py-10">
-      <div className="mb-[30px] flex items-center justify-between">
+    <div className="max-w-225 mx-auto px-5 py-10">
+      <div className="mb-7.5 flex items-center justify-between">
         <button
           onClick={() => navigate('/archive')}
           className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-4 py-2.5 text-[13px] font-light tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
@@ -123,9 +108,7 @@ function OrderDetail() {
               className="flex gap-6 rounded-lg border border-[rgba(255,248,212,0.15)] bg-[rgba(67,86,99,0.15)] p-6 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,248,212,0.25)] hover:bg-[rgba(67,86,99,0.25)]"
             >
               {/* 이모지 */}
-              <div className="flex-shrink-0 text-[56px] leading-none opacity-90">
-                {product.emoji}
-              </div>
+              <div className="shrink-0 text-[56px] leading-none opacity-90">{product.emoji}</div>
 
               {/* 상품 정보 */}
               <div className="min-w-0 flex-1">
