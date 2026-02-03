@@ -1,4 +1,4 @@
-import { doc, setDoc, collection, query, orderBy, onSnapshot, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, query, orderBy, onSnapshot, deleteDoc, limit, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export async function saveUserOrder(userId, order) {
@@ -39,4 +39,22 @@ export async function deleteUserOrder(userId, orderId) {
   await deleteDoc(orderRef);
 }
 
-export default { saveUserOrder, subscribeToUserOrders, deleteUserOrder };
+export async function getRecentOrders(userId, count = 20) {
+  if (!userId) return [];
+
+  const q = query(
+    collection(db, 'users', userId, 'orders'),
+    orderBy('orderDate', 'desc'),
+    limit(count)
+  );
+
+  const snapshot = await getDocs(q);
+  const orders = [];
+  snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+    orders.push({ ...data, id: docSnap.id });
+  });
+  return orders;
+}
+
+export default { saveUserOrder, subscribeToUserOrders, deleteUserOrder, getRecentOrders };

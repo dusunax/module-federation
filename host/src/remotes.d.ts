@@ -66,6 +66,16 @@ declare module 'auth/energyStore' {
     date: string;
   }
 
+  interface Order {
+    id: string;
+    emoji?: string;
+    name: string;
+    category?: string;
+    energyCost?: number;
+    orderDate: string;
+    [key: string]: unknown;
+  }
+
   interface EnergyState {
     current: number;
     maxEnergy: number;
@@ -80,6 +90,7 @@ declare module 'auth/energyStore' {
     clearEnergy: () => void;
     resetEnergy: () => Promise<void>;
     fetchDailyUsage: (days?: number) => Promise<DailyUsage[]>;
+    fetchRecentOrders: (count?: number) => Promise<Order[]>;
   }
 
   export function useEnergyStore(): EnergyState;

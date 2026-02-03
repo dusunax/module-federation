@@ -11,6 +11,7 @@ import {
   BookOpenIcon,
   XIcon,
   UserIcon,
+  LayoutDashboardIcon,
 } from 'lucide-react';
 
 function Header() {
@@ -107,6 +108,19 @@ function Header() {
                   {totalItems}
                 </span>
               )}
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/dashboard"
+              className={`flex h-8 w-8 items-center justify-center rounded-full border-2 text-2xl no-underline transition-colors ${
+                isActive('/dashboard')
+                  ? 'border-[var(--color-accent-green)] bg-[var(--color-green-overlay-3)]'
+                  : 'border-[var(--color-border-primary)] hover:bg-[var(--color-overlay-3)]'
+              }`}
+              aria-label="대시보드로 이동"
+            >
+              <LayoutDashboardIcon className="h-4 w-4" />
             </Link>
           </li>
           {user ? (

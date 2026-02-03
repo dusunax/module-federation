@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { doc, getDoc, setDoc, serverTimestamp, increment } from 'firebase/firestore';
 import { db } from '../firebase';
 import { getDailyUsage } from '../services/energyService';
+import { getRecentOrders } from '../services/orderService';
 
 const MAX_ENERGY_FREE = 5;
 const MAX_ENERGY_PREMIUM = 10;
@@ -235,6 +236,18 @@ const useEnergyStore = create((set, get) => ({
       return await getDailyUsage(userId, days);
     } catch (err) {
       console.error('Failed to fetch daily usage:', err);
+      return [];
+    }
+  },
+
+  // fetch recent orders for dashboard log
+  fetchRecentOrders: async (count = 20) => {
+    const { userId } = get();
+    if (!userId) return [];
+    try {
+      return await getRecentOrders(userId, count);
+    } catch (err) {
+      console.error('Failed to fetch recent orders:', err);
       return [];
     }
   },
