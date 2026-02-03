@@ -1,0 +1,92 @@
+declare module 'header/Header' {
+  const Header: React.ComponentType;
+  export default Header;
+}
+
+declare module 'products/ProductList' {
+  const ProductList: React.ComponentType;
+  export default ProductList;
+}
+
+declare module 'products/ProductDetail' {
+  const ProductDetail: React.ComponentType;
+  export default ProductDetail;
+}
+
+declare module 'cart/Cart' {
+  const Cart: React.ComponentType;
+  export default Cart;
+}
+
+declare module 'cart/features/remembering/hooks/useRememberProgress' {
+  export function useRememberProgress(): void;
+}
+
+declare module 'cart/features/remembering/hooks/useRememberingSync' {
+  export function useRememberingSync(): void;
+}
+
+declare module 'archive/OrderList' {
+  const OrderList: React.ComponentType;
+  export default OrderList;
+}
+
+declare module 'archive/OrderDetail' {
+  const OrderDetail: React.ComponentType;
+  export default OrderDetail;
+}
+
+declare module 'auth/authStore' {
+  interface User {
+    uid: string;
+    email: string | null;
+    displayName: string | null;
+    photoURL: string | null;
+    plan: string;
+  }
+
+  interface AuthState {
+    user: User | null;
+    loading: boolean;
+    error: string | null;
+    signInWithGoogle: () => Promise<void>;
+    signOut: () => Promise<void>;
+    initAuthListener: () => () => void;
+    clearError: () => void;
+  }
+
+  export function useAuthStore(): AuthState;
+  export function useAuthStore<T>(selector: (state: AuthState) => T): T;
+}
+
+declare module 'auth/energyStore' {
+  interface DailyUsage {
+    used: number;
+    count: number;
+    date: string;
+  }
+
+  interface EnergyState {
+    current: number;
+    maxEnergy: number;
+    lastResetDate: string | null;
+    loading: boolean;
+    error: string | null;
+    userId: string | null;
+    initializeEnergy: (userId: string, plan?: string) => Promise<void>;
+    hasEnoughEnergy: (cost: number) => boolean;
+    deductEnergy: (cost: number, count?: number) => Promise<number>;
+    restoreEnergy: (amount: number, count?: number) => Promise<number>;
+    clearEnergy: () => void;
+    resetEnergy: () => Promise<void>;
+    fetchDailyUsage: (days?: number) => Promise<DailyUsage[]>;
+  }
+
+  export function useEnergyStore(): EnergyState;
+  export function useEnergyStore<T>(selector: (state: EnergyState) => T): T;
+}
+
+declare module '*.css' {
+  const content: Record<string, string>;
+  export default content;
+}

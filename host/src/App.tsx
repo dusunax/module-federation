@@ -14,6 +14,7 @@ const Cart = lazy(() => import('cart/Cart'));
 const OrderList = lazy(() => import('archive/OrderList'));
 const OrderDetail = lazy(() => import('archive/OrderDetail'));
 const Login = lazy(() => import('./pages/Login'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -72,6 +73,16 @@ function AppContent() {
               <ProtectedRoute>
                 <Suspense fallback={<div>감정 기록 로딩 중...</div>}>
                   <OrderList />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<div>대시보드 로딩 중...</div>}>
+                  <Dashboard />
                 </Suspense>
               </ProtectedRoute>
             }

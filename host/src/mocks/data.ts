@@ -1,15 +1,29 @@
-export const emotions = [
+export interface Emotion {
+  id: number;
+  name: string;
+  emoji: string;
+  rarity: 'common' | 'rare' | 'epic';
+  energyCost: number;
+  category: string;
+  description: string;
+  story: string;
+  effects: string[];
+  status: string;
+  image: string;
+}
+
+export const emotions: Emotion[] = [
   {
     id: 1,
-    name: '답장이 0.2초 늦었던 순간',
+    name: '답장이 1분 늦었던 순간',
     emoji: '💬',
     rarity: 'common',
     energyCost: 1,
     category: '불안',
     description:
-      '메시지를 보냈는데 읽음 표시만 뜨고 답장이 없다. 0.2초가 지나고, 1초가 지나고, 5초가 지나도 아무 반응이 없다.',
+      '메시지를 보냈는데 읽음 표시만 뜨고 답장이 없다. 1분가 지나고, 5분이 지나고, 10분이 지나도 아무 반응이 없다.',
     story:
-      '"안녕"이라고 보냈다. 읽음 표시는 바로 떴다. 하지만 답장은 없었다. 0.2초가 지나고, 1초가 지나고, 5초가 지나도 아무 반응이 없다. 혹시 뭔가 잘못됐나?',
+      '"안녕"이라고 보냈다. 읽음 표시는 바로 떴다. 하지만 답장은 없었다. 1분이 지나고, 5분이 지나고, 10분이 지나도 아무 반응이 없다. 혹시 뭔가 잘못됐나?',
     effects: ['불안', '기대', '의심'],
     status: 'noticing',
     image: '💬',

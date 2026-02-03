@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from 'auth/authStore';
 
-function ProtectedRoute({ children }) {
+interface ProtectedRouteProps {
+  children: ReactNode;
+}
+
+function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuthStore();
   const location = useLocation();
 
@@ -20,12 +24,12 @@ function ProtectedRoute({ children }) {
   if (!user) {
     // allow unauthenticated access to the main homepage
     if (location.pathname === '/' || location.pathname === '') {
-      return children;
+      return <>{children}</>;
     }
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return children;
+  return <>{children}</>;
 }
 
 export default ProtectedRoute;
