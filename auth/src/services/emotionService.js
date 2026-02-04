@@ -1,4 +1,4 @@
-import { collection, doc, getDocs, getDoc, query, orderBy } from 'firebase/firestore';
+import { collection, doc, getDocs, getDoc, setDoc, updateDoc, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
 
 let rarityConfigCache = null;
@@ -19,7 +19,7 @@ function withRarityInfo(emotion, config) {
   };
 }
 
-export async function getAllEmotions(searchTerm) {
+export async function getAllEmotions(searchTerm, { includeAll = false } = {}) {
   const [snapshot, config] = await Promise.all([
     getDocs(query(collection(db, 'emotions'), orderBy('id', 'asc'))),
     getRarityConfig(),
@@ -29,6 +29,10 @@ export async function getAllEmotions(searchTerm) {
   snapshot.forEach((docSnap) => {
     results.push(withRarityInfo(docSnap.data(), config));
   });
+
+  if (!includeAll) {
+    results = results.filter((e) => e.published === true);
+  }
 
   if (searchTerm) {
     const term = searchTerm.toLowerCase();
@@ -51,5 +55,15 @@ export async function getEmotionById(id) {
   ]);
   if (!docSnap.exists()) return null;
   return withRarityInfo(docSnap.data(), config);
+}
+
+export async function createEmotion(data) {
+  const docRef = doc(db, 'emotions', String(data.id));
+  await setDoc(docRef, data);
+}
+
+export async function updateEmotion(id, data) {
+  const docRef = doc(db, 'emotions', String(id));
+  await updateDoc(docRef, data);
 }
 

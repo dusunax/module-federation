@@ -5,6 +5,7 @@ import ToastHost from './components/ToastHost';
 import { useRememberProgress } from 'cart/features/remembering/hooks/useRememberProgress';
 import { useRememberingSync } from 'cart/features/remembering/hooks/useRememberingSync';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import './styles/tailwind.css';
 
 const Header = lazy(() => import('header/Header'));
@@ -16,6 +17,7 @@ const OrderDetail = lazy(() => import('archive/OrderDetail'));
 const EmotionCollection = lazy(() => import('archive/EmotionCollection'));
 const Login = lazy(() => import('./pages/Login'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const AdminEmotions = lazy(() => import('./pages/AdminEmotions'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -106,6 +108,16 @@ function AppContent() {
                   <OrderDetail />
                 </Suspense>
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/emotions"
+            element={
+              <AdminRoute>
+                <Suspense fallback={<div>관리 페이지 로딩 중...</div>}>
+                  <AdminEmotions />
+                </Suspense>
+              </AdminRoute>
             }
           />
         </Routes>

@@ -13,6 +13,7 @@ import {
   XIcon,
   UserIcon,
   LayoutDashboardIcon,
+  ShieldIcon,
 } from 'lucide-react';
 
 function Header() {
@@ -184,14 +185,6 @@ function Header() {
 
                   <div className="py-1">
                     <Link
-                      to="/archive"
-                      className={`flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[var(--color-text-primary)] no-underline transition-colors hover:bg-[var(--color-bg-tertiary)] ${
-                        isActive('/archive') ? 'bg-[var(--color-green-overlay-3)]' : ''
-                      }`}
-                    >
-                      <BookOpenIcon className="h-4 w-4" /> 감정 기록
-                    </Link>
-                    <Link
                       to="/collection"
                       className={`flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[var(--color-text-primary)] no-underline transition-colors hover:bg-[var(--color-bg-tertiary)] ${
                         isActive('/collection') ? 'bg-[var(--color-green-overlay-3)]' : ''
@@ -199,6 +192,24 @@ function Header() {
                     >
                       <BookMarkedIcon className="h-4 w-4" /> 감정 도감
                     </Link>
+                    <Link
+                      to="/archive"
+                      className={`flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[var(--color-text-primary)] no-underline transition-colors hover:bg-[var(--color-bg-tertiary)] ${
+                        isActive('/archive') ? 'bg-[var(--color-green-overlay-3)]' : ''
+                      }`}
+                    >
+                      <BookOpenIcon className="h-4 w-4" /> 감정 기록
+                    </Link>
+                    {user.role === 'admin' && (
+                      <Link
+                        to="/admin/emotions"
+                        className={`flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[var(--color-text-primary)] no-underline transition-colors hover:bg-[var(--color-bg-tertiary)] ${
+                          isActive('/admin/emotions') ? 'bg-[var(--color-green-overlay-3)]' : ''
+                        }`}
+                      >
+                        <ShieldIcon className="h-4 w-4" /> 관리자 페이지
+                      </Link>
+                    )}
                   </div>
 
                   <div className="border-t border-[var(--color-border-primary)] py-1">

@@ -42,7 +42,9 @@ const useAuthStore = create((set) => ({
       }
 
       const userDoc = await getDoc(doc(db, 'users', user.uid));
-      const plan = userDoc.exists() ? userDoc.data().plan || 'none' : 'none';
+      const userData = userDoc.exists() ? userDoc.data() : {};
+      const plan = userData.plan || 'none';
+      const role = userData.role;
 
       set({
         user: {
@@ -51,6 +53,7 @@ const useAuthStore = create((set) => ({
           displayName: user.displayName,
           photoURL: user.photoURL,
           plan,
+          role,
         },
         loading: false,
       });
@@ -81,7 +84,9 @@ const useAuthStore = create((set) => ({
       if (user) {
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
-          const plan = userDoc.exists() ? userDoc.data().plan || 'none' : 'none';
+          const userData = userDoc.exists() ? userDoc.data() : {};
+          const plan = userData.plan || 'none';
+          const role = userData.role;
 
           set({
             user: {
@@ -90,6 +95,7 @@ const useAuthStore = create((set) => ({
               displayName: user.displayName,
               photoURL: user.photoURL,
               plan,
+              role,
             },
             loading: false,
           });

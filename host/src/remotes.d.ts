@@ -48,6 +48,7 @@ declare module 'auth/authStore' {
     displayName: string | null;
     photoURL: string | null;
     plan: string;
+    role?: string;
   }
 
   interface AuthState {
@@ -113,13 +114,18 @@ declare module 'auth/services/emotionService' {
     description: string;
     story: string;
     effects: string[];
-    status: string;
+    published: boolean;
     image: string | null;
   }
 
-  export function getAllEmotions(searchTerm?: string): Promise<Emotion[]>;
-  export function getEmotionById(id: number): Promise<Emotion | null>;
+  interface GetAllEmotionsOptions {
+    includeAll?: boolean;
+  }
 
+  export function getAllEmotions(searchTerm?: string, options?: GetAllEmotionsOptions): Promise<Emotion[]>;
+  export function getEmotionById(id: number): Promise<Emotion | null>;
+  export function createEmotion(data: Omit<Emotion, 'energyCost'>): Promise<void>;
+  export function updateEmotion(id: number, data: Partial<Omit<Emotion, 'energyCost'>>): Promise<void>;
 }
 
 declare module '*.css' {
