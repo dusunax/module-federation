@@ -1,4 +1,4 @@
-import { collection, doc, getDocs, getDoc, setDoc, updateDoc, query, orderBy } from 'firebase/firestore';
+import { collection, doc, getDocs, getDoc, setDoc, updateDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 
 let rarityConfigCache = null;
@@ -30,6 +30,13 @@ export async function getAllEmotions(searchTerm, { includeAll = false } = {}) {
     results.push(withRarityInfo(docSnap.data(), config));
   });
 
+  results.sort((a, b) => {
+    const timeA = a.createdAt?.seconds ?? 0;
+    const timeB = b.createdAt?.seconds ?? 0;
+    if (timeA !== timeB) return timeB - timeA;
+    return b.id - a.id;
+  });
+
   if (!includeAll) {
     results = results.filter((e) => e.published === true);
   }
@@ -59,7 +66,7 @@ export async function getEmotionById(id) {
 
 export async function createEmotion(data) {
   const docRef = doc(db, 'emotions', String(data.id));
-  await setDoc(docRef, data);
+  await setDoc(docRef, { ...data, createdAt: serverTimestamp() });
 }
 
 export async function updateEmotion(id, data) {
