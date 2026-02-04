@@ -53,6 +53,7 @@ module.exports = {
       exposes: {
         './OrderList': './src/OrderList',
         './OrderDetail': './src/OrderDetail',
+        './EmotionCollection': './src/EmotionCollection',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },

@@ -53,6 +53,7 @@ module.exports = {
         './energyStore': './src/store/energyStore.js',
         './rememberingStore': './src/store/rememberingStore.js',
         './services/orderService': './src/services/orderService.js',
+        './services/emotionService': './src/services/emotionService.js',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },

@@ -11,7 +11,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.12.0",
     "sonner": "^2.0.7",
-    "zustand": "^4.4.0"
+    "zustand": "^4.4.0",
+    "lucide-react": "^0.278.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",

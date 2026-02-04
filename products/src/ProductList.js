@@ -5,6 +5,7 @@ import { useCartStore } from './store/cartStore';
 import { useOrderStore } from './store/orderStore';
 import { getStatusConfig } from './utils/statusStyle';
 import { EMOTION_STATUS } from './constants';
+import { getAllEmotions } from 'auth/services/emotionService';
 
 function ProductList() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -19,16 +20,7 @@ function ProductList() {
     error,
   } = useQuery({
     queryKey: ['emotions', searchTerm],
-    queryFn: async () => {
-      const url = searchTerm
-        ? `/api/emotions?search=${encodeURIComponent(searchTerm)}`
-        : '/api/emotions';
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('순간 데이터를 불러오는데 실패했습니다.');
-      }
-      return response.json();
-    },
+    queryFn: () => getAllEmotions(searchTerm || undefined),
     keepPreviousData: true,
   });
 

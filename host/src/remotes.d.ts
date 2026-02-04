@@ -36,6 +36,11 @@ declare module 'archive/OrderDetail' {
   export default OrderDetail;
 }
 
+declare module 'archive/EmotionCollection' {
+  const EmotionCollection: React.ComponentType;
+  export default EmotionCollection;
+}
+
 declare module 'auth/authStore' {
   interface User {
     uid: string;
@@ -95,6 +100,26 @@ declare module 'auth/energyStore' {
 
   export function useEnergyStore(): EnergyState;
   export function useEnergyStore<T>(selector: (state: EnergyState) => T): T;
+}
+
+declare module 'auth/services/emotionService' {
+  interface Emotion {
+    id: number;
+    name: string;
+    emoji: string;
+    rarity: 'common' | 'rare' | 'epic';
+    energyCost: number;
+    category: string;
+    description: string;
+    story: string;
+    effects: string[];
+    status: string;
+    image: string | null;
+  }
+
+  export function getAllEmotions(searchTerm?: string): Promise<Emotion[]>;
+  export function getEmotionById(id: number): Promise<Emotion | null>;
+
 }
 
 declare module '*.css' {

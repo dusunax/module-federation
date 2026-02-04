@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { useRememberingStore } from 'auth/rememberingStore';
-import { emotions as mockEmotions } from '../mocks/data';
+import { getAllEmotions } from 'auth/services/emotionService';
 
 // Simple cookie helpers (no external deps)
 function readCookie(name) {
@@ -33,13 +33,20 @@ function minimalFromItems(items) {
   }));
 }
 
-function itemsFromMinimal(minimal) {
-  // Create lightweight items with product placeholder (only id) — full product info should be mapped by UI
+async function itemsFromMinimal(minimal) {
+  let emotions = [];
+  try {
+    emotions = await getAllEmotions();
+  } catch {
+    // Firestore unavailable — fall back to id-only products
+  }
+  const emotionMap = new Map(emotions.map((e) => [Number(e.id), e]));
+
   const items = {};
   let nextId = 1;
   minimal.forEach((m) => {
     const id = m.id ?? nextId++;
-    const productSnapshot = mockEmotions.find((e) => Number(e.id) === Number(m.productId));
+    const productSnapshot = emotionMap.get(Number(m.productId));
     items[id] = {
       id,
       product: productSnapshot
@@ -66,11 +73,11 @@ export const useCartStore = create((set, get) => ({
   nextItemId: 1,
 
   // Rehydrate from cookie on init
-  __rehydrate: () => {
+  __rehydrate: async () => {
     try {
       const minimal = readCookie(CART_COOKIE) || [];
       if (minimal && minimal.length > 0) {
-        const { items, nextItemId } = itemsFromMinimal(minimal);
+        const { items, nextItemId } = await itemsFromMinimal(minimal);
         set({ items, nextItemId });
       }
     } catch (e) {

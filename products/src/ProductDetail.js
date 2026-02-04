@@ -7,6 +7,7 @@ import { useRememberingStore } from 'auth/rememberingStore';
 import { useOrderStore } from './store/orderStore';
 import { getStatusConfig } from './utils/statusStyle';
 import { EMOTION_STATUS } from './constants';
+import { getEmotionById } from 'auth/services/emotionService';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -37,13 +38,7 @@ function ProductDetail() {
     error,
   } = useQuery({
     queryKey: ['emotion', id],
-    queryFn: async () => {
-      const response = await fetch(`/api/emotions/${id}`);
-      if (!response.ok) {
-        throw new Error('순간 정보를 불러오는데 실패했습니다.');
-      }
-      return response.json();
-    },
+    queryFn: () => getEmotionById(Number(id)),
   });
 
   // 같은 productId를 가진 아이템이 있는지 확인

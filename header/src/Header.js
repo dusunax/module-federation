@@ -9,6 +9,7 @@ import {
   ShoppingCartIcon,
   LogOutIcon,
   BookOpenIcon,
+  BookMarkedIcon,
   XIcon,
   UserIcon,
   LayoutDashboardIcon,
@@ -189,6 +190,14 @@ function Header() {
                       }`}
                     >
                       <BookOpenIcon className="h-4 w-4" /> 감정 기록
+                    </Link>
+                    <Link
+                      to="/collection"
+                      className={`flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[var(--color-text-primary)] no-underline transition-colors hover:bg-[var(--color-bg-tertiary)] ${
+                        isActive('/collection') ? 'bg-[var(--color-green-overlay-3)]' : ''
+                      }`}
+                    >
+                      <BookMarkedIcon className="h-4 w-4" /> 감정 도감
                     </Link>
                   </div>
 

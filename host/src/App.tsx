@@ -13,6 +13,7 @@ const ProductDetail = lazy(() => import('products/ProductDetail'));
 const Cart = lazy(() => import('cart/Cart'));
 const OrderList = lazy(() => import('archive/OrderList'));
 const OrderDetail = lazy(() => import('archive/OrderDetail'));
+const EmotionCollection = lazy(() => import('archive/EmotionCollection'));
 const Login = lazy(() => import('./pages/Login'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 
@@ -83,6 +84,16 @@ function AppContent() {
               <ProtectedRoute>
                 <Suspense fallback={<div>대시보드 로딩 중...</div>}>
                   <Dashboard />
+                </Suspense>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/collection"
+            element={
+              <ProtectedRoute>
+                <Suspense fallback={<div>감정 도감 로딩 중...</div>}>
+                  <EmotionCollection />
                 </Suspense>
               </ProtectedRoute>
             }
