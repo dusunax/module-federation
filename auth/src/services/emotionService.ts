@@ -1,16 +1,40 @@
 import { collection, doc, getDocs, getDoc, setDoc, updateDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 
-let rarityConfigCache = null;
+export interface Emotion {
+  id: number;
+  name: string;
+  emoji: string;
+  rarity: string;
+  category: string;
+  description: string;
+  story: string;
+  effects: string[];
+  published: boolean;
+  image: string | null;
+  energyCost?: number;
+  rarityOrder?: number;
+  createdAt?: { seconds: number };
+  status?: string;
+}
 
-export async function getRarityConfig() {
+interface RarityConfig {
+  [key: string]: {
+    energyCost: number;
+    order: number;
+  };
+}
+
+let rarityConfigCache: RarityConfig | null = null;
+
+export async function getRarityConfig(): Promise<RarityConfig> {
   if (rarityConfigCache) return rarityConfigCache;
   const docSnap = await getDoc(doc(db, 'config', 'rarity'));
-  rarityConfigCache = docSnap.data();
+  rarityConfigCache = docSnap.data() as RarityConfig;
   return rarityConfigCache;
 }
 
-function withRarityInfo(emotion, config) {
+function withRarityInfo(emotion: Emotion, config: RarityConfig): Emotion {
   const rarity = config[emotion.rarity];
   return {
     ...emotion,
@@ -19,15 +43,15 @@ function withRarityInfo(emotion, config) {
   };
 }
 
-export async function getAllEmotions(searchTerm, { includeAll = false } = {}) {
+export async function getAllEmotions(searchTerm?: string, { includeAll = false } = {}): Promise<Emotion[]> {
   const [snapshot, config] = await Promise.all([
     getDocs(query(collection(db, 'emotions'), orderBy('id', 'asc'))),
     getRarityConfig(),
   ]);
 
-  let results = [];
+  let results: Emotion[] = [];
   snapshot.forEach((docSnap) => {
-    results.push(withRarityInfo(docSnap.data(), config));
+    results.push(withRarityInfo(docSnap.data() as Emotion, config));
   });
 
   results.sort((a, b) => {
@@ -55,22 +79,21 @@ export async function getAllEmotions(searchTerm, { includeAll = false } = {}) {
   return results;
 }
 
-export async function getEmotionById(id) {
+export async function getEmotionById(id: number): Promise<Emotion | null> {
   const [docSnap, config] = await Promise.all([
     getDoc(doc(db, 'emotions', String(id))),
     getRarityConfig(),
   ]);
   if (!docSnap.exists()) return null;
-  return withRarityInfo(docSnap.data(), config);
+  return withRarityInfo(docSnap.data() as Emotion, config);
 }
 
-export async function createEmotion(data) {
+export async function createEmotion(data: Partial<Emotion>): Promise<void> {
   const docRef = doc(db, 'emotions', String(data.id));
   await setDoc(docRef, { ...data, createdAt: serverTimestamp() });
 }
 
-export async function updateEmotion(id, data) {
+export async function updateEmotion(id: number, data: Partial<Emotion>): Promise<void> {
   const docRef = doc(db, 'emotions', String(id));
   await updateDoc(docRef, data);
 }
-

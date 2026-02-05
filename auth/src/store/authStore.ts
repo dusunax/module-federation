@@ -4,14 +4,34 @@ import {
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   onAuthStateChanged,
+  User as FirebaseUser,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useEnergyStore } from './energyStore';
 
+interface User {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  plan: string;
+  role?: string;
+}
+
+interface AuthState {
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+  signInWithGoogle: () => Promise<FirebaseUser>;
+  signOut: () => Promise<void>;
+  initAuthListener: () => () => void;
+  clearError: () => void;
+}
+
 const googleProvider = new GoogleAuthProvider();
 
-const useAuthStore = create((set) => ({
+const useAuthStore = create<AuthState>((set) => ({
   user: null,
   loading: true,
   error: null,
@@ -60,7 +80,7 @@ const useAuthStore = create((set) => ({
 
       return user;
     } catch (error) {
-      set({ error: error.message, loading: false });
+      set({ error: (error as Error).message, loading: false });
       throw error;
     }
   },
@@ -72,7 +92,7 @@ const useAuthStore = create((set) => ({
       useEnergyStore.getState().clearEnergy();
       set({ user: null, loading: false });
     } catch (error) {
-      set({ error: error.message, loading: false });
+      set({ error: (error as Error).message, loading: false });
       throw error;
     }
   },

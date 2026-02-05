@@ -1,18 +1,35 @@
 import { create } from 'zustand';
 import { doc, getDoc, setDoc, serverTimestamp, increment } from 'firebase/firestore';
 import { db } from '../firebase';
-import { getDailyUsage } from '../services/energyService';
-import { getRecentOrders } from '../services/orderService';
+import { getDailyUsage, DailyUsage } from '../services/energyService';
+import { getRecentOrders, Order } from '../services/orderService';
 
 const MAX_ENERGY_FREE = 5;
 const MAX_ENERGY_PREMIUM = 10;
 
-const getTodayDateString = () => {
+const getTodayDateString = (): string => {
   const today = new Date();
   return today.toISOString().split('T')[0];
 };
 
-const useEnergyStore = create((set, get) => ({
+interface EnergyState {
+  current: number;
+  maxEnergy: number;
+  lastResetDate: string | null;
+  loading: boolean;
+  error: string | null;
+  userId: string | null;
+  initializeEnergy: (userId: string, plan?: string) => Promise<void>;
+  hasEnoughEnergy: (cost: number) => boolean;
+  deductEnergy: (cost: number, count?: number) => Promise<number>;
+  restoreEnergy: (amount: number, count?: number) => Promise<number>;
+  clearEnergy: () => void;
+  resetEnergy: () => Promise<void>;
+  fetchDailyUsage: (days?: number) => Promise<DailyUsage[]>;
+  fetchRecentOrders: (count?: number) => Promise<Order[]>;
+}
+
+const useEnergyStore = create<EnergyState>((set, get) => ({
   current: 0,
   maxEnergy: MAX_ENERGY_FREE,
   lastResetDate: null,
@@ -78,7 +95,7 @@ const useEnergyStore = create((set, get) => ({
       }
     } catch (error) {
       console.error('Energy initialization error:', error);
-      set({ error: error.message, loading: false });
+      set({ error: (error as Error).message, loading: false });
     }
   },
 

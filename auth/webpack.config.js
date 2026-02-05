@@ -4,7 +4,7 @@ const Dotenv = require('dotenv-webpack');
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/index.ts',
   mode: 'development',
   devServer: {
     port: 3005,
@@ -15,13 +15,13 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.(j|t)sx?$/,
         exclude: /node_modules/,
         include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, '../shared')],
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-react'],
+            presets: ['@babel/preset-react', '@babel/preset-typescript'],
           },
         },
       },
@@ -48,12 +48,12 @@ module.exports = {
       name: 'auth',
       filename: 'remoteEntry.js',
       exposes: {
-        './authStore': './src/store/authStore.js',
-        './firebase': './src/firebase/index.js',
-        './energyStore': './src/store/energyStore.js',
-        './rememberingStore': './src/store/rememberingStore.js',
-        './services/orderService': './src/services/orderService.js',
-        './services/emotionService': './src/services/emotionService.js',
+        './authStore': './src/store/authStore.ts',
+        './firebase': './src/firebase/index.ts',
+        './energyStore': './src/store/energyStore.ts',
+        './rememberingStore': './src/store/rememberingStore.ts',
+        './services/orderService': './src/services/orderService.ts',
+        './services/emotionService': './src/services/emotionService.ts',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },
@@ -67,7 +67,7 @@ module.exports = {
     }),
   ],
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
     modules: ['node_modules', path.resolve(__dirname, 'node_modules')],
     alias: {
       '@shared': path.resolve(__dirname, '../shared'),

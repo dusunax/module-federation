@@ -7,12 +7,47 @@ import {
   onSnapshot,
   serverTimestamp,
   Timestamp,
+  Unsubscribe,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const REMEMBERING_DURATION = 60000; // 1분
 
-const useRememberingStore = create((set, get) => ({
+export interface ProductInfo {
+  id?: number;
+  name?: string;
+  emoji?: string;
+  energyCost?: number;
+}
+
+export interface RememberingItem {
+  visibleItemId: string;
+  cartItemId: number;
+  productInfo: ProductInfo;
+  startTime: number;
+  duration: number;
+  energyCost: number;
+  status: string;
+}
+
+interface RememberingState {
+  rememberingItems: Record<string, RememberingItem>;
+  loading: boolean;
+  error: string | null;
+  userId: string | null;
+  unsubscribe: Unsubscribe | null;
+  initializeListener: (userId: string) => void;
+  cleanup: () => void;
+  startRemembering: (cartItemId: number, productInfo: ProductInfo, energyCost: number) => Promise<string>;
+  startRememberingBatch: (items: Array<{ cartItemId: number; productInfo: ProductInfo; energyCost: number }>) => Promise<void>;
+  cancelItemRemembering: (visibleItemId: string) => Promise<RememberingItem | null>;
+  cancelAllRemembering: () => Promise<number>;
+  completeItemRemembering: (visibleItemId: string) => Promise<RememberingItem | null>;
+  getProgress: (visibleItemId: string) => number;
+  getAllProgress: () => Record<string, { progress: number; startTime: number; energyCost: number; cartItemId: number }>;
+}
+
+const useRememberingStore = create<RememberingState>((set, get) => ({
   // Firestore에서 동기화된 기억 중인 아이템들
   // { [visibleItemId]: { visibleItemId, cartItemId, productInfo, startTime, duration, energyCost, status } }
   rememberingItems: {},
@@ -46,11 +81,11 @@ const useRememberingStore = create((set, get) => ({
     const unsubscribe = onSnapshot(
       rememberingRef,
       (snapshot) => {
-        const items = {};
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          items[doc.id] = {
-            visibleItemId: doc.id,
+        const items: Record<string, RememberingItem> = {};
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          items[docSnap.id] = {
+            visibleItemId: docSnap.id,
             cartItemId: data.cartItemId,
             productInfo: data.productInfo,
             startTime:
@@ -64,7 +99,7 @@ const useRememberingStore = create((set, get) => ({
       },
       (error) => {
         console.error('Remembering listener error:', error);
-        set({ error: error.message, loading: false });
+        set({ error: (error as Error).message, loading: false });
       }
     );
 
@@ -206,7 +241,7 @@ const useRememberingStore = create((set, get) => ({
   // 헬퍼: 모든 아이템의 프로그레스 계산
   getAllProgress: () => {
     const { rememberingItems } = get();
-    const progress = {};
+    const progress: Record<string, { progress: number; startTime: number; energyCost: number; cartItemId: number }> = {};
 
     Object.entries(rememberingItems).forEach(([visibleItemId, item]) => {
       if (item.startTime) {
