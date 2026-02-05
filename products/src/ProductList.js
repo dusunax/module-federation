@@ -98,7 +98,7 @@ function ProductList() {
           placeholder="순간, 카테고리, 스토리로 검색..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full max-w-[500px] rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-4 py-3.5 text-sm font-light text-[#FFF8D4] outline-none transition-all duration-300 focus:border-[#A3B087] focus:bg-[rgba(67,86,99,0.4)]"
+          className="w-full max-w-[500px] rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-3)] px-4 py-3.5 text-sm font-normal text-[var(--color-text-primary)] outline-none transition-all duration-300 focus:border-[var(--color-accent-green)] focus:bg-[var(--color-overlay-4)]"
         />
       </div>
 
@@ -106,10 +106,10 @@ function ProductList() {
       <div className="mb-6 flex items-center gap-2">
         <button
           onClick={handleDateToggle}
-          className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-light tracking-wide transition-all duration-200 ${
+          className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-normal tracking-wide transition-all duration-200 ${
             dateSort
-              ? 'border-[rgba(163,176,135,0.4)] bg-[rgba(163,176,135,0.15)] text-[#A3B087]'
-              : 'border-[rgba(255,248,212,0.12)] bg-transparent text-[rgba(255,248,212,0.5)] hover:border-[rgba(255,248,212,0.25)] hover:text-[rgba(255,248,212,0.7)]'
+              ? 'border-[var(--color-border-green)] bg-[var(--color-green-overlay-1)] text-[var(--color-accent-green)]'
+              : 'border-[var(--color-border-faded)] bg-transparent text-[var(--color-text-faded)] hover:border-[var(--color-border-primary)] hover:text-[var(--color-text-muted)]'
           }`}
         >
           날짜
@@ -119,10 +119,10 @@ function ProductList() {
         </button>
         <button
           onClick={handleEnergyToggle}
-          className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-light tracking-wide transition-all duration-200 ${
+          className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-normal tracking-wide transition-all duration-200 ${
             energySort
-              ? 'border-[rgba(163,176,135,0.4)] bg-[rgba(163,176,135,0.15)] text-[#A3B087]'
-              : 'border-[rgba(255,248,212,0.12)] bg-transparent text-[rgba(255,248,212,0.5)] hover:border-[rgba(255,248,212,0.25)] hover:text-[rgba(255,248,212,0.7)]'
+              ? 'border-[var(--color-border-green)] bg-[var(--color-green-overlay-1)] text-[var(--color-accent-green)]'
+              : 'border-[var(--color-border-faded)] bg-transparent text-[var(--color-text-faded)] hover:border-[var(--color-border-primary)] hover:text-[var(--color-text-muted)]'
           }`}
         >
           ⚡ 에너지
@@ -134,14 +134,14 @@ function ProductList() {
 
       {/* 에러 표시 */}
       {error && (
-        <div className="mb-5 rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-5 text-center text-[#FFF8D4]">
+        <div className="mb-5 rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] p-5 text-center text-[var(--color-text-primary)]">
           <p>에러: {error.message}</p>
         </div>
       )}
 
       {/* 검색 결과 표시 */}
       {searchTerm && (
-        <p className="mb-5 text-[13px] font-light text-[rgba(255,248,212,0.85)]">
+        <p className="mb-5 text-[13px] font-normal text-[var(--color-text-secondary)]">
           검색 결과: {sortedEmotions?.length || 0}개
           {isFetching && <span className="ml-2.5 text-xs">업데이트 중...</span>}
         </p>
@@ -150,7 +150,7 @@ function ProductList() {
       {/* 로딩 상태 */}
       {isLoading && !emotions && (
         <div className="py-15 text-center">
-          <p className="font-light text-[#FFF8D4]">로딩 중...</p>
+          <p className="font-normal text-[var(--color-text-primary)]">로딩 중...</p>
         </div>
       )}
 
@@ -175,28 +175,28 @@ function ProductList() {
               <div
                 key={emotion.id}
                 onClick={() => handleProductClick(emotion.id)}
-                className="relative flex cursor-pointer flex-col rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-6 text-left backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.3)]"
+                className="relative flex cursor-pointer flex-col rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] p-6 text-left backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-accent-green)] hover:bg-[var(--color-overlay-3)]"
               >
                 {/* 상태 표시 */}
                 <div
-                  className="absolute right-4 top-4 rounded-sm bg-[rgba(67,86,99,0.4)] px-2 py-1 text-[10px] font-light tracking-wide"
+                  className="absolute right-4 top-4 rounded-sm bg-[var(--color-overlay-4)] px-2 py-1 text-[10px] font-normal tracking-wide"
                   style={{ color: statusStyle.color }}
                 >
                   {statusStyle.icon} {statusStyle.label}
                 </div>
 
                 <div className="mb-4 text-5xl opacity-90">{emotion.emoji}</div>
-                <h3 className="mb-1 text-base font-light leading-6 tracking-wide ">
+                <h3 className="mb-1 text-base font-normal leading-6 tracking-wide ">
                   {emotion.name}
                 </h3>
-                <p className="mb-4 line-clamp-5 min-h-0 flex-1 text-[13px] font-light leading-relaxed text-[rgba(255,248,212,0.85)]">
+                <p className="mb-4 line-clamp-5 min-h-0 flex-1 text-[13px] font-normal leading-relaxed text-[var(--color-text-secondary)]">
                   {emotion.description}
                 </p>
-                <div className="mt-5 flex items-center justify-between border-t border-[rgba(255,248,212,0.1)] pt-4">
-                  <span className="rounded-sm bg-[rgba(67,86,99,0.3)] px-2.5 py-1 text-[11px] font-light tracking-wider text-[rgba(255,248,212,0.75)]">
+                <div className="mt-5 flex items-center justify-between border-t border-[var(--color-border-faded)] pt-4">
+                  <span className="rounded-sm bg-[var(--color-overlay-3)] px-2.5 py-1 text-[11px] font-normal tracking-wider text-[var(--color-text-muted)]">
                     {emotion.category}
                   </span>
-                  <span className="text-sm font-light tracking-wider text-[#A3B087]">
+                  <span className="text-sm font-normal tracking-wider text-[var(--color-accent-green)]">
                     ⚡ {emotion.energyCost}
                   </span>
                 </div>
@@ -207,8 +207,8 @@ function ProductList() {
       )}
 
       {!isLoading && sortedEmotions?.length === 0 && (
-        <div className="py-15 px-5 text-center text-[rgba(255,248,212,0.8)]">
-          <p className="font-light">검색 결과가 없습니다.</p>
+        <div className="py-15 px-5 text-center text-[var(--color-text-muted)]">
+          <p className="font-normal">검색 결과가 없습니다.</p>
         </div>
       )}
     </div>

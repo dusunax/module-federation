@@ -83,10 +83,10 @@ function EmotionCollection() {
     <div className="max-w-225 mx-auto px-5 py-10">
       {/* Header */}
       <div className="mb-10 border-b border-[rgba(255,248,212,0.15)] pb-6">
-        <h1 className="m-0 mb-2 text-[28px] font-light tracking-wider text-[#FFF8D4]">
+        <h1 className="m-0 mb-2 text-[28px] font-normal tracking-wider text-[#FFF8D4]">
           감정 도감
         </h1>
-        <p className="m-0 mb-4 text-[13px] font-light tracking-wide text-[rgba(255,248,212,0.7)]">
+        <p className="m-0 mb-4 text-[13px] font-normal tracking-wide text-[rgba(255,248,212,0.7)]">
           {collectedCount} / {totalCount} 수집 완료
         </p>
 
@@ -98,7 +98,7 @@ function EmotionCollection() {
               style={{ width: `${percentage}%` }}
             />
           </div>
-          <span className="min-w-[40px] text-right text-sm font-light tracking-wide text-[rgba(255,248,212,0.7)]">
+          <span className="min-w-[40px] text-right text-sm font-normal tracking-wide text-[rgba(255,248,212,0.7)]">
             {percentage}%
           </span>
         </div>
@@ -117,13 +117,13 @@ function EmotionCollection() {
                 className={`flex flex-col items-center gap-2 rounded-lg border-2 bg-[rgba(67,86,99,0.2)] p-5 backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[rgba(67,86,99,0.3)] ${rarity.border} ${rarity.glow}`}
               >
                 <span className="text-[40px] leading-none">{emotion.emoji}</span>
-                <span className="text-center text-sm font-light tracking-wide text-[#FFF8D4]">
+                <span className="text-center text-sm font-normal tracking-wide text-[#FFF8D4]">
                   {emotion.name}
                 </span>
-                <span className="text-xs font-light tracking-wide text-[rgba(255,248,212,0.5)]">
+                <span className="text-xs font-normal tracking-wide text-[rgba(255,248,212,0.5)]">
                   {emotion.category}
                 </span>
-                <span className="text-xs font-light tracking-wide text-[rgba(255,248,212,0.4)]">
+                <span className="text-xs font-normal tracking-wide text-[rgba(255,248,212,0.4)]">
                   ⚡ {emotion.energyCost}
                 </span>
               </div>
@@ -136,10 +136,10 @@ function EmotionCollection() {
               className="flex flex-col items-center gap-2 rounded-lg border-2 border-[rgba(255,248,212,0.08)] bg-[rgba(67,86,99,0.1)] p-5 opacity-50"
             >
               <LockIcon className="h-10 w-10 text-[rgba(255,248,212,0.3)]" />
-              <span className="text-center text-sm font-light tracking-wide text-[rgba(255,248,212,0.3)]">
+              <span className="text-center text-sm font-normal tracking-wide text-[rgba(255,248,212,0.3)]">
                 ???
               </span>
-              <span className="text-xs font-light tracking-wide text-[rgba(255,248,212,0.2)]">
+              <span className="text-xs font-normal tracking-wide text-[rgba(255,248,212,0.2)]">
                 ⚡ {emotion.energyCost}
               </span>
             </div>

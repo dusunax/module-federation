@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { useOrderStore } from 'products/orderStore';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
 import showConfirmToast from '@shared/components/showConfirmToast';
+import BackButton from '@shared/components/BackButton';
 
 function OrderDetail() {
   const { orderId } = useParams();
@@ -29,15 +30,10 @@ function OrderDetail() {
   if (!order) {
     return (
       <div className="max-w-225 mx-auto px-5 py-10">
-        <button
-          onClick={() => navigate('/archive')}
-          className="mb-5 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-4 py-2.5 text-[13px] font-light tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
-        >
-          ← 기록 목록으로
-        </button>
+        <BackButton to="/archive" label="기록 목록으로" className="mb-5" />
         <div className="px-5 py-20 text-center text-[#FFF8D4]">
           <div className="mb-6 text-[64px] opacity-50">📝</div>
-          <p className="text-base font-light tracking-wide">기록을 찾을 수 없어요</p>
+          <p className="text-base font-normal tracking-wide">기록을 찾을 수 없어요</p>
         </div>
       </div>
     );
@@ -59,15 +55,10 @@ function OrderDetail() {
   return (
     <div className="max-w-225 mx-auto px-5 py-10">
       <div className="mb-7.5 flex items-center justify-between">
-        <button
-          onClick={() => navigate('/archive')}
-          className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-4 py-2.5 text-[13px] font-light tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
-        >
-          ← 기록 목록으로
-        </button>
+        <BackButton to="/archive" label="기록 목록으로" />
         <button
           onClick={handleForget}
-          className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-4 py-2.5 text-[13px] font-light tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
+          className="cursor-pointer rounded border border-[rgba(229,115,115,0.3)] bg-[rgba(229,115,115,0.1)] px-4 py-2.5 text-[13px] font-normal tracking-wide text-[var(--color-text-danger)] transition-all duration-300 hover:bg-[rgba(229,115,115,0.2)]"
         >
           잊기
         </button>
@@ -80,15 +71,15 @@ function OrderDetail() {
       >
         <div className="mb-5 flex items-start justify-between">
           <div>
-            <h1 className="my-0 mb-4 text-2xl font-light tracking-wider text-[#FFF8D4]">
+            <h1 className="my-0 mb-4 text-2xl font-normal tracking-wider text-[#FFF8D4]">
               기록 상세
             </h1>
-            <div className="text-[13px] font-light tracking-wide text-[rgba(255,248,212,0.7)]">
+            <div className="text-[13px] font-normal tracking-wide text-[rgba(255,248,212,0.7)]">
               {formatDate(order.orderDate)}
             </div>
           </div>
           <div
-            className="inline-flex items-center gap-1.5 rounded bg-[rgba(67,86,99,0.4)] px-4 py-2 text-xs font-light tracking-wide"
+            className="inline-flex items-center gap-1.5 rounded bg-[rgba(67,86,99,0.4)] px-4 py-2 text-xs font-normal tracking-wide"
             style={{ color: statusConfig.color }}
           >
             <span>{statusConfig.icon}</span>
@@ -99,7 +90,7 @@ function OrderDetail() {
 
       {/* 기록된 순간들 */}
       <div className="mb-8">
-        <h2 className="mb-6 text-xl font-light tracking-wider text-[#FFF8D4]">기록된 순간들</h2>
+        <h2 className="mb-6 text-xl font-normal tracking-wider text-[#FFF8D4]">기록된 순간들</h2>
 
         <div className="flex flex-col gap-4">
           {order.items.map(({ product, quantity }) => (
@@ -112,23 +103,23 @@ function OrderDetail() {
 
               {/* 상품 정보 */}
               <div className="min-w-0 flex-1">
-                <h3 className="my-0 mb-2 text-lg font-light leading-snug tracking-wide text-[#FFF8D4]">
+                <h3 className="my-0 mb-2 text-lg font-normal leading-snug tracking-wide text-[#FFF8D4]">
                   {product.name}
                 </h3>
                 {product.description && (
-                  <p className="my-0 mb-3 text-sm font-light leading-relaxed tracking-[0.2px] text-[rgba(255,248,212,0.8)]">
+                  <p className="my-0 mb-3 text-sm font-normal leading-relaxed tracking-[0.2px] text-[rgba(255,248,212,0.8)]">
                     {product.description}
                   </p>
                 )}
                 {product.category && (
-                  <div className="inline-block rounded border border-[rgba(163,176,135,0.3)] bg-[rgba(163,176,135,0.15)] px-2.5 py-1 text-[11px] font-light tracking-wide text-[#A3B087]">
+                  <div className="inline-block rounded border border-[rgba(163,176,135,0.3)] bg-[rgba(163,176,135,0.15)] px-2.5 py-1 text-[11px] font-normal tracking-wide text-[#A3B087]">
                     {product.category}
                   </div>
                 )}
               </div>
 
               {/* 수량 */}
-              <div className="flex h-fit items-center gap-2 rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-4 py-2 text-[13px] font-light tracking-wide text-[rgba(255,248,212,0.9)]">
+              <div className="flex h-fit items-center gap-2 rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-4 py-2 text-[13px] font-normal tracking-wide text-[rgba(255,248,212,0.9)]">
                 {quantity}회
               </div>
             </div>
@@ -139,10 +130,10 @@ function OrderDetail() {
       {/* 기록 요약 */}
       <div className="rounded-lg border border-[rgba(163,176,135,0.2)] bg-[rgba(67,86,99,0.15)] p-8 backdrop-blur-[10px]">
         <div className="mb-4 flex items-center justify-between">
-          <p className="m-0 text-[13px] font-light tracking-wide text-[rgba(255,248,212,0.7)]">
+          <p className="m-0 text-[13px] font-normal tracking-wide text-[rgba(255,248,212,0.7)]">
             총 기록된 순간
           </p>
-          <p className="m-0 text-lg font-light tracking-wide text-[#FFF8D4]">
+          <p className="m-0 text-lg font-normal tracking-wide text-[#FFF8D4]">
             {order.totalItems}개
           </p>
         </div>

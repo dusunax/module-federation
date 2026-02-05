@@ -8,6 +8,7 @@ import { useOrderStore } from './store/orderStore';
 import { getStatusConfig } from './utils/statusStyle';
 import { EMOTION_STATUS } from './constants';
 import { getEmotionById } from 'auth/services/emotionService';
+import BackButton from '@shared/components/BackButton';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -47,7 +48,7 @@ function ProductDetail() {
   if (isLoading) {
     return (
       <div className="p-10 text-center">
-        <p className="font-light text-[#FFF8D4]">로딩 중...</p>
+        <p className="font-normal text-[#FFF8D4]">로딩 중...</p>
       </div>
     );
   }
@@ -58,7 +59,7 @@ function ProductDetail() {
         <p>에러: {error.message}</p>
         <button
           onClick={() => navigate('/')}
-          className="mt-5 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-6 py-3 text-sm font-light text-[#FFF8D4]"
+          className="mt-5 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-6 py-3 text-sm font-normal text-[#FFF8D4]"
         >
           목록으로 돌아가기
         </button>
@@ -78,12 +79,7 @@ function ProductDetail() {
   return (
     <div className="mx-auto max-w-[900px] p-5">
       {/* 뒤로가기 버튼 */}
-      <button
-        onClick={() => navigate('/')}
-        className="mb-6 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-5 py-2.5 text-[13px] font-light text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
-      >
-        ← 목록으로
-      </button>
+      <BackButton to="/" label="목록으로" className="mb-6" />
 
       {/* 순간 상세 정보 */}
       <div className="rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-10 backdrop-blur-[10px]">
@@ -93,7 +89,7 @@ function ProductDetail() {
             <div className="mb-4 text-[100px] leading-none opacity-90">{emotion?.emoji}</div>
             {/* 상태 표시 */}
             <div
-              className="inline-block rounded-sm border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-3 py-1.5 text-[11px] font-light tracking-wider"
+              className="inline-block rounded-sm border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-3 py-1.5 text-[11px] font-normal tracking-wider"
               style={{ color: statusStyle.color }}
             >
               {statusStyle.icon} {statusStyle.label}
@@ -102,13 +98,13 @@ function ProductDetail() {
 
           {/* 기본 정보 */}
           <div className="min-w-[300px] flex-1">
-            <h1 className="mb-4 mt-0 text-[28px] font-light leading-snug tracking-wider text-[#FFF8D4]">
+            <h1 className="mb-4 mt-0 text-[28px] font-normal leading-snug tracking-wider text-[#FFF8D4]">
               {emotion?.name}
             </h1>
-            <p className="mb-5 text-lg font-light tracking-wide text-[#A3B087]">
+            <p className="mb-5 text-lg font-normal tracking-wide text-[#A3B087]">
               ⚡ {emotion?.energyCost} 에너지
             </p>
-            <span className="mb-5 inline-block rounded-sm bg-[rgba(67,86,99,0.3)] px-3.5 py-1.5 text-xs font-light tracking-wider text-[rgba(255,248,212,0.9)]">
+            <span className="mb-5 inline-block rounded-sm bg-[rgba(67,86,99,0.3)] px-3.5 py-1.5 text-xs font-normal tracking-wider text-[rgba(255,248,212,0.9)]">
               {emotion?.category}
             </span>
           </div>
@@ -116,17 +112,17 @@ function ProductDetail() {
 
         {/* 설명 */}
         <div className="mb-[30px]">
-          <h2 className="mb-3 text-base font-light tracking-wider text-[#FFF8D4]">설명</h2>
-          <p className="text-[15px] font-light leading-[1.8] text-[rgba(255,248,212,0.9)]">
+          <h2 className="mb-3 text-base font-normal tracking-wider text-[#FFF8D4]">설명</h2>
+          <p className="text-[15px] font-normal leading-[1.8] text-[rgba(255,248,212,0.9)]">
             {emotion?.description}
           </p>
         </div>
 
         {/* 상황 스토리 */}
         <div className="mb-[30px]">
-          <h2 className="mb-3 text-base font-light tracking-wider text-[#FFF8D4]">상황 스토리</h2>
+          <h2 className="mb-3 text-base font-normal tracking-wider text-[#FFF8D4]">상황 스토리</h2>
           <div className="rounded border-l-2 border-[#A3B087] bg-[rgba(67,86,99,0.3)] p-6">
-            <p className="m-0 text-[15px] font-light italic leading-[1.9] text-[#FFF8D4]">
+            <p className="m-0 text-[15px] font-normal italic leading-[1.9] text-[#FFF8D4]">
               "{emotion?.story}"
             </p>
           </div>
@@ -135,12 +131,12 @@ function ProductDetail() {
         {/* 효과 */}
         {emotion?.effects && emotion.effects.length > 0 && (
           <div className="mb-[30px]">
-            <h2 className="mb-3 text-base font-light tracking-wider text-[#FFF8D4]">효과</h2>
+            <h2 className="mb-3 text-base font-normal tracking-wider text-[#FFF8D4]">효과</h2>
             <div className="flex flex-wrap gap-2.5">
               {emotion.effects.map((effect, index) => (
                 <span
                   key={index}
-                  className="rounded-sm bg-[rgba(67,86,99,0.3)] px-3.5 py-1.5 text-xs font-light tracking-wide text-[#A3B087]"
+                  className="rounded-sm bg-[rgba(67,86,99,0.3)] px-3.5 py-1.5 text-xs font-normal tracking-wide text-[#A3B087]"
                 >
                   {effect}
                 </span>
@@ -152,7 +148,7 @@ function ProductDetail() {
         {/* 장바구니 추가 버튼 */}
         <div className="flex gap-3">
           <button
-            className="flex-1 cursor-pointer rounded border border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] px-4 py-4 text-[15px] font-light tracking-wider text-[#FFF8D4] transition-all duration-300 hover:border-[rgba(163,176,135,0.7)] hover:bg-[rgba(163,176,135,0.5)]"
+            className="flex-1 cursor-pointer rounded border border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] px-4 py-4 text-[15px] font-normal tracking-wider text-[#FFF8D4] transition-all duration-300 hover:border-[rgba(163,176,135,0.7)] hover:bg-[rgba(163,176,135,0.5)]"
             onClick={handleAddToCart}
           >
             {isInCart ? '더 담기' : '담기'}

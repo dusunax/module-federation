@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from 'auth/authStore';
 
 function Login() {
@@ -21,7 +21,7 @@ function Login() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[var(--color-bg-primary)]">
       <div className="w-full max-w-md rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-bg-secondary)] p-8">
-        <h1 className="mb-2 text-center text-2xl font-light text-[var(--color-text-primary)]">
+        <h1 className="mb-2 text-center text-2xl font-normal text-[var(--color-text-primary)]">
           Login
         </h1>
         <p className="mb-4 text-center text-lg text-[var(--color-text-secondary)]">
@@ -61,6 +61,13 @@ function Login() {
             />
           </svg>
           {loading ? '로그인 중...' : 'Google로 로그인'}
+        </button>
+
+        <button
+          onClick={() => navigate(-1)}
+          className="mt-4 w-full cursor-pointer rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-3)] px-4 py-2.5 text-[13px] text-[var(--color-text-primary)] transition-all duration-300 hover:border-[var(--color-accent-green)] hover:bg-[var(--color-overlay-4)]"
+        >
+          ← 돌아가기
         </button>
       </div>
     </div>

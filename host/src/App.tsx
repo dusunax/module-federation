@@ -124,7 +124,7 @@ function AppContent() {
       </main>
 
       <footer className="mt-10 border-t border-[var(--color-border-primary)] p-5 text-center">
-        <p className="text-sm font-light text-[var(--color-text-secondary)]">
+        <p className="text-sm font-normal text-[var(--color-text-secondary)]">
           Between Lines - Like Real People Do
         </p>
       </footer>

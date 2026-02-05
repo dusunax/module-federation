@@ -54,14 +54,14 @@ export function CartSummary({
   return (
     <div className="rounded border border-[rgba(163,176,135,0.3)] bg-[rgba(67,86,99,0.2)] p-[30px] backdrop-blur-[10px]">
       <div className="mb-5 flex items-center justify-between">
-        <span className="text-sm font-light tracking-wide text-[rgba(255,248,212,0.9)]">
+        <span className="text-sm font-normal tracking-wide text-[rgba(255,248,212,0.9)]">
           총 {normalTotalItems}개 시간
         </span>
       </div>
       <div className="mb-6 flex items-center justify-between">
-        <span className="text-lg font-light tracking-wider text-[#FFF8D4]">필요 에너지</span>
+        <span className="text-lg font-normal tracking-wider text-[#FFF8D4]">필요 에너지</span>
         <span
-          className={`text-2xl font-light tracking-wider ${hasEnoughEnergy ? 'text-[#A3B087]' : 'text-[#E57373]'}`}
+          className={`text-2xl font-normal tracking-wider ${hasEnoughEnergy ? 'text-[#A3B087]' : 'text-[#E57373]'}`}
         >
           ⚡ {normalTotalEnergyCost} / {currentEnergy}
         </span>
@@ -70,7 +70,7 @@ export function CartSummary({
       <button
         onClick={handleRemember}
         disabled={isDisabled}
-        className={`w-full rounded border py-4 text-base font-light tracking-wider text-[#FFF8D4] transition-all duration-300 ${
+        className={`w-full rounded border py-4 text-base font-normal tracking-wider text-[#FFF8D4] transition-all duration-300 ${
           isDisabled
             ? 'cursor-not-allowed border-[rgba(255,248,212,0.1)] bg-[rgba(67,86,99,0.3)] opacity-50'
             : 'cursor-pointer border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] hover:-translate-y-px hover:border-[rgba(163,176,135,0.7)] hover:bg-[rgba(163,176,135,0.5)]'

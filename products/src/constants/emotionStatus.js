@@ -10,26 +10,26 @@ export const EMOTION_STATUS = {
 export const EMOTION_STATUS_CONFIG = {
   [EMOTION_STATUS.NOTICING]: {
     color: 'rgba(255, 248, 212, 0.7)',
-    icon: '1️⃣',
-    label: '눈에 들어오는 중',
+    icon: '',
+    label: '',
     order: 1,
   },
   [EMOTION_STATUS.HELD]: {
     color: '#A3B087',
-    icon: '2️⃣',
-    label: '잠시 붙잡아 두었어요',
+    icon: '',
+    label: '',
     order: 2,
   },
   [EMOTION_STATUS.BEING_UNDERSTOOD]: {
     color: 'rgba(163, 176, 135, 0.9)',
-    icon: '3️⃣',
-    label: '이해되는 중이에요',
+    icon: '',
+    label: '기억하는 중',
     order: 3,
   },
   [EMOTION_STATUS.REMEMBERED]: {
     color: '#FFF8D4',
-    icon: '4️⃣',
-    label: '기억으로 남았어요',
+    icon: '',
+    label: '기억됨',
     order: 4,
   },
 };

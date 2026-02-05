@@ -349,19 +349,25 @@ export default function Dashboard() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <h1 className="mb-4 text-2xl font-light text-[var(--color-text-primary)]">대시보드</h1>
+      <h1 className="mb-4 text-2xl font-normal text-[var(--color-text-primary)]">대시보드</h1>
 
       <section className="mb-6 rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-overlay-1)] p-4">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm text-[var(--color-text-secondary)]">최근 14일 에너지 사용</h2>
           <div className="flex items-center gap-4 text-xs text-[var(--color-text-faded)]">
             <span className="flex items-center gap-1">
-              <span className="inline-block h-0.5 w-4 rounded" style={{ background: 'var(--color-accent-green)' }} />
-              사용량
+              <span
+                className="inline-block h-0.5 w-4 rounded"
+                style={{ background: 'var(--color-accent-green)' }}
+              />
+              에너지
             </span>
             <span className="flex items-center gap-1">
-              <span className="inline-block h-0.5 w-4 rounded border-t border-dashed" style={{ borderColor: 'var(--color-text-muted)' }} />
-              저장 횟수
+              <span
+                className="inline-block h-0.5 w-4 rounded border-t border-dashed"
+                style={{ borderColor: 'var(--color-text-muted)' }}
+              />
+              저장 수
             </span>
           </div>
         </div>
@@ -372,9 +378,7 @@ export default function Dashboard() {
         ) : (
           <UsageChart data={data} />
         )}
-        <div className="mt-2 text-xs text-[var(--color-text-faded)]">
-          날짜는 KST 기준입니다.
-        </div>
+        <div className="mt-2 text-xs text-[var(--color-text-faded)]">날짜는 KST 기준입니다.</div>
       </section>
 
       <section className="mb-6 rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-overlay-1)] p-4">
@@ -382,11 +386,15 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 gap-4">
           <div className="rounded-md border border-[var(--color-border-faded)] bg-[var(--color-overlay-15)] p-3">
             <div className="text-xs text-[var(--color-text-faded)]">총 에너지 사용</div>
-            <div className="mt-1 text-xl font-light text-[var(--color-accent-green)]">{totalUsed}</div>
+            <div className="mt-1 text-xl font-normal text-[var(--color-accent-green)]">
+              {totalUsed}
+            </div>
           </div>
           <div className="rounded-md border border-[var(--color-border-faded)] bg-[var(--color-overlay-15)] p-3">
-            <div className="text-xs text-[var(--color-text-faded)]">총 저장 횟수</div>
-            <div className="mt-1 text-xl font-light text-[var(--color-text-primary)]">{totalCount}</div>
+            <div className="text-xs text-[var(--color-text-faded)]">총 저장 수</div>
+            <div className="mt-1 text-xl font-normal text-[var(--color-text-primary)]">
+              {totalCount}
+            </div>
           </div>
         </div>
       </section>

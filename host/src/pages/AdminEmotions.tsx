@@ -62,51 +62,51 @@ function EmotionModal({
   return (
     <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/50">
       <div className="flex w-full max-w-md flex-col gap-4 rounded-lg border border-[var(--color-border-green)] bg-[var(--color-overlay-95)] p-6 backdrop-blur-sm">
-        <h2 className="text-base font-light tracking-wide text-[var(--color-text-primary)]">
+        <h2 className="text-base font-normal tracking-wide text-[var(--color-text-primary)]">
           {isEdit ? '감정 수정' : '감정 추가'}
         </h2>
 
         <div className="flex flex-col gap-3">
           {!isEdit && (
             <label className="flex flex-col gap-1">
-              <span className="text-xs font-light text-[var(--color-text-muted)]">ID</span>
+              <span className="text-xs font-normal text-[var(--color-text-muted)]">ID</span>
               <input
                 type="number"
                 value={form.id}
                 onChange={(e) => onChange('id', e.target.value)}
-                className="rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-light text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
+                className="rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-normal text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
               />
             </label>
           )}
 
           <div className="grid grid-cols-2 gap-3">
             <label className="flex flex-col gap-1">
-              <span className="text-xs font-light text-[var(--color-text-muted)]">이름</span>
+              <span className="text-xs font-normal text-[var(--color-text-muted)]">이름</span>
               <input
                 type="text"
                 value={form.name}
                 onChange={(e) => onChange('name', e.target.value)}
-                className="rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-light text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
+                className="rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-normal text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-xs font-light text-[var(--color-text-muted)]">이모지</span>
+              <span className="text-xs font-normal text-[var(--color-text-muted)]">이모지</span>
               <input
                 type="text"
                 value={form.emoji}
                 onChange={(e) => onChange('emoji', e.target.value)}
-                className="rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-light text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
+                className="rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-normal text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
               />
             </label>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <label className="flex flex-col gap-1">
-              <span className="text-xs font-light text-[var(--color-text-muted)]">희귀도</span>
+              <span className="text-xs font-normal text-[var(--color-text-muted)]">희귀도</span>
               <select
                 value={form.rarity}
                 onChange={(e) => onChange('rarity', e.target.value)}
-                className="rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-light text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
+                className="rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-normal text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
               >
                 {RARITY_OPTIONS.map((r) => (
                   <option key={r} value={r}>{r}</option>
@@ -114,38 +114,38 @@ function EmotionModal({
               </select>
             </label>
             <label className="flex flex-col gap-1">
-              <span className="text-xs font-light text-[var(--color-text-muted)]">카테고리</span>
+              <span className="text-xs font-normal text-[var(--color-text-muted)]">카테고리</span>
               <input
                 type="text"
                 value={form.category}
                 onChange={(e) => onChange('category', e.target.value)}
-                className="rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-light text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
+                className="rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-normal text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
               />
             </label>
           </div>
 
           <label className="flex flex-col gap-1">
-            <span className="text-xs font-light text-[var(--color-text-muted)]">설명</span>
+            <span className="text-xs font-normal text-[var(--color-text-muted)]">설명</span>
             <textarea
               value={form.description}
               onChange={(e) => onChange('description', e.target.value)}
               rows={2}
-              className="resize-none rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-light text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
+              className="resize-none rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-normal text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
             />
           </label>
 
           <label className="flex flex-col gap-1">
-            <span className="text-xs font-light text-[var(--color-text-muted)]">스토리</span>
+            <span className="text-xs font-normal text-[var(--color-text-muted)]">스토리</span>
             <textarea
               value={form.story}
               onChange={(e) => onChange('story', e.target.value)}
               rows={2}
-              className="resize-none rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-light text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
+              className="resize-none rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-normal text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
             />
           </label>
 
           <label className="flex flex-col gap-1">
-            <span className="text-xs font-light text-[var(--color-text-muted)]">
+            <span className="text-xs font-normal text-[var(--color-text-muted)]">
               효과 (콤마로 구분)
             </span>
             <input
@@ -153,7 +153,7 @@ function EmotionModal({
               value={form.effects}
               onChange={(e) => onChange('effects', e.target.value)}
               placeholder="효과1, 효과2, 효과3"
-              className="rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-light text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
+              className="rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] px-3 py-2 text-sm font-normal text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent-green)]"
             />
           </label>
 
@@ -173,7 +173,7 @@ function EmotionModal({
                 }`}
               />
             </button>
-            <span className="text-xs font-light text-[var(--color-text-muted)]">퍼블리싱</span>
+            <span className="text-xs font-normal text-[var(--color-text-muted)]">퍼블리싱</span>
           </label>
 
         </div>
@@ -182,14 +182,14 @@ function EmotionModal({
           <button
             onClick={onClose}
             disabled={saving}
-            className="cursor-pointer rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-5)] px-4 py-2 text-[13px] font-light text-[var(--color-text-primary)] transition-all duration-200 hover:bg-[var(--color-overlay-7)]"
+            className="cursor-pointer rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-5)] px-4 py-2 text-[13px] font-normal text-[var(--color-text-primary)] transition-all duration-200 hover:bg-[var(--color-overlay-7)]"
           >
             취소
           </button>
           <button
             onClick={onSave}
             disabled={saving}
-            className="cursor-pointer rounded border border-[var(--color-border-green-medium)] bg-[var(--color-green-overlay-3)] px-4 py-2 text-[13px] font-light text-[var(--color-text-primary)] transition-all duration-200 hover:bg-[var(--color-green-overlay-5)] disabled:opacity-50"
+            className="cursor-pointer rounded border border-[var(--color-border-green-medium)] bg-[var(--color-green-overlay-3)] px-4 py-2 text-[13px] font-normal text-[var(--color-text-primary)] transition-all duration-200 hover:bg-[var(--color-green-overlay-5)] disabled:opacity-50"
           >
             {saving ? '저장 중...' : '저장'}
           </button>
@@ -306,28 +306,28 @@ function AdminEmotions() {
   return (
     <div className="mx-auto max-w-4xl px-4">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-lg font-light tracking-wide text-[var(--color-text-primary)]">
+        <h1 className="text-lg font-normal tracking-wide text-[var(--color-text-primary)]">
           감정 관리
         </h1>
         <button
           onClick={openAddModal}
-          className="cursor-pointer rounded border border-[var(--color-border-green-medium)] bg-[var(--color-green-overlay-3)] px-4 py-2 text-xs font-light text-[var(--color-text-primary)] transition-all duration-300 hover:bg-[var(--color-green-overlay-5)]"
+          className="cursor-pointer rounded border border-[var(--color-border-green-medium)] bg-[var(--color-green-overlay-3)] px-4 py-2 text-xs font-normal text-[var(--color-text-primary)] transition-all duration-300 hover:bg-[var(--color-green-overlay-5)]"
         >
           추가
         </button>
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-[var(--color-border-primary)]">
-        <table className="w-full text-left text-sm font-light">
+        <table className="w-full text-left text-sm font-normal">
           <thead>
             <tr className="border-b border-[var(--color-border-primary)] bg-[var(--color-overlay-2)]">
-              <th className="px-4 py-3 text-xs font-light tracking-wider text-[var(--color-text-muted)]">ID</th>
-              <th className="px-4 py-3 text-xs font-light tracking-wider text-[var(--color-text-muted)]">이모지</th>
-              <th className="px-4 py-3 text-xs font-light tracking-wider text-[var(--color-text-muted)]">이름</th>
-              <th className="px-4 py-3 text-xs font-light tracking-wider text-[var(--color-text-muted)]">희귀도</th>
-              <th className="px-4 py-3 text-xs font-light tracking-wider text-[var(--color-text-muted)]">카테고리</th>
-              <th className="px-4 py-3 text-xs font-light tracking-wider text-[var(--color-text-muted)]">퍼블리싱</th>
-              <th className="px-4 py-3 text-xs font-light tracking-wider text-[var(--color-text-muted)]" />
+              <th className="px-4 py-3 text-xs font-normal tracking-wider text-[var(--color-text-muted)]">ID</th>
+              <th className="px-4 py-3 text-xs font-normal tracking-wider text-[var(--color-text-muted)]">이모지</th>
+              <th className="px-4 py-3 text-xs font-normal tracking-wider text-[var(--color-text-muted)]">이름</th>
+              <th className="px-4 py-3 text-xs font-normal tracking-wider text-[var(--color-text-muted)]">희귀도</th>
+              <th className="px-4 py-3 text-xs font-normal tracking-wider text-[var(--color-text-muted)]">카테고리</th>
+              <th className="px-4 py-3 text-xs font-normal tracking-wider text-[var(--color-text-muted)]">퍼블리싱</th>
+              <th className="px-4 py-3 text-xs font-normal tracking-wider text-[var(--color-text-muted)]" />
             </tr>
           </thead>
           <tbody>
@@ -347,7 +347,7 @@ function AdminEmotions() {
                 <td className="px-4 py-3 text-right">
                   <button
                     onClick={() => openEditModal(emotion)}
-                    className="cursor-pointer rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-3)] px-3 py-1 text-xs font-light text-[var(--color-text-primary)] transition-all duration-200 hover:border-[var(--color-accent-green)] hover:bg-[var(--color-overlay-4)]"
+                    className="cursor-pointer rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-3)] px-3 py-1 text-xs font-normal text-[var(--color-text-primary)] transition-all duration-200 hover:border-[var(--color-accent-green)] hover:bg-[var(--color-overlay-4)]"
                   >
                     수정
                   </button>

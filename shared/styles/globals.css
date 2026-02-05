@@ -7,9 +7,10 @@
 
   /* 텍스트 색상 */
   --color-text-primary: #fff8d4;
-  --color-text-secondary: rgba(255, 248, 212, 0.85);
-  --color-text-muted: rgba(255, 248, 212, 0.7);
-  --color-text-faded: rgba(255, 248, 212, 0.5);
+  --color-text-secondary: rgba(255, 248, 212, 0.9);
+  --color-text-muted: rgba(255, 248, 212, 0.75);
+  --color-text-faded: rgba(255, 248, 212, 0.6);
+  --color-text-danger: #ffcdd2;
 
   /* 액센트 색상 */
   --color-accent-green: #a3b087;

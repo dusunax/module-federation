@@ -74,36 +74,36 @@ function RememberingItemCard({ firestoreItem, cancelItemRemembering }) {
       <div className="flex items-center gap-5">
         <div className="text-5xl opacity-90">{productInfo.emoji || '🧠'}</div>
         <div className="flex-1">
-          <h3 className="my-0 mb-2 text-base font-light tracking-wide text-[#FFF8D4]">
+          <h3 className="my-0 mb-2 text-base font-normal tracking-wide text-[#FFF8D4]">
             {productInfo.name || '알 수 없는 항목'}
           </h3>
-          <p className="my-0 mb-1.5 text-sm font-light tracking-wide text-[#A3B087]">
+          <p className="my-0 mb-1.5 text-sm font-normal tracking-wide text-[#A3B087]">
             ⚡ {productInfo.energyCost ?? energyCost}
           </p>
           <div
-            className="mt-1 text-[11px] font-light tracking-wide"
+            className="mt-1 text-[11px] font-normal tracking-wide"
             style={{ color: statusStyle.color }}
           >
             {statusStyle.icon} {statusStyle.label}
           </div>
         </div>
-        <div className="min-w-25 text-right text-base font-light tracking-wide text-[#A3B087]">
+        <div className="min-w-25 text-right text-base font-normal tracking-wide text-[#A3B087]">
           ⚡ {energyCost}
         </div>
       </div>
 
       <div className="mt-4 rounded bg-[rgba(67,86,99,0.3)] p-3">
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-[12px] font-light tracking-wide text-[rgba(255,248,212,0.8)]">
+          <span className="text-[12px] font-normal tracking-wide text-[rgba(255,248,212,0.8)]">
             이해되는 중... {formatRemainingTime(progress)} 남음
           </span>
           <div className="flex items-center gap-3">
-            <span className="text-[12px] font-light tracking-wide text-[#A3B087]">
+            <span className="text-[12px] font-normal tracking-wide text-[#A3B087]">
               {Math.round(progress)}%
             </span>
             <button
               onClick={handleCancel}
-              className="cursor-pointer rounded border border-[rgba(229,115,115,0.3)] bg-[rgba(229,115,115,0.1)] px-2 py-1 text-[10px] font-light text-[#E57373] transition-all duration-200 hover:bg-[rgba(229,115,115,0.2)]"
+              className="cursor-pointer rounded border border-[rgba(229,115,115,0.3)] bg-[rgba(229,115,115,0.1)] px-2 py-1 text-[10px] font-normal text-[#E57373] transition-all duration-200 hover:bg-[rgba(229,115,115,0.2)]"
             >
               취소
             </button>
@@ -135,10 +135,10 @@ export function RememberingSection({ orderStatuses, cancelItemRemembering }) {
   return (
     <div className="mb-10">
       <div className="mb-5 border-b border-[rgba(163,176,135,0.3)] pb-4">
-        <h2 className="m-0 text-xl font-light tracking-wider text-[#A3B087]">
+        <h2 className="m-0 text-xl font-normal tracking-wider text-[#A3B087]">
           이해되는 중 ({totalItems}개)
         </h2>
-        <p className="mb-0 mt-1 text-xs font-light tracking-wide text-[rgba(163,176,135,0.8)]">
+        <p className="mb-0 mt-1 text-xs font-normal tracking-wide text-[rgba(163,176,135,0.8)]">
           기억으로 남기는 중입니다
         </p>
       </div>
