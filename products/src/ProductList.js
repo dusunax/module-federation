@@ -19,7 +19,9 @@ function loadSortPrefs() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) return JSON.parse(saved);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return { dateSort: 'desc', energySort: null };
 }
 
@@ -114,7 +116,9 @@ function ProductList() {
         >
           날짜
           {dateSort && (
-            <span className="text-[10px] opacity-80">{ARROW[dateSort]} {DATE_LABELS[dateSort]}</span>
+            <span className="text-[10px] opacity-80">
+              {ARROW[dateSort]} {DATE_LABELS[dateSort]}
+            </span>
           )}
         </button>
         <button
@@ -127,7 +131,9 @@ function ProductList() {
         >
           ⚡ 에너지
           {energySort && (
-            <span className="text-[10px] opacity-80">{ARROW[energySort]} {ENERGY_LABELS[energySort]}</span>
+            <span className="text-[10px] opacity-80">
+              {ARROW[energySort]} {ENERGY_LABELS[energySort]}
+            </span>
           )}
         </button>
       </div>
@@ -179,10 +185,10 @@ function ProductList() {
               >
                 {/* 상태 표시 */}
                 <div
-                  className="absolute right-4 top-4 rounded-sm bg-[var(--color-overlay-4)] px-2 py-1 text-[10px] font-normal tracking-wide"
+                  className={`absolute right-4 top-4 rounded-sm bg-[var(--color-overlay-4)] px-2 py-1 text-[10px] font-normal tracking-wide ${statusStyle.label ? '' : 'hidden'}`}
                   style={{ color: statusStyle.color }}
                 >
-                  {statusStyle.icon} {statusStyle.label}
+                  {statusStyle.label}
                 </div>
 
                 <div className="mb-4 text-5xl opacity-90">{emotion.emoji}</div>

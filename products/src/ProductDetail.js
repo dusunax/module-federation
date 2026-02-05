@@ -16,7 +16,6 @@ function ProductDetail() {
 
   const addToCart = useCartStore((state) => state.addToCart);
   const items = useCartStore((state) => state.items);
-  const rememberingItems = useRememberingStore((state) => state.rememberingItems);
   const orderStatuses = useOrderStore((state) => state.orderStatuses);
 
   // 장바구니에 추가 핸들러
@@ -89,10 +88,10 @@ function ProductDetail() {
             <div className="mb-4 text-[100px] leading-none opacity-90">{emotion?.emoji}</div>
             {/* 상태 표시 */}
             <div
-              className="inline-block rounded-sm border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-3 py-1.5 text-[11px] font-normal tracking-wider"
+              className={` rounded-sm border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-3 py-1.5 text-[11px] font-normal tracking-wider ${statusStyle.label ? 'inline-block' : 'hidden'}`}
               style={{ color: statusStyle.color }}
             >
-              {statusStyle.icon} {statusStyle.label}
+              {statusStyle.label}
             </div>
           </div>
 
