@@ -1,9 +1,35 @@
 import { create } from 'zustand';
 import { useRememberingStore } from 'auth/rememberingStore';
-import { getAllEmotions } from 'auth/services/emotionService';
+import { getAllEmotions, Emotion } from 'auth/services/emotionService';
+
+export interface CartItem {
+  id: number;
+  product: Emotion;
+  productId?: number;
+  quantity: number;
+  addedAt: number;
+}
+
+interface MinimalCartItem {
+  id: number;
+  productId: number | null;
+  quantity: number;
+  addedAt: number;
+}
+
+interface CartState {
+  items: Record<number, CartItem>;
+  nextItemId: number;
+  __rehydrate: () => Promise<void>;
+  addToCart: (product: Emotion) => void;
+  updateQuantity: (itemId: number, quantity: number) => void;
+  removeFromCart: (itemId: number) => void;
+  clearCart: () => void;
+  getTotalItems: () => number;
+}
 
 // Simple cookie helpers (no external deps)
-function readCookie(name) {
+function readCookie(name: string): MinimalCartItem[] | null {
   if (typeof document === 'undefined') return null;
   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
   if (!match) return null;
@@ -14,7 +40,7 @@ function readCookie(name) {
   }
 }
 
-function writeCookie(name, value, days = 30) {
+function writeCookie(name: string, value: MinimalCartItem[], days = 30): void {
   if (typeof document === 'undefined') return;
   const expires = new Date(Date.now() + days * 864e5).toUTCString();
   const v = encodeURIComponent(JSON.stringify(value));
@@ -23,7 +49,7 @@ function writeCookie(name, value, days = 30) {
 
 const CART_COOKIE = 'sentimo_cart_v1';
 
-function minimalFromItems(items) {
+function minimalFromItems(items: Record<number, CartItem>): MinimalCartItem[] {
   // items: { [id]: { id, product?, quantity, addedAt } }
   return Object.values(items).map((it) => ({
     id: it.id,
@@ -33,7 +59,7 @@ function minimalFromItems(items) {
   }));
 }
 
-async function itemsFromMinimal(minimal) {
+async function itemsFromMinimal(minimal: MinimalCartItem[]): Promise<{ items: Record<number, CartItem>; nextItemId: number }> {
   let emotions = [];
   try {
     emotions = await getAllEmotions();
@@ -66,7 +92,7 @@ async function itemsFromMinimal(minimal) {
 // Module Federation을 통해 모든 앱에서 동일한 store 인스턴스를 공유합니다
 // - zustand가 shared로 설정되어 동일한 인스턴스 사용
 // - store가 expose되어 모든 앱이 같은 store 참조
-export const useCartStore = create((set, get) => ({
+export const useCartStore = create<CartState>((set, get) => ({
   // 장바구니 아이템 (key: itemId, value: {id, product, quantity, addedAt})
   // 각 아이템은 고유한 ID를 가져서 같은 productId를 가진 여러 아이템을 저장할 수 있음
   items: {},

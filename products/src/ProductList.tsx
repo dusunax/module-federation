@@ -5,33 +5,40 @@ import { useCartStore } from './store/cartStore';
 import { useOrderStore } from './store/orderStore';
 import { getStatusConfig } from './utils/statusStyle';
 import { EMOTION_STATUS } from './constants';
-import { getAllEmotions } from 'auth/services/emotionService';
+import { getAllEmotions, Emotion } from 'auth/services/emotionService';
+
+type SortDirection = 'asc' | 'desc' | null;
+
+interface SortPrefs {
+  dateSort: SortDirection;
+  energySort: SortDirection;
+}
 
 const STORAGE_KEY = 'emotion-sort-prefs';
-const DATE_STATES = ['desc', 'asc', null];
-const ENERGY_STATES = ['asc', 'desc', null];
+const DATE_STATES: SortDirection[] = ['desc', 'asc', null];
+const ENERGY_STATES: SortDirection[] = ['asc', 'desc', null];
 
-const DATE_LABELS = { desc: '최신순', asc: '오래된순' };
-const ENERGY_LABELS = { asc: '낮은순', desc: '높은순' };
-const ARROW = { asc: '↑', desc: '↓' };
+const DATE_LABELS: Record<string, string> = { desc: '최신순', asc: '오래된순' };
+const ENERGY_LABELS: Record<string, string> = { asc: '낮은순', desc: '높은순' };
+const ARROW: Record<string, string> = { asc: '↑', desc: '↓' };
 
-function loadSortPrefs() {
+function loadSortPrefs(): SortPrefs {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) return JSON.parse(saved);
+    if (saved) return JSON.parse(saved) as SortPrefs;
   } catch {
     /* ignore */
   }
   return { dateSort: 'desc', energySort: null };
 }
 
-function saveSortPrefs(dateSort, energySort) {
+function saveSortPrefs(dateSort: SortDirection, energySort: SortDirection): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ dateSort, energySort }));
 }
 
-function ProductList() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortPrefs, setSortPrefs] = useState(loadSortPrefs);
+function ProductList(): React.ReactElement {
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [sortPrefs, setSortPrefs] = useState<SortPrefs>(loadSortPrefs);
   const { dateSort, energySort } = sortPrefs;
   const navigate = useNavigate();
   const cartItems = useCartStore((state) => state.items);
@@ -42,22 +49,22 @@ function ProductList() {
     isLoading,
     isFetching,
     error,
-  } = useQuery({
+  } = useQuery<Emotion[], Error>({
     queryKey: ['emotions', searchTerm],
     queryFn: () => getAllEmotions(searchTerm || undefined),
     keepPreviousData: true,
   });
 
-  const updateSort = useCallback((nextDate, nextEnergy) => {
+  const updateSort = useCallback((nextDate: SortDirection, nextEnergy: SortDirection) => {
     setSortPrefs({ dateSort: nextDate, energySort: nextEnergy });
     saveSortPrefs(nextDate, nextEnergy);
   }, []);
 
-  const sortedEmotions = React.useMemo(() => {
+  const sortedEmotions = React.useMemo((): Emotion[] | undefined => {
     if (!emotions) return emotions;
     if (!dateSort && !energySort) return emotions;
     const sorted = [...emotions];
-    sorted.sort((a, b) => {
+    sorted.sort((a: Emotion, b: Emotion) => {
       if (energySort) {
         const dir = energySort === 'asc' ? 1 : -1;
         const diff = (a.energyCost - b.energyCost) * dir;
@@ -87,7 +94,7 @@ function ProductList() {
     updateSort(dateSort, next);
   }, [dateSort, energySort, updateSort]);
 
-  const handleProductClick = (id) => {
+  const handleProductClick = (id: number): void => {
     navigate(`/detail/${id}`);
   };
 

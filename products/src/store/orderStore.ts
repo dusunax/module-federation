@@ -1,9 +1,47 @@
 import { create } from 'zustand';
-import { useCartStore } from './cartStore';
+import { useCartStore, CartItem } from './cartStore';
+
+export interface Order {
+  id: number;
+  items: CartItem[];
+  totalEnergy: number;
+  totalItems: number;
+  orderDate: string;
+  status: string;
+}
+
+interface ItemProgress {
+  progress: number;
+  startTime: number;
+  energyCost: number;
+}
+
+interface OrderState {
+  orders: Order[];
+  itemProgress: Record<number, ItemProgress>;
+  orderStatuses: Record<number, string>;
+  completeOrder: () => Order | null;
+  completeRememberingItems: () => Order | null;
+  getOrder: (orderId: number) => Order | undefined;
+  removeOrder: (orderId: number) => void;
+  startRemembering: (itemIds?: number[]) => void;
+  updateItemProgress: (itemId: number, progress: number) => void;
+  cancelItemRemembering: (itemId: number) => ItemProgress | null;
+  completeItemRemembering: (itemId: number) => Order | null;
+  updateProgress: (newProgress: number) => void;
+  updateOrderStatus: (productId: number, status: string) => void;
+  updateAllOrderStatuses: (statuses: Record<number, string>) => void;
+  completeRemembering: () => void;
+  resetRemembering: () => void;
+  cancelRemembering: () => number;
+  getIsRemembering: () => boolean;
+  getRememberingItemIds: () => number[];
+  getTotalEnergyCost: () => number;
+}
 
 // 기억/주문 상태를 관리하는 Zustand store
 // Module Federation을 통해 모든 앱에서 동일한 store 인스턴스를 공유합니다
-export const useOrderStore = create((set, get) => ({
+export const useOrderStore = create<OrderState>((set, get) => ({
   // 기억 내역 (완료된 기억들)
   orders: [],
 

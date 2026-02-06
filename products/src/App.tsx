@@ -5,7 +5,7 @@ import ProductList from './ProductList';
 import ProductDetail from './ProductDetail';
 import './styles/tailwind.css';
 
-function App() {
+function App(): React.ReactElement {
   return (
     <AppLayout subtitle="Like Real People Do - 독립 실행 모드 (포트 3002)">
       <Routes>

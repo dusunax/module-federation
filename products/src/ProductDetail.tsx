@@ -7,11 +7,16 @@ import { useRememberingStore } from 'auth/rememberingStore';
 import { useOrderStore } from './store/orderStore';
 import { getStatusConfig } from './utils/statusStyle';
 import { EMOTION_STATUS } from './constants';
-import { getEmotionById } from 'auth/services/emotionService';
+import { getEmotionById, Emotion } from 'auth/services/emotionService';
 import BackButton from '@shared/components/BackButton';
 
-function ProductDetail() {
-  const { id } = useParams();
+interface RouteParams {
+  id: string;
+  [key: string]: string | undefined;
+}
+
+function ProductDetail(): React.ReactElement {
+  const { id } = useParams<RouteParams>();
   const navigate = useNavigate();
 
   const addToCart = useCartStore((state) => state.addToCart);
@@ -19,7 +24,8 @@ function ProductDetail() {
   const orderStatuses = useOrderStore((state) => state.orderStatuses);
 
   // 장바구니에 추가 핸들러
-  const handleAddToCart = () => {
+  const handleAddToCart = (): void => {
+    if (!emotion) return;
     addToCart(emotion);
     // 추가 후 현재 수량 확인 (기억하는 중인 아이템 제외, 일반 장바구니 아이템만)
     const cartState = useCartStore.getState();
@@ -36,7 +42,7 @@ function ProductDetail() {
     data: emotion,
     isLoading,
     error,
-  } = useQuery({
+  } = useQuery<Emotion, Error>({
     queryKey: ['emotion', id],
     queryFn: () => getEmotionById(Number(id)),
   });

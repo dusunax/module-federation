@@ -19,6 +19,7 @@
   "devDependencies": {
     "@babel/core": "^7.23.0",
     "@babel/preset-react": "^7.22.0",
+    "@babel/preset-typescript": "^7.28.5",
     "@tailwindcss/postcss": "^4.1.18",
     "autoprefixer": "^10.4.23",
     "babel-loader": "^9.1.3",

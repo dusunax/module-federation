@@ -3,7 +3,7 @@ const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPl
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/index.ts',
   mode: 'development',
   devServer: {
     port: 3002,
@@ -15,13 +15,13 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, '../shared')],
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-react'],
+            presets: ['@babel/preset-react', '@babel/preset-typescript'],
           },
         },
       },
@@ -55,12 +55,12 @@ module.exports = {
         auth: 'auth@http://localhost:3005/remoteEntry.js',
       },
       exposes: {
-        './ProductList': './src/ProductList.js',
-        './ProductDetail': './src/ProductDetail.js',
-        './cartStore': './src/store/cartStore.js',
-        './orderStore': './src/store/orderStore.js',
-        './utils/statusStyle': './src/utils/statusStyle.js',
-        './constants': './src/constants/index.js',
+        './ProductList': './src/ProductList.tsx',
+        './ProductDetail': './src/ProductDetail.tsx',
+        './cartStore': './src/store/cartStore.ts',
+        './orderStore': './src/store/orderStore.ts',
+        './utils/statusStyle': './src/utils/statusStyle.ts',
+        './constants': './src/constants/index.ts',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },
@@ -76,7 +76,7 @@ module.exports = {
     }),
   ],
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
     modules: [
       'node_modules',
       path.resolve(__dirname, 'node_modules'),

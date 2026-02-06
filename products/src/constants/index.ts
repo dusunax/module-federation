@@ -5,3 +5,5 @@ export {
   getStatusConfig,
   getAllStatuses,
 } from './emotionStatus';
+
+export type { EmotionStatusType, StatusStyle } from './emotionStatus';
