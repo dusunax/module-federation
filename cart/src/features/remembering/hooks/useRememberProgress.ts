@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-import { useOrderStore } from 'products/orderStore';
-import { useCartStore } from 'products/cartStore';
-import { useRememberingStore } from 'auth/rememberingStore';
+import { useOrderStore, Order } from 'products/orderStore';
+import { useCartStore, CartItem } from 'products/cartStore';
+import { useRememberingStore, RememberingItem } from 'auth/rememberingStore';
 import { EMOTION_STATUS } from 'products/utils/statusStyle';
 import { useAuthStore } from 'auth/authStore';
 import { saveUserOrder } from 'auth/services/orderService';
@@ -13,8 +13,8 @@ export function useRememberProgress() {
   const rememberingItems = useRememberingStore((state) => state.rememberingItems);
   const completeItemRemembering = useRememberingStore((state) => state.completeItemRemembering);
   const updateOrderStatus = useOrderStore((state) => state.updateOrderStatus);
-  const intervalRef = useRef(null);
-  const completedRef = useRef(new Set());
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const completedRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     return () => {
@@ -51,7 +51,7 @@ export function useRememberProgress() {
       }
 
       // Collect all items that reached 100% and are not yet processed
-      const completedNow = [];
+      const completedNow: string[] = [];
       for (const visibleItemId of currentItemIds) {
         const item = currentRememberingItems[visibleItemId];
         if (!item || !item.startTime) continue;

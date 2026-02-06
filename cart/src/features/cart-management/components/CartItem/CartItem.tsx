@@ -2,6 +2,20 @@ import React from 'react';
 import { toast } from 'sonner';
 import showConfirmToast from '@shared/components/showConfirmToast';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
+import { Emotion } from 'auth/services/emotionService';
+import { CartItem as CartItemType } from 'products/cartStore';
+import { TimeRemaining } from '../../hooks/useCartTimer';
+
+interface CartItemProps {
+  product: Emotion;
+  quantity: number;
+  orderStatuses: Record<number, string>;
+  timeRemaining: Record<number, TimeRemaining>;
+  item: CartItemType;
+  itemId: number;
+  updateQuantity: (itemId: number, quantity: number) => void;
+  removeFromCart: (itemId: number) => void;
+}
 
 export function CartItem({
   product,
@@ -12,7 +26,7 @@ export function CartItem({
   itemId,
   updateQuantity,
   removeFromCart,
-}) {
+}: CartItemProps): React.ReactElement {
   // If product metadata is missing (rehydrated from cookie), use a local placeholder.
   const displayProduct =
     product && product.name

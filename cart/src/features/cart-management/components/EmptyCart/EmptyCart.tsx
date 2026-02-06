@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function EmptyCart() {
+export function EmptyCart(): React.ReactElement {
   return (
     <div className="mx-auto max-w-[800px] p-5">
       <h2 className="mb-5 font-normal tracking-wider text-[#FFF8D4]">장바구니</h2>

@@ -2,6 +2,17 @@ import React from 'react';
 import { toast } from 'sonner';
 import { EMOTION_STATUS } from 'products/utils/statusStyle';
 import showConfirmToast from '@shared/components/showConfirmToast';
+import { CartItem } from 'products/cartStore';
+
+interface CartSummaryProps {
+  normalItems: CartItem[];
+  normalTotalItems: number;
+  normalTotalEnergyCost: number;
+  currentEnergy: number;
+  isLoggedIn: boolean;
+  startRemembering: () => Promise<void>;
+  updateAllOrderStatuses: (statuses: Record<number, string>) => void;
+}
 
 export function CartSummary({
   normalItems,
@@ -11,7 +22,7 @@ export function CartSummary({
   isLoggedIn,
   startRemembering,
   updateAllOrderStatuses,
-}) {
+}: CartSummaryProps): React.ReactElement | null {
   if (normalItems.length === 0) {
     return null;
   }
@@ -38,7 +49,7 @@ export function CartSummary({
       onConfirm: async () => {
         try {
           await startRemembering();
-          const newStatuses = {};
+          const newStatuses: Record<number, string> = {};
           normalItems.forEach((item) => {
             newStatuses[item.product.id] = EMOTION_STATUS.BEING_UNDERSTOOD;
           });

@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import showConfirmToast from '@shared/components/showConfirmToast';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
-import { useRememberingStore } from 'auth/rememberingStore';
+import { useRememberingStore, RememberingItem } from 'auth/rememberingStore';
 
 const DURATION = 60000; // 1 minute
 
-function formatRemainingTime(progress) {
+function formatRemainingTime(progress: number) {
   const remainingMs = ((100 - progress) / 100) * DURATION;
   const remainingSeconds = Math.ceil(remainingMs / 1000);
   const minutes = Math.floor(remainingSeconds / 60);
@@ -14,8 +14,8 @@ function formatRemainingTime(progress) {
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-function useRealtimeProgress(startTime) {
-  const [progress, setProgress] = useState(0);
+function useRealtimeProgress(startTime: number | undefined) {
+  const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
     if (!startTime) {
@@ -39,10 +39,15 @@ function useRealtimeProgress(startTime) {
   return progress;
 }
 
-function RememberingItemCard({ firestoreItem, cancelItemRemembering }) {
+interface RememberingItemCardProps {
+  firestoreItem: RememberingItem;
+  cancelItemRemembering: (itemId: number | string) => Promise<RememberingItem | null>;
+}
+
+function RememberingItemCard({ firestoreItem, cancelItemRemembering }: RememberingItemCardProps): React.ReactElement {
   const {
-    productInfo = {},
-    status = EMOTION_STATUS.IN_PROGRESS,
+    productInfo = {} as RememberingItem['productInfo'],
+    status = EMOTION_STATUS.BEING_UNDERSTOOD,
     startTime,
     energyCost = 1,
     visibleItemId,
@@ -124,7 +129,12 @@ function RememberingItemCard({ firestoreItem, cancelItemRemembering }) {
   );
 }
 
-export function RememberingSection({ orderStatuses, cancelItemRemembering }) {
+interface RememberingSectionProps {
+  orderStatuses: Record<number, string>;
+  cancelItemRemembering: (itemId: number | string) => Promise<RememberingItem | null>;
+}
+
+export function RememberingSection({ orderStatuses, cancelItemRemembering }: RememberingSectionProps): React.ReactElement | null {
   const firestoreItems = useRememberingStore((state) => state.rememberingItems || {});
   const firestoreItemsList = Object.values(firestoreItems);
 

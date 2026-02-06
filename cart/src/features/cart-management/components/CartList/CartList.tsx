@@ -2,6 +2,18 @@ import React from 'react';
 import { toast } from 'sonner';
 import showConfirmToast from '@shared/components/showConfirmToast';
 import { CartItem } from '../CartItem/CartItem';
+import { CartItem as CartItemType } from 'products/cartStore';
+import { TimeRemaining } from '../../hooks/useCartTimer';
+
+interface CartListProps {
+  normalItems: CartItemType[];
+  normalTotalItems: number;
+  items: Record<number, CartItemType>;
+  orderStatuses: Record<number, string>;
+  timeRemaining: Record<number, TimeRemaining>;
+  updateQuantity: (itemId: number, quantity: number) => void;
+  removeFromCart: (itemId: number) => void;
+}
 
 export function CartList({
   normalItems,
@@ -11,7 +23,7 @@ export function CartList({
   timeRemaining,
   updateQuantity,
   removeFromCart,
-}) {
+}: CartListProps): React.ReactElement | null {
   const handleClearAll = () => {
     showConfirmToast({
       title: '장바구니를 비우시겠어요?',

@@ -1,10 +1,16 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useCartStore } from 'products/cartStore';
 
-export function useCartTimer() {
+export interface TimeRemaining {
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+export function useCartTimer(): Record<number, TimeRemaining> {
   const items = useCartStore((state) => state.items);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
-  const [timeRemaining, setTimeRemaining] = useState({});
+  const [timeRemaining, setTimeRemaining] = useState<Record<number, TimeRemaining>>({});
 
   // addedAt 값들을 추출해서 의존성으로 사용 (addedAt이 변경되면 재계산)
   const addedAtValues = useMemo(() => {
@@ -17,7 +23,7 @@ export function useCartTimer() {
   useEffect(() => {
     const calculateTimeRemaining = () => {
       const now = Date.now();
-      const newTimeRemaining = {};
+      const newTimeRemaining: Record<number, TimeRemaining> = {};
 
       Object.values(items).forEach((item) => {
         const { id, addedAt } = item;

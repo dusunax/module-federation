@@ -2,9 +2,28 @@ import { useCallback, useMemo } from 'react';
 import { useOrderStore } from 'products/orderStore';
 import { useCartStore } from 'products/cartStore';
 import { useEnergyStore } from 'auth/energyStore';
-import { useRememberingStore } from 'auth/rememberingStore';
+import { useRememberingStore, RememberingItem } from 'auth/rememberingStore';
 
-export function useRememberingState() {
+interface ItemProgress {
+  progress: number;
+  startTime: number;
+  energyCost: number;
+}
+
+interface UseRememberingStateReturn {
+  isRemembering: boolean;
+  itemProgress: Record<string, ItemProgress>;
+  orderStatuses: Record<number, string>;
+  rememberingItemIds: number[];
+  rememberingItems: Record<string, RememberingItem>;
+  loading: boolean;
+  startRemembering: () => Promise<void>;
+  updateAllOrderStatuses: (statuses: Record<number, string>) => void;
+  cancelRemembering: () => Promise<void>;
+  cancelItemRemembering: (itemId: number | string) => Promise<RememberingItem | null>;
+}
+
+export function useRememberingState(): UseRememberingStateReturn {
   // Firestore 기반 상태
   const rememberingItems = useRememberingStore((state) => state.rememberingItems);
   const loading = useRememberingStore((state) => state.loading);
@@ -28,8 +47,8 @@ export function useRememberingState() {
   const isRemembering = rememberingItemIds.length > 0;
 
   // itemProgress 형태로 변환 (기존 컴포넌트 호환용)
-  const itemProgress = useMemo(() => {
-    const progress = {};
+  const itemProgress = useMemo((): Record<string, ItemProgress> => {
+    const progress: Record<string, ItemProgress> = {};
     Object.entries(rememberingItems).forEach(([visibleItemId, item]) => {
       if (item.startTime) {
         const elapsed = Date.now() - item.startTime;
@@ -104,7 +123,7 @@ export function useRememberingState() {
 
   // 개별 아이템 기억 취소 (에너지 회복 + Firestore 삭제)
   const cancelItemRemembering = useCallback(
-    async (itemId) => {
+    async (itemId: number | string) => {
       const itemData = await cancelItemRememberingFirestore(String(itemId));
 
       if (itemData && itemData.energyCost > 0) {

@@ -1,7 +1,16 @@
-import { useCartStore } from 'products/cartStore';
+import { useCartStore, CartItem } from 'products/cartStore';
 import { useRememberingStore } from 'auth/rememberingStore';
 
-export function useCartItems() {
+interface UseCartItemsReturn {
+  cartItems: CartItem[];
+  normalItems: CartItem[];
+  rememberingItems: CartItem[];
+  normalTotalItems: number;
+  normalTotalEnergyCost: number;
+  rememberingTotalItems: number;
+}
+
+export function useCartItems(): UseCartItemsReturn {
   const items = useCartStore((state) => state.items);
   const firestoreRememberingItems = useRememberingStore((state) => state.rememberingItems);
 
