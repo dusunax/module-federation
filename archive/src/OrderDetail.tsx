@@ -29,7 +29,7 @@ function OrderDetail() {
 
   if (!order) {
     return (
-      <div className="max-w-225 mx-auto px-5 py-10">
+      <div className="max-w-225 mx-auto px-5 py-10" aria-label="order-not-found">
         <BackButton to="/archive" label="기록 목록으로" className="mb-5" />
         <div className="px-5 py-20 text-center text-[#FFF8D4]">
           <div className="mb-6 text-[64px] opacity-50">📝</div>
@@ -58,6 +58,7 @@ function OrderDetail() {
         <BackButton to="/archive" label="기록 목록으로" />
         <button
           onClick={handleForget}
+          aria-label="order-detail-forget"
           className="cursor-pointer rounded border border-[rgba(229,115,115,0.3)] bg-[rgba(229,115,115,0.1)] px-4 py-2.5 text-[13px] font-normal tracking-wide text-[var(--color-text-danger)] transition-all duration-300 hover:bg-[rgba(229,115,115,0.2)]"
         >
           잊기
@@ -96,6 +97,7 @@ function OrderDetail() {
           {order.items.map(({ product, quantity }) => (
             <div
               key={product.id}
+              aria-label={`order-item-${product.id}`}
               className="flex gap-6 rounded-lg border border-[rgba(255,248,212,0.15)] bg-[rgba(67,86,99,0.15)] p-6 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,248,212,0.25)] hover:bg-[rgba(67,86,99,0.25)]"
             >
               {/* 이모지 */}

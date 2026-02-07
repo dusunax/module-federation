@@ -30,7 +30,7 @@ function OrderList() {
 
   if (orders.length === 0) {
     return (
-      <div className="max-w-225 mx-auto min-h-[60vh] px-5 py-10">
+      <div className="max-w-225 mx-auto min-h-[60vh] px-5 py-10" aria-label="orders-empty">
         <div className="py-25 px-5 text-center">
           <div className="mb-8 text-[80px] leading-none opacity-50">📚</div>
           <h2 className="mb-4 text-2xl font-normal tracking-wider text-[#FFF8D4]">
@@ -60,7 +60,10 @@ function OrderList() {
       {/* 헤더 */}
       <div className="mb-10 border-b border-[rgba(255,248,212,0.15)] pb-6">
         <h1 className="m-0 mb-2 text-[28px] font-normal tracking-wider text-[#FFF8D4]">감정 기록</h1>
-        <p className="m-0 text-[13px] font-normal tracking-wide text-[rgba(255,248,212,0.7)]">
+        <p
+          className="m-0 text-[13px] font-normal tracking-wide text-[rgba(255,248,212,0.7)]"
+          aria-label="orders-count"
+        >
           {orders.length}개의 기록이 있어요
         </p>
       </div>
@@ -74,6 +77,9 @@ function OrderList() {
             <div
               key={order.id}
               onClick={() => navigate(`/archive/${order.id}`)}
+              role="button"
+              tabIndex={0}
+              aria-label={`order-card-${order.id}`}
               className="relative cursor-pointer rounded-lg border bg-[rgba(67,86,99,0.15)] p-8 backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgba(255,248,212,0.25)] hover:bg-[rgba(67,86,99,0.25)]"
               style={{ borderColor: statusConfig.color }}
             >
@@ -138,6 +144,7 @@ function OrderList() {
                       },
                     });
                   }}
+                  aria-label={`order-forget-${order.id}`}
                   className="cursor-pointer rounded border border-[rgba(229,115,115,0.3)] bg-[rgba(229,115,115,0.1)] px-3.5 py-2 text-xs font-normal tracking-wide text-[var(--color-text-danger)] transition-all duration-300 hover:bg-[rgba(229,115,115,0.2)]"
                 >
                   잊기

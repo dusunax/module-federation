@@ -12,8 +12,8 @@ vi.mock('../OrderDetail', () => ({
   default: () => <div>OrderDetail</div>,
 }));
 
-describe('Archive App', () => {
-  it('renders OrderList on root route', () => {
+describe('아카이브 앱', () => {
+  it('루트에서 OrderList를 렌더링한다', () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <App />
@@ -23,7 +23,7 @@ describe('Archive App', () => {
     expect(screen.getByText('OrderList')).toBeInTheDocument();
   });
 
-  it('renders OrderDetail on detail route', () => {
+  it('상세 라우트에서 OrderDetail을 렌더링한다', () => {
     render(
       <MemoryRouter initialEntries={['/archive/123']}>
         <App />
