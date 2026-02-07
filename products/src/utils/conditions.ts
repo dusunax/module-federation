@@ -37,11 +37,12 @@ export interface CurrentConditions {
 
 interface ConditionMeta {
   label: string;
+  emoji?: string;
 }
 
 export const CONDITION_META: Record<string, ConditionMeta> = {
   day: { label: '낮' },
-  night: { label: '밤' },
+  night: { label: '밤', emoji: '🌃🌙' },
   monday: { label: '월요일' },
   tuesday: { label: '화요일' },
   wednesday: { label: '수요일' },

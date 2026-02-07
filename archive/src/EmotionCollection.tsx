@@ -25,6 +25,25 @@ const RARITY_STYLES: Record<string, RarityStyle> = {
   },
 };
 
+const CATEGORY_LABELS: Record<string, string> = {
+  joy: '기쁨',
+  sadness: '슬픔',
+  anger: '분노',
+  fear: '두려움',
+  disgust: '혐오',
+  surprise: '놀람',
+  trust: '신뢰',
+  love: '사랑',
+  obsession: '집착',
+  anxiety: '불안',
+  jealousy: '질투',
+  disappointment: '실망',
+  contempt: '경멸',
+  discouragement: '낙담',
+  guilt: '죄책감',
+  hope: '희망',
+};
+
 function EmotionCollection() {
   const user = useAuthStore((state) => state.user);
   const [allEmotions, setAllEmotions] = useState<Emotion[]>([]);
@@ -115,6 +134,7 @@ function EmotionCollection() {
           {allEmotions.sort((a, b) => (a.rarityOrder ?? 0) - (b.rarityOrder ?? 0)).map((emotion) => {
           const isCollected = collectedIds.has(emotion.id);
           const rarity = RARITY_STYLES[emotion.rarity] || RARITY_STYLES.common;
+          const categoryLabel = CATEGORY_LABELS[emotion.category] ?? emotion.category;
 
           if (isCollected) {
             return (
@@ -127,7 +147,7 @@ function EmotionCollection() {
                   {emotion.name}
                 </span>
                 <span className="text-xs font-normal tracking-wide text-[rgba(255,248,212,0.5)]">
-                  {emotion.category}
+                  {categoryLabel}
                 </span>
                 <span className="text-xs font-normal tracking-wide text-[rgba(255,248,212,0.4)]">
                   ⚡ {emotion.energyCost}
