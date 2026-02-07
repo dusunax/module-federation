@@ -151,15 +151,20 @@ describe('Dashboard component', () => {
     __resetEnergyState();
   });
 
-  it('로딩 상태에서 스피너를 렌더링한다', () => {
+  it('로딩 상태에서 스피너를 렌더링한다', async () => {
     __setEnergyState({
       fetchDailyUsage: vi.fn(async () => []),
       fetchRecentOrders: vi.fn(async () => []),
     });
 
-    render(<Dashboard />);
+    const { container } = render(<Dashboard />);
 
     expect(screen.getByText('대시보드')).toBeInTheDocument();
+    expect(container.querySelector('.animate-spin')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText('총 에너지 사용')).toBeInTheDocument();
+    });
   });
 
   it('데이터 로드 후 요약 통계를 표시한다', async () => {

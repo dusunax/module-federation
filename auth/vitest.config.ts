@@ -13,7 +13,7 @@ export default defineConfig({
     alias: {
       '@shared': r('../shared'),
       // 모듈
-      'auth': r('src/__mocks__/auth'),
+      'host': r('src/__mocks__/host'),
       'header': r('src/__mocks__/header'),
       'cart': r('src/__mocks__/cart'),
       'products': r('src/__mocks__/products'),

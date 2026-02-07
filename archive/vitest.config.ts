@@ -12,7 +12,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@shared': r('../shared'),
+      react: r('node_modules/react'),
+      'react-dom': r('node_modules/react-dom'),
       // 모듈
+      'host': r('src/__mocks__/host'),
       'auth': r('src/__mocks__/auth'),
       'header': r('src/__mocks__/header'),
       'cart': r('src/__mocks__/cart'),
