@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuthStore } from 'auth/authStore';
 import { subscribeToUserOrders } from 'auth/services/orderService';
-import { getAllEmotions } from 'auth/services/emotionService';
+import { getAllEmotions, Emotion } from 'auth/services/emotionService';
+import { Order } from 'products/orderStore';
 import { LockIcon } from 'lucide-react';
 
-const RARITY_STYLES = {
+interface RarityStyle {
+  border: string;
+  glow: string;
+}
+
+const RARITY_STYLES: Record<string, RarityStyle> = {
   common: {
     border: 'border-[rgba(255,248,212,0.2)]',
     glow: '',
@@ -21,10 +27,10 @@ const RARITY_STYLES = {
 
 function EmotionCollection() {
   const user = useAuthStore((state) => state.user);
-  const [allEmotions, setAllEmotions] = useState([]);
-  const [orders, setOrders] = useState([]);
+  const [allEmotions, setAllEmotions] = useState<Emotion[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getAllEmotions()
@@ -45,7 +51,7 @@ function EmotionCollection() {
   }, [user?.uid]);
 
   const collectedIds = useMemo(() => {
-    const ids = new Set();
+    const ids = new Set<number>();
     for (const order of orders) {
       if (!order.items) continue;
       for (const { product } of order.items) {

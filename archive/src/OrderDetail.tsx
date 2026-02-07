@@ -39,7 +39,7 @@ function OrderDetail() {
     );
   }
 
-  const formatDate = (isoString) => {
+  const formatDate = (isoString: string) => {
     const date = new Date(isoString);
     return date.toLocaleString('ko-KR', {
       year: 'numeric',

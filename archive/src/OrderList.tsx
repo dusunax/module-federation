@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useOrderStore } from 'products/orderStore';
+import { useOrderStore, Order } from 'products/orderStore';
 import { useAuthStore } from 'auth/authStore';
 import { subscribeToUserOrders, deleteUserOrder } from 'auth/services/orderService';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
@@ -13,7 +13,7 @@ function OrderList() {
   const removeOrder = useOrderStore((state) => state.removeOrder);
   const user = useAuthStore((state) => state.user);
 
-  const [orders, setOrders] = React.useState(ordersFromStore || []);
+  const [orders, setOrders] = React.useState<Order[]>(ordersFromStore || []);
 
   React.useEffect(() => {
     // keep local store in sync initially
@@ -44,7 +44,7 @@ function OrderList() {
     );
   }
 
-  const formatDate = (isoString) => {
+  const formatDate = (isoString: string) => {
     const date = new Date(isoString);
     return date.toLocaleString('ko-KR', {
       year: 'numeric',

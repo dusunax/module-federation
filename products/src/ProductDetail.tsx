@@ -24,7 +24,7 @@ function ProductDetail(): React.ReactElement {
   const orderStatuses = useOrderStore((state) => state.orderStatuses);
 
   // 장바구니에 추가 핸들러
-  const handleAddToCart = (): void => {
+  const handleAddToCart = () => {
     if (!emotion) return;
     addToCart(emotion);
     // 추가 후 현재 수량 확인 (기억하는 중인 아이템 제외, 일반 장바구니 아이템만)

@@ -32,7 +32,7 @@ function loadSortPrefs(): SortPrefs {
   return { dateSort: 'desc', energySort: null };
 }
 
-function saveSortPrefs(dateSort: SortDirection, energySort: SortDirection): void {
+function saveSortPrefs(dateSort: SortDirection, energySort: SortDirection) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ dateSort, energySort }));
 }
 
@@ -94,7 +94,7 @@ function ProductList(): React.ReactElement {
     updateSort(dateSort, next);
   }, [dateSort, energySort, updateSort]);
 
-  const handleProductClick = (id: number): void => {
+  const handleProductClick = (id: number) => {
     navigate(`/detail/${id}`);
   };
 
