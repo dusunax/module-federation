@@ -92,7 +92,7 @@ function buildViewModel(conditions: CurrentConditions, now: Date): ConditionView
     timeMinutes: minutes,
     isNight,
     seasonKey: conditions.season,
-    dayText,  
+    dayText,
     weatherLabel,
     seasonLabel,
     eventLabels,

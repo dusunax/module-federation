@@ -372,6 +372,7 @@ function AdminEmotions() {
 
   const handleSave = useCallback(async () => {
     if (!form.name || !form.emoji || !form.category || !form.rarity || !form.description || !form.story) {
+      toast.error('필수 항목을 모두 입력해주세요.');
       return;
     }
 
@@ -383,8 +384,10 @@ function AdminEmotions() {
       event: form.visibilityEvent ? [form.visibilityEvent] : [],
     };
 
-    const nextId =
-      emotions.length > 0 ? Math.max(...emotions.map((emotion) => emotion.id)) + 1 : 1;
+    // Generate ID for new emotions. Use timestamp + random to reduce collision risk.
+    // Note: This client-side approach has a small race condition risk if two admins
+    // create emotions simultaneously. Ideally, this should be server-side (Cloud Function).
+    const nextId = editingId ?? Date.now() + Math.floor(Math.random() * 1000);
     const emotionData = {
       id: editingId ?? nextId,
       name: form.name,

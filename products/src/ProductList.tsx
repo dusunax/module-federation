@@ -11,6 +11,7 @@ import { useCurrentConditions } from './hooks/useCurrentConditions';
 import ConditionHintPopup from './components/ConditionHintPopup';
 import CurrentConditionUI from './components/CurrentConditionUI';
 import { InfoIcon } from 'lucide-react';
+import { CATEGORY_LABELS } from '@shared/constants/categories';
 
 type SortDirection = 'asc' | 'desc' | null;
 
@@ -26,24 +27,6 @@ const ENERGY_STATES: SortDirection[] = ['asc', 'desc', null];
 const DATE_LABELS: Record<string, string> = { desc: '최신순', asc: '오래된순' };
 const ENERGY_LABELS: Record<string, string> = { asc: '낮은순', desc: '높은순' };
 const ARROW: Record<string, string> = { asc: '↑', desc: '↓' };
-const CATEGORY_LABELS: Record<string, string> = {
-  joy: '기쁨',
-  sadness: '슬픔',
-  anger: '분노',
-  fear: '두려움',
-  disgust: '혐오',
-  surprise: '놀람',
-  trust: '신뢰',
-  love: '사랑',
-  obsession: '집착',
-  anxiety: '불안',
-  jealousy: '질투',
-  disappointment: '실망',
-  contempt: '경멸',
-  discouragement: '낙담',
-  guilt: '죄책감',
-  hope: '희망',
-};
 
 function loadSortPrefs(): SortPrefs {
   try {
@@ -130,7 +113,7 @@ function ProductList() {
   return (
     <div className="mx-auto max-w-[1400px] px-5">
       <div className="flex items-center gap-4 mb-6">
-        <div className='flex'>
+        <div className="flex">
           {/* 현재 조건 */}
           <CurrentConditionUI view={view} />
           

@@ -36,13 +36,19 @@ interface RarityConfig {
 let rarityConfigCache: RarityConfig | null = null;
 
 function stripUndefined<T>(value: T): T {
-  if (Array.isArray(value)) return value.map((item) => stripUndefined(item)) as T;
-  if (value && typeof value === 'object') {
+  if (Array.isArray(value)) {
+    return value.map((item) => stripUndefined(item)) as T;
+  }
+
+  // Only deep-strip plain objects. Leave non-plain objects (e.g. Firestore FieldValue,
+  // Timestamp, GeoPoint, Date, etc.) untouched so their special behavior is preserved.
+  if (value && typeof value === 'object' && (value as object).constructor === Object) {
     const entries = Object.entries(value as Record<string, unknown>)
       .filter(([, v]) => v !== undefined)
       .map(([k, v]) => [k, stripUndefined(v)]);
     return Object.fromEntries(entries) as T;
   }
+
   return value;
 }
 

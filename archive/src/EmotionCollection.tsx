@@ -4,6 +4,7 @@ import { subscribeToUserOrders } from 'auth/services/orderService';
 import { getAllEmotions, Emotion } from 'auth/services/emotionService';
 import { Order } from 'products/orderStore';
 import { LockIcon } from 'lucide-react';
+import { CATEGORY_LABELS } from '@shared/constants/categories';
 
 interface RarityStyle {
   border: string;
@@ -23,25 +24,6 @@ const RARITY_STYLES: Record<string, RarityStyle> = {
     border: 'border-[#A855F7]',
     glow: 'shadow-[0_0_12px_rgba(168,85,247,0.3)]',
   },
-};
-
-const CATEGORY_LABELS: Record<string, string> = {
-  joy: '기쁨',
-  sadness: '슬픔',
-  anger: '분노',
-  fear: '두려움',
-  disgust: '혐오',
-  surprise: '놀람',
-  trust: '신뢰',
-  love: '사랑',
-  obsession: '집착',
-  anxiety: '불안',
-  jealousy: '질투',
-  disappointment: '실망',
-  contempt: '경멸',
-  discouragement: '낙담',
-  guilt: '죄책감',
-  hope: '희망',
 };
 
 function EmotionCollection() {
