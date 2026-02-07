@@ -58,10 +58,9 @@ describe('ProductDetail', () => {
       emoji: '💫',
       description: '테스트 설명',
       story: '테스트 스토리',
-      category: '감정',
+      category: 'joy',
       energyCost: 2,
       status: 'NOTICING',
-      effects: ['미소'],
     };
     __setMockEmotions([emotion]);
     __setMockEmotionById(emotion);

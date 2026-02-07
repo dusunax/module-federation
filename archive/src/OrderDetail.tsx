@@ -5,6 +5,7 @@ import { useOrderStore } from 'products/orderStore';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
 import showConfirmToast from '@shared/components/showConfirmToast';
 import BackButton from '@shared/components/BackButton';
+import { CATEGORY_LABELS } from '@shared/constants/categories';
 
 function OrderDetail() {
   const { orderId } = useParams();
@@ -94,12 +95,16 @@ function OrderDetail() {
         <h2 className="mb-6 text-xl font-normal tracking-wider text-[#FFF8D4]">기록된 순간들</h2>
 
         <div className="flex flex-col gap-4">
-          {order.items.map(({ product, quantity }) => (
-            <div
-              key={product.id}
-              aria-label={`order-item-${product.id}`}
-              className="flex gap-6 rounded-lg border border-[rgba(255,248,212,0.15)] bg-[rgba(67,86,99,0.15)] p-6 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,248,212,0.25)] hover:bg-[rgba(67,86,99,0.25)]"
-            >
+          {order.items.map(({ product, quantity }) => {
+            const categoryLabel = product.category
+              ? CATEGORY_LABELS[product.category] ?? product.category
+              : '';
+            return (
+              <div
+                key={product.id}
+                aria-label={`order-item-${product.id}`}
+                className="flex gap-6 rounded-lg border border-[rgba(255,248,212,0.15)] bg-[rgba(67,86,99,0.15)] p-6 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,248,212,0.25)] hover:bg-[rgba(67,86,99,0.25)]"
+              >
               {/* 이모지 */}
               <div className="shrink-0 text-[56px] leading-none opacity-90">{product.emoji}</div>
 
@@ -113,9 +118,9 @@ function OrderDetail() {
                     {product.description}
                   </p>
                 )}
-                {product.category && (
+                {categoryLabel && (
                   <div className="inline-block rounded border border-[rgba(163,176,135,0.3)] bg-[rgba(163,176,135,0.15)] px-2.5 py-1 text-[11px] font-normal tracking-wide text-[#A3B087]">
-                    {product.category}
+                    {categoryLabel}
                   </div>
                 )}
               </div>
@@ -124,8 +129,9 @@ function OrderDetail() {
               <div className="flex h-fit items-center gap-2 rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-4 py-2 text-[13px] font-normal tracking-wide text-[rgba(255,248,212,0.9)]">
                 {quantity}회
               </div>
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       </div>
 

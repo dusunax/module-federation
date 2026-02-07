@@ -4,6 +4,7 @@ import { subscribeToUserOrders } from 'auth/services/orderService';
 import { getAllEmotions, Emotion } from 'auth/services/emotionService';
 import { Order } from 'products/orderStore';
 import { LockIcon } from 'lucide-react';
+import { CATEGORY_LABELS } from '@shared/constants/categories';
 
 interface RarityStyle {
   border: string;
@@ -115,6 +116,7 @@ function EmotionCollection() {
           {allEmotions.sort((a, b) => (a.rarityOrder ?? 0) - (b.rarityOrder ?? 0)).map((emotion) => {
           const isCollected = collectedIds.has(emotion.id);
           const rarity = RARITY_STYLES[emotion.rarity] || RARITY_STYLES.common;
+          const categoryLabel = CATEGORY_LABELS[emotion.category] ?? emotion.category;
 
           if (isCollected) {
             return (
@@ -127,7 +129,7 @@ function EmotionCollection() {
                   {emotion.name}
                 </span>
                 <span className="text-xs font-normal tracking-wide text-[rgba(255,248,212,0.5)]">
-                  {emotion.category}
+                  {categoryLabel}
                 </span>
                 <span className="text-xs font-normal tracking-wide text-[rgba(255,248,212,0.4)]">
                   ⚡ {emotion.energyCost}

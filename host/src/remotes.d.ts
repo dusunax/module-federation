@@ -113,9 +113,17 @@ declare module 'auth/services/emotionService' {
     category: string;
     description: string;
     story: string;
-    effects: string[];
     published: boolean;
     image: string | null;
+    visibility: {
+      time: ('day' | 'night')[];
+      day: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday' | 'weekday' | 'weekend')[];
+      weather: ('clear' | 'cloudy' | 'rain' | 'snow' | 'storm')[];
+      season: ('spring' | 'summer' | 'autumn' | 'winter')[];
+      event: string[];
+    };
+    rarityOrder: number;
+    createdAt: { seconds: number };
   }
 
   interface GetAllEmotionsOptions {

@@ -48,7 +48,7 @@ describe('OrderDetail', () => {
       orderDate: new Date().toISOString(),
       items: [
         {
-          product: { id: 10, name: '첫눈', emoji: '💫', description: '설명', category: '감정' },
+          product: { id: 10, name: '첫눈', emoji: '💫', description: '설명', category: 'joy' },
           quantity: 2,
         },
       ],
@@ -71,7 +71,7 @@ describe('OrderDetail', () => {
       orderDate: new Date().toISOString(),
       items: [
         {
-          product: { id: 10, name: '첫눈', emoji: '💫', description: '설명', category: '감정' },
+          product: { id: 10, name: '첫눈', emoji: '💫', description: '설명', category: 'joy' },
           quantity: 2,
         },
       ],

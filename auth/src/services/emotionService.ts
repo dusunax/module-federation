@@ -1,6 +1,14 @@
 import { collection, doc, getDocs, getDoc, setDoc, updateDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 
+export interface VisibilityCondition {
+  time: ('day' | 'night')[];
+  day: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday' | 'weekday' | 'weekend')[];
+  weather: ('clear' | 'cloudy' | 'rain' | 'snow' | 'storm')[];
+  season: ('spring' | 'summer' | 'autumn' | 'winter')[];
+  event: string[];
+}
+
 export interface Emotion {
   id: number;
   name: string;
@@ -9,13 +17,13 @@ export interface Emotion {
   category: string;
   description: string;
   story: string;
-  effects: string[];
   published: boolean;
   image: string | null;
   energyCost?: number;
   rarityOrder?: number;
   createdAt?: { seconds: number };
   status?: string;
+  visibility?: VisibilityCondition;
 }
 
 interface RarityConfig {
@@ -26,6 +34,23 @@ interface RarityConfig {
 }
 
 let rarityConfigCache: RarityConfig | null = null;
+
+function stripUndefined<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map((item) => stripUndefined(item)) as T;
+  }
+
+  // Only deep-strip plain objects. Leave non-plain objects (e.g. Firestore FieldValue,
+  // Timestamp, GeoPoint, Date, etc.) untouched so their special behavior is preserved.
+  if (value && typeof value === 'object' && (value as object).constructor === Object) {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .filter(([, v]) => v !== undefined)
+      .map(([k, v]) => [k, stripUndefined(v)]);
+    return Object.fromEntries(entries) as T;
+  }
+
+  return value;
+}
 
 export async function getRarityConfig(): Promise<RarityConfig> {
   if (rarityConfigCache) return rarityConfigCache;
@@ -90,10 +115,10 @@ export async function getEmotionById(id: number): Promise<Emotion | null> {
 
 export async function createEmotion(data: Partial<Emotion>): Promise<void> {
   const docRef = doc(db, 'emotions', String(data.id));
-  await setDoc(docRef, { ...data, createdAt: serverTimestamp() });
+  await setDoc(docRef, stripUndefined({ ...data, createdAt: serverTimestamp() }));
 }
 
 export async function updateEmotion(id: number, data: Partial<Emotion>): Promise<void> {
   const docRef = doc(db, 'emotions', String(id));
-  await updateDoc(docRef, data);
+  await updateDoc(docRef, stripUndefined(data));
 }
