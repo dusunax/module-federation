@@ -1,14 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-/**
- * 뒤로 가기 버튼 컴포넌트
- * @param {Object} props
- * @param {string} [props.to] - 이동할 경로 (없으면 navigate(-1))
- * @param {string} [props.label] - 버튼 텍스트 (기본값: "돌아가기")
- * @param {string} [props.className] - 추가 클래스
- */
-function BackButton({ to, label = '돌아가기', className = '' }) {
+interface BackButtonProps {
+  to?: string;
+  label?: string;
+  className?: string;
+}
+
+function BackButton({ to, label = '돌아가기', className = '' }: BackButtonProps) {
   const navigate = useNavigate();
 
   const handleClick = () => {

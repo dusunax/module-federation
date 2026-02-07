@@ -1,12 +1,11 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
-/**
- * 공통 앱 레이아웃 컴포넌트
- * @param {Object} props
- * @param {string} props.subtitle - 헤더 부제목 (예: "Products - 독립 실행 모드 (포트 3002)")
- * @param {React.ReactNode} props.children - 메인 컨텐츠
- */
-function AppLayout({ subtitle, children }) {
+interface AppLayoutProps {
+  subtitle?: string;
+  children: ReactNode;
+}
+
+function AppLayout({ subtitle, children }: AppLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex items-center justify-between border-b border-[var(--color-border-primary)] bg-black px-6 py-2">

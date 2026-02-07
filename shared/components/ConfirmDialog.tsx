@@ -2,8 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { toast } from 'sonner';
 
-// Small presentational centered confirmation dialog used inside toast.custom
-// Uses portal to escape sonner's transform container and render at viewport center
+export interface ConfirmDialogProps {
+  title?: string;
+  description?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+}
+
 export default function ConfirmDialog({
   title,
   description,
@@ -11,7 +18,7 @@ export default function ConfirmDialog({
   cancelLabel = '취소',
   onConfirm,
   onCancel,
-}) {
+}: ConfirmDialogProps) {
   return ReactDOM.createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50">
       <div className="flex min-w-[300px] flex-col gap-3 rounded-lg border border-[rgba(163,176,135,0.3)] bg-[rgba(67,86,99,0.95)] p-4 backdrop-blur-sm">
