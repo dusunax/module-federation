@@ -53,6 +53,7 @@ export function CartList({
         </div>
         <button
           onClick={handleClearAll}
+          aria-label="cart-clear-all"
           className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-4 py-2.5 text-[13px] font-normal tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
         >
           전체 삭제

@@ -72,6 +72,7 @@ export function CartItem({
       <div className="flex items-center gap-3">
         <button
           onClick={() => updateQuantity(itemId, quantity - 1)}
+          aria-label="cart-qty-decrease"
           className="h-8 w-8 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] text-lg font-normal text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
         >
           −
@@ -81,6 +82,7 @@ export function CartItem({
         </span>
         <button
           onClick={() => updateQuantity(itemId, quantity + 1)}
+          aria-label="cart-qty-increase"
           className="h-8 w-8 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] text-lg font-normal text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
         >
           +
@@ -101,6 +103,7 @@ export function CartItem({
             },
           });
         }}
+        aria-label="cart-remove-item"
         className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-3.5 py-2 text-xs font-normal tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
       >
         웃어 넘기기
