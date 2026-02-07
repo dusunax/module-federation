@@ -1,6 +1,14 @@
 import { collection, doc, getDocs, getDoc, setDoc, updateDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 
+export interface VisibilityCondition {
+  time: ('day' | 'night')[];
+  day: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday' | 'weekday' | 'weekend')[];
+  weather: ('clear' | 'cloudy' | 'rain' | 'snow' | 'storm')[];
+  season: ('spring' | 'summer' | 'autumn' | 'winter')[];
+  event: string[];
+}
+
 export interface Emotion {
   id: number;
   name: string;
@@ -16,6 +24,7 @@ export interface Emotion {
   rarityOrder?: number;
   createdAt?: { seconds: number };
   status?: string;
+  visibility?: VisibilityCondition;
 }
 
 interface RarityConfig {

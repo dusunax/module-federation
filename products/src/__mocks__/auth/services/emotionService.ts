@@ -1,3 +1,11 @@
+export interface VisibilityCondition {
+  time: ('day' | 'night')[];
+  day: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday' | 'weekday' | 'weekend')[];
+  weather: ('clear' | 'cloudy' | 'rain' | 'snow' | 'storm')[];
+  season: ('spring' | 'summer' | 'autumn' | 'winter')[];
+  event: string[];
+}
+
 export interface Emotion {
   id: number;
   name: string;
@@ -9,6 +17,7 @@ export interface Emotion {
   story?: string;
   effects?: string[];
   createdAt?: { seconds?: number };
+  visibility?: VisibilityCondition;
 }
 
 let emotions: Emotion[] = [];

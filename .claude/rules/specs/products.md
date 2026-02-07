@@ -115,6 +115,54 @@ const EMOTION_STATUS = {
 - `EMOTION_STATUS_CONFIG`: 상태별 color, label, order 정의
 - `getStatusConfig(status)`: 상태 스타일 반환
 
+## 조건별 아이템 출력
+
+### VisibilityCondition 타입
+
+```typescript
+interface VisibilityCondition {
+  time: ('day' | 'night')[];
+  day: ('monday' | ... | 'sunday' | 'weekday' | 'weekend')[];
+  weather: ('clear' | 'cloudy' | 'rain' | 'snow' | 'storm')[];
+  season: ('spring' | 'summer' | 'autumn' | 'winter')[];
+  event: string[];  // 'valentines', 'christmas', 'newyear', 'chuseok', 'halloween' 등
+}
+```
+
+- `Emotion.visibility` 필드: 빈 배열 = 해당 카테고리 조건 없음 (항상 통과)
+- 카테고리 간(time/day/weather/season/event): AND, 카테고리 내 값들: OR
+
+### 조건 판정 (`src/utils/conditions.ts`)
+
+- `getCurrentTimeOfDay()`: 6~18시 → 'day', 그 외 → 'night'
+- `getCurrentDayInfo()`: 요일 + weekday/weekend 판정
+- `getCurrentSeason()`: 월 기반 (봄 3~5, 여름 6~8, 가을 9~11, 겨울 12~2)
+- `getActiveEvents()`: 기념일별 활성 날짜 범위로 판정 (추석은 연도별 하드코딩 2024-2027)
+- `isEmotionVisible(emotion, conditions)`: 노출 여부 판정
+- `mapWeatherCode(wmoCode)`: WMO 코드 → WeatherType 변환
+
+### 날씨 (`src/hooks/useWeather.ts`)
+
+- Open-Meteo API (`https://api.open-meteo.com/v1/forecast?...&current_weather=true`)
+- `navigator.geolocation` 사용, 실패 시 서울(37.57, 126.98) 폴백
+- React Query 10분 캐시
+
+### 현재 조건 집계 (`src/hooks/useCurrentConditions.ts`)
+
+- useWeather + getCurrentTimeOfDay + getCurrentDayInfo + getCurrentSeason + getActiveEvents
+- 1분 인터벌 갱신
+
+### UI 컴포넌트
+
+- `CurrentConditions` (`src/components/CurrentConditions.tsx`): 정렬 바 아래 뱃지 바
+- `ConditionHintPopup` (`src/components/ConditionHintPopup.tsx`): 조건별 그룹핑 모달, Lucide 아이콘 + 이모지 전용
+
+### ProductList 통합
+
+- `sortedEmotions` → `isEmotionVisible` 필터 → `visibleEmotions`
+- 검색 결과 카운트는 `visibleEmotions` 기준
+- 💡 버튼으로 힌트 팝업 열기
+
 ## Bootstrap 순서
 
 1. React Query 설정 (staleTime: 5분)

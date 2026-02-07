@@ -1,4 +1,12 @@
 declare module 'auth/services/emotionService' {
+  export interface VisibilityCondition {
+    time: ('day' | 'night')[];
+    day: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday' | 'weekday' | 'weekend')[];
+    weather: ('clear' | 'cloudy' | 'rain' | 'snow' | 'storm')[];
+    season: ('spring' | 'summer' | 'autumn' | 'winter')[];
+    event: string[];
+  }
+
   export interface Emotion {
     id: number;
     name: string;
@@ -10,6 +18,7 @@ declare module 'auth/services/emotionService' {
     story?: string;
     effects?: string[];
     createdAt?: { seconds?: number };
+    visibility?: VisibilityCondition;
   }
 
   export const __setMockEmotions: (next: Emotion[]) => void;
