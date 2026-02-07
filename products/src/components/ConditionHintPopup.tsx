@@ -4,6 +4,7 @@ import {
   VisibilityCondition,
   CurrentConditions,
   CONDITION_META,
+  isEmotionVisible,
 } from '../utils/conditions';
 
 interface EmotionLike {
@@ -57,6 +58,12 @@ function ConditionHintPopup({ emotions, conditions, isOpen, onClose }: Props): R
         v.event.length > 0;
       if (!hasCondition) {
         alwaysEmojis.add(emotion.emoji ?? '?');
+        continue;
+      }
+
+      // Only include emoji if the entire visibility condition is met
+      const isVisible = isEmotionVisible({ visibility: v }, conditions);
+      if (!isVisible) {
         continue;
       }
 

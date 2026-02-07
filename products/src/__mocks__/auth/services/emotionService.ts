@@ -14,9 +14,9 @@ export interface Emotion {
   category: string;
   energyCost: number;
   status: string;
-  story: string;
-  createdAt: { seconds: number };
-  visibility: VisibilityCondition;
+  story?: string;
+  createdAt?: { seconds: number };
+  visibility?: VisibilityCondition;
 }
 
 let emotions: Emotion[] = [];

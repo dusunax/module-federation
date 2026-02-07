@@ -20,7 +20,7 @@ const MOCK_EMOTIONS = [
     name: '기쁨',
     emoji: '😊',
     rarity: 'common',
-    category: '기쁨 (Joy)',
+    category: 'joy',
     description: '기쁜 감정',
     story: '기쁨의 이야기',
     published: true,
@@ -38,7 +38,7 @@ const MOCK_EMOTIONS = [
     name: '슬픔',
     emoji: '😢',
     rarity: 'rare',
-    category: '슬픔 (Sadness)',
+    category: 'sadness',
     description: '슬픈 감정',
     story: '슬픔의 이야기',
     published: false,
@@ -135,7 +135,8 @@ describe('AdminEmotions', () => {
     expect(screen.getByText('감정 수정')).toBeInTheDocument();
     expect(screen.getByDisplayValue('기쁨')).toBeInTheDocument();
     expect(screen.getByDisplayValue('😊')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('기쁨 (Joy)')).toBeInTheDocument();
+    const categorySelect = screen.getByLabelText('카테고리 *') as HTMLSelectElement;
+    expect(categorySelect.value).toBe('joy');
     const timeSelect = screen.getByLabelText('노출 시간') as HTMLSelectElement;
     const daySelect = screen.getByLabelText('노출 요일') as HTMLSelectElement;
     const weatherSelect = screen.getByLabelText('노출 날씨') as HTMLSelectElement;

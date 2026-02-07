@@ -36,12 +36,12 @@ react, react-dom, react-router-dom, @tanstack/react-query, zustand, sonner
 - 정렬: 날짜(최신/오래된), 에너지(낮은/높은) — localStorage(`emotion-sort-prefs`) 저장
 - 상품 카드: 이모지, 이름, 설명(5줄), 카테고리(한글 라벨), 에너지(⚡), 상태 뱃지
 - 상태 우선순위: DB(orderStatuses) > 장바구니(HELD) > emotion.status
-- React Query: `['emotions', searchTerm]`, `keepPreviousData: true`
+- React Query: `['emotions', searchTerm]`
 
 ### ProductDetail (`src/ProductDetail.tsx`)
 
 - URL 파라미터: `id`
-- 표시: 이모지(100px), 이름, 에너지, 카테고리(한글 라벨), 설명, 스토리, 효과(pill 뱃지)
+- 표시: 이모지(100px), 이름, 에너지, 카테고리(한글 라벨), 설명, 스토리
 - 장바구니 담기: `addToCart(emotion)` → 토스트 ("담기" / "더 담기")
 - remembering 아이템 제외하여 수량 계산
 - React Query: `['emotion', id]`
@@ -159,7 +159,7 @@ interface VisibilityCondition {
 
 ### UI 컴포넌트
 
-- `CurrentConditions` (`src/components/CurrentConditions.tsx`): 정렬 바 아래 뱃지 바
+- `CurrentConditionUI` (`src/components/CurrentConditionUI.tsx`): 정렬 바 아래 뱃지 바
 - `ConditionHintPopup` (`src/components/ConditionHintPopup.tsx`): 조건별 그룹핑 모달, Lucide 아이콘 + 이모지 전용
 
 ### ProductList 통합

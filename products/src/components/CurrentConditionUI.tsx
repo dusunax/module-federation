@@ -54,9 +54,9 @@ const CurrentConditionUI = ({ view }: CurrentConditionUIProps) => {
             </div>
           )}
 
-          <div className='flex items-center gap-1'>
+          <div className="flex items-center gap-1">
             {isNight ? <Moon className="h-9 w-9" /> : <Sun className="h-9 w-9" />}
-          <div className="text-xl min-h-7 min-w-10 font-medium opacity-90">{temperatureText}</div>
+            <div className="text-xl min-h-7 min-w-10 font-medium opacity-90">{temperatureText}</div>
           </div>
 
         </div>
