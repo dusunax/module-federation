@@ -384,10 +384,10 @@ function AdminEmotions() {
       event: form.visibilityEvent ? [form.visibilityEvent] : [],
     };
 
-    // Generate ID for new emotions. Use timestamp + random to reduce collision risk.
-    // Note: This client-side approach has a small race condition risk if two admins
-    // create emotions simultaneously. Ideally, this should be server-side (Cloud Function).
-    const nextId = editingId ?? Date.now() + Math.floor(Math.random() * 1000);
+    // Generate ID for new emotions. Use timestamp * 1000 + random to reduce collision risk.
+    // Note: This client-side approach still has a small race condition risk.
+    // Ideally, this should be server-side (Cloud Function) or use Firestore auto IDs.
+    const nextId = editingId ?? Date.now() * 1000 + Math.floor(Math.random() * 1000);
     const emotionData = {
       id: editingId ?? nextId,
       name: form.name,
