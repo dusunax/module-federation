@@ -13,8 +13,8 @@ vi.mock('../store/authStore', () => ({
   useAuthStore: () => mockState,
 }));
 
-describe('Auth App', () => {
-  it('renders logged-out view', async () => {
+describe('인증 앱', () => {
+  it('로그아웃 상태 화면을 렌더링한다', async () => {
     mockState = {
       user: null,
       loading: false,
@@ -30,7 +30,7 @@ describe('Auth App', () => {
     expect(screen.getByText('로그인되지 않음')).toBeInTheDocument();
   });
 
-  it('renders user info when logged in', () => {
+  it('로그인 상태에서 사용자 정보를 렌더링한다', () => {
     mockState = {
       user: { displayName: '테스트 사용자', email: 'test@example.com' },
       loading: false,
