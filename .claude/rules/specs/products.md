@@ -34,14 +34,14 @@ react, react-dom, react-router-dom, @tanstack/react-query, zustand, sonner
 
 - 검색: 이름, 카테고리, 스토리 실시간 검색
 - 정렬: 날짜(최신/오래된), 에너지(낮은/높은) — localStorage(`emotion-sort-prefs`) 저장
-- 상품 카드: 이모지, 이름, 설명(5줄), 카테고리, 에너지(⚡), 상태 뱃지
+- 상품 카드: 이모지, 이름, 설명(5줄), 카테고리(한글 라벨), 에너지(⚡), 상태 뱃지
 - 상태 우선순위: DB(orderStatuses) > 장바구니(HELD) > emotion.status
 - React Query: `['emotions', searchTerm]`, `keepPreviousData: true`
 
 ### ProductDetail (`src/ProductDetail.tsx`)
 
 - URL 파라미터: `id`
-- 표시: 이모지(100px), 이름, 에너지, 카테고리, 설명, 스토리, 효과(pill 뱃지)
+- 표시: 이모지(100px), 이름, 에너지, 카테고리(한글 라벨), 설명, 스토리, 효과(pill 뱃지)
 - 장바구니 담기: `addToCart(emotion)` → 토스트 ("담기" / "더 담기")
 - remembering 아이템 제외하여 수량 계산
 - React Query: `['emotion', id]`
@@ -131,6 +131,11 @@ interface VisibilityCondition {
 
 - `Emotion.visibility` 필드: 빈 배열 = 해당 카테고리 조건 없음 (항상 통과)
 - 카테고리 간(time/day/weather/season/event): AND, 카테고리 내 값들: OR
+
+### 카테고리 규칙
+
+- 감정 카테고리 값은 **소문자 영문 코드**로 저장합니다. 예: `joy`, `sadness`, `love`
+- 일반 사용자에게 노출되는 ProductList/ProductDetail에서는 **한글 라벨만** 출력합니다.
 
 ### 조건 판정 (`src/utils/conditions.ts`)
 
