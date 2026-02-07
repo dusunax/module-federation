@@ -15,6 +15,25 @@ interface RouteParams {
   [key: string]: string | undefined;
 }
 
+const CATEGORY_LABELS: Record<string, string> = {
+  joy: '기쁨',
+  sadness: '슬픔',
+  anger: '분노',
+  fear: '두려움',
+  disgust: '혐오',
+  surprise: '놀람',
+  trust: '신뢰',
+  love: '사랑',
+  obsession: '집착',
+  anxiety: '불안',
+  jealousy: '질투',
+  disappointment: '실망',
+  contempt: '경멸',
+  discouragement: '낙담',
+  guilt: '죄책감',
+  hope: '희망',
+};
+
 function ProductDetail(): React.ReactElement {
   const { id } = useParams<RouteParams>();
   const navigate = useNavigate();
@@ -80,6 +99,7 @@ function ProductDetail(): React.ReactElement {
       ? EMOTION_STATUS.HELD
       : emotion?.status || EMOTION_STATUS.NOTICING;
   const statusStyle = getStatusConfig(currentStatus);
+  const categoryLabel = emotion?.category ? CATEGORY_LABELS[emotion.category] ?? emotion.category : '';
 
   return (
     <div className="mx-auto max-w-[900px] p-5">
@@ -110,7 +130,7 @@ function ProductDetail(): React.ReactElement {
               ⚡ {emotion?.energyCost} 에너지
             </p>
             <span className="mb-5 inline-block rounded-sm bg-[rgba(67,86,99,0.3)] px-3.5 py-1.5 text-xs font-normal tracking-wider text-[rgba(255,248,212,0.9)]">
-              {emotion?.category}
+              {categoryLabel}
             </span>
           </div>
         </div>
@@ -132,23 +152,6 @@ function ProductDetail(): React.ReactElement {
             </p>
           </div>
         </div>
-
-        {/* 효과 */}
-        {emotion?.effects && emotion.effects.length > 0 && (
-          <div className="mb-[30px]">
-            <h2 className="mb-3 text-base font-normal tracking-wider text-[#FFF8D4]">효과</h2>
-            <div className="flex flex-wrap gap-2.5">
-              {emotion.effects.map((effect, index) => (
-                <span
-                  key={index}
-                  className="rounded-sm bg-[rgba(67,86,99,0.3)] px-3.5 py-1.5 text-xs font-normal tracking-wide text-[#A3B087]"
-                >
-                  {effect}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* 장바구니 추가 버튼 */}
         <div className="flex gap-3">

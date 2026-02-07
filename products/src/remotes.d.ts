@@ -16,7 +16,6 @@ declare module 'auth/services/emotionService' {
     energyCost: number;
     status?: string;
     story?: string;
-    effects?: string[];
     createdAt?: { seconds?: number };
     visibility?: VisibilityCondition;
   }

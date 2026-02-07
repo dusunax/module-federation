@@ -20,24 +20,36 @@ const MOCK_EMOTIONS = [
     name: '기쁨',
     emoji: '😊',
     rarity: 'common',
-    category: '긍정',
+    category: '기쁨 (Joy)',
     description: '기쁜 감정',
     story: '기쁨의 이야기',
-    effects: ['힐링', '에너지 회복'],
     published: true,
     image: null,
+    visibility: {
+      time: ['day'],
+      day: ['monday', 'weekday'],
+      weather: ['clear'],
+      season: ['spring'],
+      event: ['newyear'],
+    },
   },
   {
     id: 2,
     name: '슬픔',
     emoji: '😢',
     rarity: 'rare',
-    category: '부정',
+    category: '슬픔 (Sadness)',
     description: '슬픈 감정',
     story: '슬픔의 이야기',
-    effects: ['공감'],
     published: false,
     image: null,
+    visibility: {
+      time: [],
+      day: [],
+      weather: [],
+      season: [],
+      event: [],
+    },
   },
 ];
 
@@ -75,6 +87,7 @@ describe('AdminEmotions', () => {
     expect(screen.getByText('슬픔')).toBeInTheDocument();
     expect(screen.getByText('😢')).toBeInTheDocument();
     expect(screen.getByText('감정 관리')).toBeInTheDocument();
+    expect(screen.getByText('day · monday/weekday · clear · spring · newyear')).toBeInTheDocument();
   });
 
   it('추가 버튼 클릭 시 모달이 열리고, 취소 시 닫힌다', async () => {
@@ -122,7 +135,17 @@ describe('AdminEmotions', () => {
     expect(screen.getByText('감정 수정')).toBeInTheDocument();
     expect(screen.getByDisplayValue('기쁨')).toBeInTheDocument();
     expect(screen.getByDisplayValue('😊')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('긍정')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('힐링, 에너지 회복')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('기쁨 (Joy)')).toBeInTheDocument();
+    const timeSelect = screen.getByLabelText('노출 시간') as HTMLSelectElement;
+    const daySelect = screen.getByLabelText('노출 요일') as HTMLSelectElement;
+    const weatherSelect = screen.getByLabelText('노출 날씨') as HTMLSelectElement;
+    const seasonSelect = screen.getByLabelText('노출 계절') as HTMLSelectElement;
+    const eventSelect = screen.getByLabelText('노출 이벤트') as HTMLSelectElement;
+
+    expect(timeSelect.value).toBe('day');
+    expect(daySelect.value).toBe('monday');
+    expect(weatherSelect.value).toBe('clear');
+    expect(seasonSelect.value).toBe('spring');
+    expect(eventSelect.value).toBe('newyear');
   });
 });

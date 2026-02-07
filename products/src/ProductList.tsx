@@ -26,6 +26,24 @@ const ENERGY_STATES: SortDirection[] = ['asc', 'desc', null];
 const DATE_LABELS: Record<string, string> = { desc: '최신순', asc: '오래된순' };
 const ENERGY_LABELS: Record<string, string> = { asc: '낮은순', desc: '높은순' };
 const ARROW: Record<string, string> = { asc: '↑', desc: '↓' };
+const CATEGORY_LABELS: Record<string, string> = {
+  joy: '기쁨',
+  sadness: '슬픔',
+  anger: '분노',
+  fear: '두려움',
+  disgust: '혐오',
+  surprise: '놀람',
+  trust: '신뢰',
+  love: '사랑',
+  obsession: '집착',
+  anxiety: '불안',
+  jealousy: '질투',
+  disappointment: '실망',
+  contempt: '경멸',
+  discouragement: '낙담',
+  guilt: '죄책감',
+  hope: '희망',
+};
 
 function loadSortPrefs(): SortPrefs {
   try {
@@ -240,7 +258,7 @@ function ProductList() {
                 </p>
                 <div className="mt-5 flex items-center justify-between border-t border-[var(--color-border-faded)] pt-4">
                   <span className="rounded-sm bg-[var(--color-overlay-3)] px-2.5 py-1 text-[11px] font-normal tracking-wider text-[var(--color-text-muted)]">
-                    {emotion.category}
+                    {CATEGORY_LABELS[emotion.category] ?? emotion.category}
                   </span>
                   <span className="text-sm font-normal tracking-wider text-[var(--color-accent-green)]">
                     ⚡ {emotion.energyCost}

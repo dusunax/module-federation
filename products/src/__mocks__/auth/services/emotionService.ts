@@ -9,15 +9,14 @@ export interface VisibilityCondition {
 export interface Emotion {
   id: number;
   name: string;
-  emoji?: string;
-  description?: string;
-  category?: string;
+  emoji: string;
+  description: string;
+  category: string;
   energyCost: number;
-  status?: string;
-  story?: string;
-  effects?: string[];
-  createdAt?: { seconds?: number };
-  visibility?: VisibilityCondition;
+  status: string;
+  story: string;
+  createdAt: { seconds: number };
+  visibility: VisibilityCondition;
 }
 
 let emotions: Emotion[] = [];

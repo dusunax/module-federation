@@ -17,7 +17,6 @@ export interface Emotion {
   category: string;
   description: string;
   story: string;
-  effects: string[];
   published: boolean;
   image: string | null;
   energyCost?: number;
@@ -35,6 +34,17 @@ interface RarityConfig {
 }
 
 let rarityConfigCache: RarityConfig | null = null;
+
+function stripUndefined<T>(value: T): T {
+  if (Array.isArray(value)) return value.map((item) => stripUndefined(item)) as T;
+  if (value && typeof value === 'object') {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .filter(([, v]) => v !== undefined)
+      .map(([k, v]) => [k, stripUndefined(v)]);
+    return Object.fromEntries(entries) as T;
+  }
+  return value;
+}
 
 export async function getRarityConfig(): Promise<RarityConfig> {
   if (rarityConfigCache) return rarityConfigCache;
@@ -99,10 +109,10 @@ export async function getEmotionById(id: number): Promise<Emotion | null> {
 
 export async function createEmotion(data: Partial<Emotion>): Promise<void> {
   const docRef = doc(db, 'emotions', String(data.id));
-  await setDoc(docRef, { ...data, createdAt: serverTimestamp() });
+  await setDoc(docRef, stripUndefined({ ...data, createdAt: serverTimestamp() }));
 }
 
 export async function updateEmotion(id: number, data: Partial<Emotion>): Promise<void> {
   const docRef = doc(db, 'emotions', String(id));
-  await updateDoc(docRef, data);
+  await updateDoc(docRef, stripUndefined(data));
 }

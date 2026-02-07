@@ -113,7 +113,6 @@ declare module 'auth/services/emotionService' {
     category: string;
     description: string;
     story: string;
-    effects: string[];
     published: boolean;
     image: string | null;
   }
