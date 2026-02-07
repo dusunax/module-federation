@@ -20,7 +20,7 @@ function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const profileRef = useRef(null);
+  const profileRef = useRef<HTMLLIElement>(null);
 
   const items = useCartStore((state) => state.items);
   const rememberingItems = useRememberingStore((state) => state.rememberingItems);
@@ -32,7 +32,7 @@ function Header() {
     .filter((item) => !rememberingItemIds.includes(item.id))
     .reduce((total, item) => total + item.quantity, 0);
 
-  const isActive = (path) => {
+  const isActive = (path: string) => {
     if (path === '/') {
       return location.pathname === '/';
     }
@@ -50,8 +50,8 @@ function Header() {
   };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setIsProfileOpen(false);
       }
     };

@@ -3,7 +3,7 @@ const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPl
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/index.ts',
   mode: 'development',
   devServer: {
     port: 3001,
@@ -14,13 +14,13 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, '../shared')],
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-react'],
+            presets: ['@babel/preset-react', '@babel/preset-typescript'],
           },
         },
       },
@@ -50,7 +50,7 @@ module.exports = {
         auth: 'auth@http://localhost:3005/remoteEntry.js',
       },
       exposes: {
-        './Header': './src/Header',
+        './Header': './src/Header.tsx',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },
@@ -64,7 +64,7 @@ module.exports = {
     }),
   ],
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
     modules: ['node_modules', path.resolve(__dirname, 'node_modules')],
     alias: {
       '@shared': path.resolve(__dirname, '../shared'),
