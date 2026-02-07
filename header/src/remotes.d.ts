@@ -17,6 +17,7 @@ declare module 'auth/energyStore' {
 
 declare module 'auth/rememberingStore' {
   export const useRememberingStore: <T>(selector: (state: { rememberingItems: Record<string, unknown> }) => T) => T;
+  export const __setMockRememberingState: (next: { rememberingItems?: Record<string, unknown> }) => void;
 }
 
 declare module 'products/cartStore' {

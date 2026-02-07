@@ -38,20 +38,16 @@ describe('Header', () => {
     });
   });
 
-  it('renders title, energy, and cart count', () => {
-    render(
-      <MemoryRouter>
-        <Header />
-      </MemoryRouter>
-    );
+  it('제목, 에너지, 장바구니 수를 표시한다', () => {
+    renderHeader();
 
     expect(screen.getByText('Love at First Sight')).toBeInTheDocument();
-    expect(screen.getByText('⚡ 3/5')).toBeInTheDocument();
+    expect(screen.getByLabelText('energy-badge')).toHaveTextContent('⚡ 3/5');
     const cartLink = screen.getByLabelText('장바구니 페이지로 이동');
     expect(cartLink.querySelector('span')).toHaveTextContent('3');
   });
 
-  it('hides cart count when there are no items', () => {
+  it('장바구니가 비어있으면 수량 배지를 숨긴다', () => {
     __setMockCartState({ items: {} });
 
     renderHeader();
@@ -60,27 +56,23 @@ describe('Header', () => {
     expect(cartLink.querySelector('span')).toBeNull();
   });
 
-  it('shows login link when user is logged out', () => {
+  it('로그아웃 상태에서 로그인 링크를 표시한다', () => {
     __setMockAuthState({ user: null });
 
     renderHeader();
 
-    const loginLink = document.querySelector('a[href="/login"]');
-    expect(loginLink).toBeTruthy();
+    expect(screen.getByLabelText('login-link')).toBeInTheDocument();
   });
 
-  it('opens profile menu and calls signOut', async () => {
+  it('프로필 메뉴에서 로그아웃을 호출한다', async () => {
     const signOut = vi.fn();
     __setMockAuthState({ signOut });
 
     renderHeader('/dashboard');
 
-    const button = document.querySelector('button') as HTMLButtonElement;
     const user = userEvent.setup();
-    await user.click(button);
-
-    const logoutButton = screen.getByText('로그아웃');
-    await user.click(logoutButton);
+    await user.click(screen.getByLabelText('profile-menu-toggle'));
+    await user.click(screen.getByLabelText('profile-logout'));
 
     expect(signOut).toHaveBeenCalled();
   });

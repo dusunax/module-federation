@@ -17,7 +17,7 @@ vi.mock('sonner', () => ({
 }));
 
 describe('CartList', () => {
-  it('clears all items on confirm', async () => {
+  it('확인 시 장바구니를 비운다', async () => {
     const removeFromCart = vi.fn();
     const normalItems = [
       {

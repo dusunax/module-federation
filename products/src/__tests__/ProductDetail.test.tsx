@@ -75,7 +75,7 @@ describe('ProductDetail', () => {
     vi.clearAllMocks();
   });
 
-  it('renders detail route in App', async () => {
+  it('상세 라우트를 렌더링한다', async () => {
     renderWithProviders(<App />, '/detail/1');
 
     expect(await screen.findByText('첫눈에 반함')).toBeInTheDocument();
@@ -84,7 +84,7 @@ describe('ProductDetail', () => {
     ).toBeInTheDocument();
   });
 
-  it('adds product to cart and shows toast', async () => {
+  it('상품을 장바구니에 담고 토스트를 보여준다', async () => {
     renderWithProviders(
       <Routes>
         <Route path="/detail/:id" element={<ProductDetail />} />

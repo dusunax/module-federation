@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { EmptyCart } from '../features/cart-management/components/EmptyCart/EmptyCart';
 
 describe('EmptyCart', () => {
-  it('shows empty cart message', () => {
+  it('빈 장바구니 문구를 표시한다', () => {
     render(<EmptyCart />);
 
     expect(screen.getByText('장바구니가 비어있습니다')).toBeInTheDocument();

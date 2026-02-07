@@ -55,7 +55,7 @@ describe('ProductList', () => {
     __setMockEmotions(data);
   });
 
-  it('renders product cards from api data', async () => {
+  it('API 데이터로 상품 카드가 렌더링된다', async () => {
     renderWithProviders(<ProductList />);
 
     expect(screen.getByLabelText('products-search')).toBeInTheDocument();

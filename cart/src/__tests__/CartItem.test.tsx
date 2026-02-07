@@ -17,7 +17,7 @@ vi.mock('sonner', () => ({
 }));
 
 describe('CartItem', () => {
-  it('updates quantity with plus/minus buttons', async () => {
+  it('플러스/마이너스 버튼으로 수량을 변경한다', async () => {
     const updateQuantity = vi.fn();
     const removeFromCart = vi.fn();
 
@@ -41,7 +41,7 @@ describe('CartItem', () => {
     expect(updateQuantity).toHaveBeenCalledWith(1, 3);
   });
 
-  it('removes item on confirm', async () => {
+  it('확인 시 아이템을 삭제한다', async () => {
     const updateQuantity = vi.fn();
     const removeFromCart = vi.fn();
 

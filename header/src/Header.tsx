@@ -77,7 +77,10 @@ function Header() {
         </Link>
         <ul className="m-0 flex list-none items-center gap-3 p-0">
           <li>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-green-overlay-3)] px-3 py-0.5 font-semibold text-[var(--color-accent-green)]">
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-green-overlay-3)] px-3 py-0.5 font-semibold text-[var(--color-accent-green)]"
+              aria-label="energy-badge"
+            >
               ⚡ {currentEnergy}/{maxEnergy}
             </span>
           </li>
@@ -106,7 +109,10 @@ function Header() {
             >
               <ShoppingCartIcon className="h-4 w-4" />
               {totalItems > 0 && (
-                <span className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-accent-orange)] text-xs font-bold text-white">
+                <span
+                  className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-accent-orange)] text-xs font-bold text-white"
+                  aria-label="cart-count"
+                >
                   {totalItems}
                 </span>
               )}
@@ -129,6 +135,7 @@ function Header() {
             <li className="relative" ref={profileRef}>
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
+                aria-label="profile-menu-toggle"
                 className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[var(--color-border-primary)] bg-transparent transition-colors hover:bg-[var(--color-overlay-3)]"
               >
                 {user.photoURL && (
@@ -215,6 +222,7 @@ function Header() {
                   <div className="border-t border-[var(--color-border-primary)] py-1">
                     <button
                       onClick={handleSignOut}
+                      aria-label="profile-logout"
                       className="flex w-full cursor-pointer items-center gap-2 bg-transparent px-4 py-2 text-left text-sm text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]"
                     >
                       <LogOutIcon className="h-4 w-4" /> 로그아웃
@@ -227,6 +235,7 @@ function Header() {
             <Link
               to="/login"
               state={{ from: location }}
+              aria-label="login-link"
               className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border text-2xl no-underline transition-colors hover:bg-[var(--color-overlay-3)]"
             >
               <UserIcon className="h-4 w-4" />
