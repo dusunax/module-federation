@@ -12,6 +12,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@shared': r('../shared'),
+      react: r('node_modules/react'),
+      'react-dom': r('node_modules/react-dom'),
+      'react-router-dom': r('node_modules/react-router-dom'),
       // 모듈
       'host': r('src/__mocks__/host'),
       'auth': r('src/__mocks__/auth'),
