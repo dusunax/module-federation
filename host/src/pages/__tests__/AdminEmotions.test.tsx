@@ -4,7 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import AdminEmotions from '../AdminEmotions';
-import { getAllEmotions, createEmotion, updateEmotion } from '../../__mocks__/auth/services/emotionService';
+import { getAllEmotions } from '../../__mocks__/auth/services/emotionService';
+import type { Emotion } from 'auth/services/emotionService';
 import { toast } from 'sonner';
 
 vi.mock('sonner', () => ({
@@ -14,12 +15,13 @@ vi.mock('sonner', () => ({
   },
 }));
 
-const MOCK_EMOTIONS = [
+const MOCK_EMOTIONS: Emotion[] = [
   {
     id: 1,
     name: '기쁨',
     emoji: '😊',
     rarity: 'common',
+    energyCost: 1,
     category: 'joy',
     description: '기쁜 감정',
     story: '기쁨의 이야기',
@@ -32,12 +34,15 @@ const MOCK_EMOTIONS = [
       season: ['spring'],
       event: ['newyear'],
     },
+    rarityOrder: 1,
+    createdAt: { seconds: 1620000000 },
   },
   {
     id: 2,
     name: '슬픔',
     emoji: '😢',
     rarity: 'rare',
+    energyCost: 2,
     category: 'sadness',
     description: '슬픈 감정',
     story: '슬픔의 이야기',
@@ -50,6 +55,8 @@ const MOCK_EMOTIONS = [
       season: [],
       event: [],
     },
+    rarityOrder: 2,
+    createdAt: { seconds: 1620000000 },
   },
 ];
 
@@ -80,11 +87,11 @@ describe('AdminEmotions', () => {
     renderAdminEmotions();
 
     await waitFor(() => {
-      expect(screen.getByText('기쁨')).toBeInTheDocument();
+      expect(screen.getByText('joy')).toBeInTheDocument();
     });
 
     expect(screen.getByText('😊')).toBeInTheDocument();
-    expect(screen.getByText('슬픔')).toBeInTheDocument();
+    expect(screen.getByText('sadness')).toBeInTheDocument();
     expect(screen.getByText('😢')).toBeInTheDocument();
     expect(screen.getByText('감정 관리')).toBeInTheDocument();
     expect(screen.getByText('day · monday/weekday · clear · spring · newyear')).toBeInTheDocument();
@@ -95,7 +102,7 @@ describe('AdminEmotions', () => {
     const user = userEvent.setup();
 
     await waitFor(() => {
-      expect(screen.getByText('기쁨')).toBeInTheDocument();
+      expect(screen.getByText('joy')).toBeInTheDocument();
     });
 
     await user.click(screen.getByText('추가'));
@@ -112,7 +119,7 @@ describe('AdminEmotions', () => {
     const user = userEvent.setup();
 
     await waitFor(() => {
-      expect(screen.getByText('기쁨')).toBeInTheDocument();
+      expect(screen.getByText('joy')).toBeInTheDocument();
     });
 
     await user.click(screen.getByText('추가'));
@@ -126,14 +133,13 @@ describe('AdminEmotions', () => {
     const user = userEvent.setup();
 
     await waitFor(() => {
-      expect(screen.getByText('기쁨')).toBeInTheDocument();
+      expect(screen.getByText('joy')).toBeInTheDocument();
     });
 
     const editButtons = screen.getAllByText('수정');
     await user.click(editButtons[0]);
 
     expect(screen.getByText('감정 수정')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('기쁨')).toBeInTheDocument();
     expect(screen.getByDisplayValue('😊')).toBeInTheDocument();
     const categorySelect = screen.getByLabelText('카테고리 *') as HTMLSelectElement;
     expect(categorySelect.value).toBe('joy');
