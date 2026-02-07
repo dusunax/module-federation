@@ -104,6 +104,7 @@ function ProductList(): React.ReactElement {
       <div className="mb-4">
         <input
           type="text"
+          aria-label="products-search"
           placeholder="순간, 카테고리, 스토리로 검색..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -115,6 +116,7 @@ function ProductList(): React.ReactElement {
       <div className="mb-6 flex items-center gap-2">
         <button
           onClick={handleDateToggle}
+          aria-label="products-sort-date"
           className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-normal tracking-wide transition-all duration-200 ${
             dateSort
               ? 'border-[var(--color-border-green)] bg-[var(--color-green-overlay-1)] text-[var(--color-accent-green)]'
@@ -130,6 +132,7 @@ function ProductList(): React.ReactElement {
         </button>
         <button
           onClick={handleEnergyToggle}
+          aria-label="products-sort-energy"
           className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-normal tracking-wide transition-all duration-200 ${
             energySort
               ? 'border-[var(--color-border-green)] bg-[var(--color-green-overlay-1)] text-[var(--color-accent-green)]'
@@ -188,6 +191,9 @@ function ProductList(): React.ReactElement {
               <div
                 key={emotion.id}
                 onClick={() => handleProductClick(emotion.id)}
+                role="button"
+                tabIndex={0}
+                aria-label={`product-card-${emotion.id}`}
                 className="relative flex cursor-pointer flex-col rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] p-6 text-left backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-accent-green)] hover:bg-[var(--color-overlay-3)]"
               >
                 {/* 상태 표시 */}

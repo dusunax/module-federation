@@ -155,6 +155,7 @@ function ProductDetail(): React.ReactElement {
           <button
             className="flex-1 cursor-pointer rounded border border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] px-4 py-4 text-[15px] font-normal tracking-wider text-[#FFF8D4] transition-all duration-300 hover:border-[rgba(163,176,135,0.7)] hover:bg-[rgba(163,176,135,0.5)]"
             onClick={handleAddToCart}
+            aria-label="product-add-to-cart"
           >
             {isInCart ? '더 담기' : '담기'}
           </button>

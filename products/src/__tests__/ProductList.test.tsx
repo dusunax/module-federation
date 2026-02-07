@@ -58,9 +58,10 @@ describe('ProductList', () => {
   it('renders product cards from api data', async () => {
     renderWithProviders(<ProductList />);
 
-    expect(await screen.findByText('첫눈에 반함')).toBeInTheDocument();
-    expect(screen.getByText('설레는 밤')).toBeInTheDocument();
-    expect(screen.getByText('⚡ 2')).toBeInTheDocument();
-    expect(screen.getByText('⚡ 5')).toBeInTheDocument();
+    expect(screen.getByLabelText('products-search')).toBeInTheDocument();
+    expect(screen.getByLabelText('products-sort-date')).toBeInTheDocument();
+    expect(screen.getByLabelText('products-sort-energy')).toBeInTheDocument();
+    expect(await screen.findByLabelText('product-card-1')).toBeInTheDocument();
+    expect(screen.getByLabelText('product-card-2')).toBeInTheDocument();
   });
 });

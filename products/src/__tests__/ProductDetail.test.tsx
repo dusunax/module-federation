@@ -92,7 +92,7 @@ describe('ProductDetail', () => {
       '/detail/1'
     );
 
-    const button = await screen.findByRole('button', { name: '담기' });
+    const button = await screen.findByLabelText('product-add-to-cart');
     await userEvent.click(button);
 
     expect(cartState.state.addToCart).toHaveBeenCalled();
