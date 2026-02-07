@@ -46,6 +46,13 @@ try {
 - Constants: `UPPER_SNAKE_CASE`
 - Files: `camelCase.ts` or `PascalCase.tsx`
 
+## Testing
+
+- Prefer stable selectors over visible text for UI tests.
+- Add explicit `aria-label` attributes for test targets.
+- In tests, query elements by label (e.g., `getByLabelText`) instead of text content.
+- Use text assertions only for user-visible copy that must be verified.
+
 ## Before Completion
 
 - [ ] No console.log in client-side production code
