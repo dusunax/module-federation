@@ -4,7 +4,6 @@ import {
   VisibilityCondition,
   CurrentConditions,
   CONDITION_META,
-  isEmotionVisible,
 } from '../utils/conditions';
 
 interface EmotionLike {
@@ -24,9 +23,24 @@ interface ConditionGroup {
   conditionLabel: string;
   emotionEmojis: string[];
   isMet: boolean;
+  isComposite: boolean;
 }
 
-function isConditionMet(conditionKey: string, conditions: CurrentConditions): boolean {
+interface ConditionCategory {
+  keys: string[];
+}
+
+function splitConditionKey(conditionKey: string): string[] {
+  return conditionKey.split('&&').map((part) => part.trim()).filter(Boolean);
+}
+
+function getConditionLabel(conditionKey: string): string {
+  const keys = splitConditionKey(conditionKey);
+  const labels = keys.map((key) => CONDITION_META[key]?.label ?? key);
+  return labels.join(' · ');
+}
+
+function isSingleConditionMet(conditionKey: string, conditions: CurrentConditions): boolean {
   const allDays = [conditions.day, ...conditions.dayExtras];
 
   if (['day', 'night'].includes(conditionKey)) return conditions.time === conditionKey;
@@ -36,6 +50,30 @@ function isConditionMet(conditionKey: string, conditions: CurrentConditions): bo
   if (['clear', 'cloudy', 'rain', 'snow', 'storm'].includes(conditionKey)) return conditions.weather === conditionKey;
   if (['spring', 'summer', 'autumn', 'winter'].includes(conditionKey)) return conditions.season === conditionKey;
   return conditions.events.includes(conditionKey);
+}
+
+function isConditionMet(conditionKey: string, conditions: CurrentConditions): boolean {
+  const keys = splitConditionKey(conditionKey);
+  return keys.every((key) => isSingleConditionMet(key, conditions));
+}
+
+function addGroupEmoji(groupMap: Map<string, Set<string>>, key: string, emoji: string): void {
+  if (!groupMap.has(key)) groupMap.set(key, new Set());
+  groupMap.get(key)!.add(emoji);
+}
+
+function buildConditionCombos(categories: ConditionCategory[]): string[][] {
+  if (categories.length === 0) return [];
+
+  return categories.reduce<string[][]>((acc, category) => {
+    const next: string[][] = [];
+    for (const combo of acc) {
+      for (const key of category.keys) {
+        next.push([...combo, key]);
+      }
+    }
+    return next;
+  }, [[]]);
 }
 
 function ConditionHintPopup({ emotions, conditions, isOpen, onClose }: Props): React.ReactElement | null {
@@ -61,24 +99,34 @@ function ConditionHintPopup({ emotions, conditions, isOpen, onClose }: Props): R
         continue;
       }
 
-      // Only include emoji if the entire visibility condition is met
-      const isVisible = isEmotionVisible({ visibility: v }, conditions);
-      if (!isVisible) {
+      const categories: ConditionCategory[] = [
+        { keys: v.time },
+        { keys: v.day },
+        { keys: v.weather },
+        { keys: v.season },
+        { keys: v.event },
+      ].filter((category) => category.keys.length > 0);
+
+      const emoji = emotion.emoji ?? '?';
+      if (categories.length <= 1) {
+        const singleKeys = categories.length === 0 ? [] : categories[0].keys;
+        for (const key of singleKeys) addGroupEmoji(groupMap, key, emoji);
         continue;
       }
 
-      const allKeys = [...v.time, ...v.day, ...v.weather, ...v.season, ...v.event];
-      for (const key of allKeys) {
-        if (!groupMap.has(key)) groupMap.set(key, new Set());
-        groupMap.get(key)!.add(emotion.emoji ?? '?');
+      const combos = buildConditionCombos(categories);
+      for (const combo of combos) {
+        const comboKey = combo.join(' && ');
+        addGroupEmoji(groupMap, comboKey, emoji);
       }
     }
 
     const conditionGroups = Array.from(groupMap.entries()).map(([key, emojis]) => ({
       conditionKey: key,
-      conditionLabel: CONDITION_META[key]?.label ?? key,
+      conditionLabel: getConditionLabel(key),
       emotionEmojis: Array.from(emojis),
       isMet: isConditionMet(key, conditions),
+      isComposite: key.includes('&&'),
     }));
     const activeGroups = conditionGroups.filter((group) => group.isMet);
     const inactiveGroups = conditionGroups.filter((group) => !group.isMet);
@@ -89,6 +137,7 @@ function ConditionHintPopup({ emotions, conditions, isOpen, onClose }: Props): R
             conditionLabel: '항상',
             emotionEmojis: Array.from(alwaysEmojis),
             isMet: true,
+            isComposite: false,
           }
         : null;
 
@@ -125,36 +174,59 @@ function ConditionHintPopup({ emotions, conditions, isOpen, onClose }: Props): R
         </div>
 
         <div className="flex flex-col gap-2">
-          {groups.map((group) => (
-            <div
-              key={group.conditionKey}
-              className={`flex items-center justify-between gap-2.5 rounded-md px-3 py-2 ${
-                group.isMet
-                  ? 'bg-[var(--color-green-overlay-1)]'
-                  : 'bg-[var(--color-overlay-2)] opacity-50'
-              }`}
-            >
-              <div className="flex min-w-0 items-center gap-2">
-                {group.isMet ? (
-                  <Check size={16} className="shrink-0 text-[var(--color-accent-green)]" />
-                ) : (
-                  <Lock size={14} className="shrink-0 text-[var(--color-text-faded)]" />
-                )}
-                <span className="shrink-0 text-sm">{group.conditionLabel}:</span>
+          {(() => {
+            const singleGroups = groups.filter((group) => !group.isComposite);
+            const compositeGroups = groups.filter((group) => group.isComposite);
+
+            const renderGroup = (group: ConditionGroup) => (
+              <div
+                key={group.conditionKey}
+                className={`flex items-center justify-between gap-2.5 rounded-md px-3 py-2 ${
+                  group.isMet
+                    ? 'bg-[var(--color-green-overlay-1)]'
+                    : 'bg-[var(--color-overlay-2)] opacity-50'
+                }`}
+              >
+                <div className="flex min-w-0 items-center gap-2">
+                  {group.isMet ? (
+                    <Check size={16} className="shrink-0 text-[var(--color-accent-green)]" />
+                  ) : (
+                    <Lock size={14} className="shrink-0 text-[var(--color-text-faded)]" />
+                  )}
+                  <span className="shrink-0 text-sm">{group.conditionLabel}:</span>
+                </div>
+                <div className="flex flex-wrap justify-end gap-1 text-[var(--color-text-muted)]">
+                  {group.isMet && group.emotionEmojis.length > 0 ? (
+                    group.emotionEmojis.map((emoji, i) => (
+                      <span key={i} className="text-base text-[var(--color-text-primary)]">
+                        {emoji}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-sm">-</span>
+                  )}
+                </div>
               </div>
-              <div className="flex flex-wrap justify-end gap-1 text-[var(--color-text-muted)]">
-                {group.isMet && group.emotionEmojis.length > 0 ? (
-                  group.emotionEmojis.map((emoji, i) => (
-                    <span key={i} className="text-base text-[var(--color-text-primary)]">
-                      {emoji}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-sm">-</span>
+            );
+
+            return (
+              <>
+                {singleGroups.length > 0 && (
+                  <div className="px-1 pt-1 text-[11px] font-medium tracking-wider text-[var(--color-text-muted)]">
+                    단일 조건
+                  </div>
                 )}
-              </div>
-            </div>
-          ))}
+                {singleGroups.map(renderGroup)}
+
+                {compositeGroups.length > 0 && (
+                  <div className="px-1 pt-2 text-[11px] font-medium tracking-wider text-[var(--color-text-muted)]">
+                    복합 조건
+                  </div>
+                )}
+                {compositeGroups.map(renderGroup)}
+              </>
+            );
+          })()}
 
           {groups.length === 0 && (
             <p className="text-center text-sm text-[var(--color-text-muted)]">

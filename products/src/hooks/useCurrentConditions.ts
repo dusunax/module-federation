@@ -11,6 +11,7 @@ import {
 export interface ConditionViewModel {
   timeHours: string;
   timeMinutes: string;
+  timeLabel: string;
   isNight: boolean;
   seasonKey: 'spring' | 'summer' | 'autumn' | 'winter';
   dayText: string;
@@ -28,6 +29,13 @@ const DAY_LABELS: Record<string, string> = {
   friday: '금',
   saturday: '토',
   sunday: '일',
+  weekday: '평일',
+  weekend: '주말',
+};
+
+const TIME_LABELS: Record<string, string> = {
+  day: '낮',
+  night: '밤',
 };
 
 const WEATHER_LABELS: Record<string, string> = {
@@ -73,10 +81,12 @@ function buildConditions(
 function buildViewModel(conditions: CurrentConditions, now: Date): ConditionViewModel {
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
-  const isWeekend = conditions.dayExtras.includes('weekend');
-  const dayLabel = DAY_LABELS[conditions.day] ?? conditions.day;
+  const dayLabels = [conditions.day, ...conditions.dayExtras]
+    .map((key) => DAY_LABELS[key] ?? key)
+    .filter(Boolean);
   const isNight = conditions.time === 'night';
-  const dayText = `${dayLabel} (${isWeekend ? '주말' : '평일'})`;
+  const dayText = dayLabels.join('·');
+  const timeLabel = TIME_LABELS[conditions.time] ?? conditions.time;
   const weatherLabel = WEATHER_LABELS[conditions.weather];
   const seasonLabel = SEASON_LABELS[conditions.season];
   const eventLabels = conditions.events
@@ -90,6 +100,7 @@ function buildViewModel(conditions: CurrentConditions, now: Date): ConditionView
   return {
     timeHours: hours,
     timeMinutes: minutes,
+    timeLabel,
     isNight,
     seasonKey: conditions.season,
     dayText,

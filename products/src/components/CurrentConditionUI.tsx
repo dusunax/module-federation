@@ -10,6 +10,7 @@ const CurrentConditionUI = ({ view }: CurrentConditionUIProps) => {
   const {
     timeHours,
     timeMinutes,
+    timeLabel,
     isNight,
     seasonKey,
     dayText,
@@ -20,6 +21,7 @@ const CurrentConditionUI = ({ view }: CurrentConditionUIProps) => {
   } = view;
 
   const conditionTextParts = [
+    timeLabel,
     dayText,
     weatherLabel,
     seasonLabel,
