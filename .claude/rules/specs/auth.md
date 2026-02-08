@@ -163,6 +163,6 @@ users/{uid}/
   ├── processing/{id}    [cartItemId, productInfo, startTime, duration, energyCost, status]
   └── orders/{orderId}   [id, orderDate, items[], totalEnergy, totalItems, status]
 
-emotions/{id}            [id, name, emoji, rarity, category, description, story, effects, published, image]
+emotions/{id}            [id, name, emoji, rarity, category, description, story, published, image, visibility]
 config/rarity            [key: { energyCost, order }]
 ```

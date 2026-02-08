@@ -8,7 +8,7 @@ interface AppLayoutProps {
 function AppLayout({ subtitle, children }: AppLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-between border-b border-[var(--color-border-primary)] bg-black px-6 py-2">
+      <header className="flex items-center justify-between border-b border-[var(--color-border-primary)] bg-black px-3 md:px-6 py-2">
         <h1 className="font-normal tracking-wider text-[var(--color-text-primary)]">
           Between Lines
         </h1>
@@ -19,7 +19,7 @@ function AppLayout({ subtitle, children }: AppLayoutProps) {
         )}
       </header>
 
-      <main className="min-h-0 flex-1 p-6">{children}</main>
+      <main className="min-h-0 flex-1 p-3 md:p-6">{children}</main>
 
       <footer className="border-t border-[var(--color-border-primary)] bg-black  p-4 text-center font-normal">
         <p className="text-sm text-[var(--color-text-muted)]">

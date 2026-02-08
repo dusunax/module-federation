@@ -34,3 +34,16 @@ declare module 'auth/authStore' {
 declare module 'auth/energyStore' {
   export const useEnergyStore: <T>(selector: (state: { current: number }) => T) => T;
 }
+
+declare module 'auth/store/rememberingStore' {
+  export interface RememberingItem {
+    id: number;
+    visibleItemId: string;
+    cartItemId: number;
+    productInfo: ProductInfo;
+    startTime: number;
+    duration: number;
+    energyCost: number;
+    status: string;
+  }
+}

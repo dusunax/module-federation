@@ -111,22 +111,22 @@ function ProductList() {
   };
 
   return (
-    <div className="mx-auto max-w-[1400px] px-5">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex">
+    <div className="mx-auto max-w-[1400px] px-3 md:px-5">
+      <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
+        <div className="flex relative">
           {/* 현재 조건 */}
           <CurrentConditionUI view={view} />
           
           <button
             onClick={() => setHintOpen(true)}
             aria-label="condition-hint-button"
-            className="self-end flex h-8 w-8 items-center justify-center rounded-full border-2 text-2xl no-underline transition-colors -translate-x-4 border-[var(--color-border-primary)] hover:bg-[var(--color-overlay-3)] cursor-pointer" 
+            className="self-end flex absolute bottom-0 right-0 md:static h-8 w-8 shrink-0 items-center md:-translate-x-1/2  justify-center rounded-full border-2 text-2xl no-underline transition-colors bg-[var(--color-overlay-3)] border-[var(--color-border-primary)] hover:bg-[var(--color-overlay-3)] cursor-pointer" 
           >
             <InfoIcon className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="flex-1 min-w-0 flex flex-col items-end gap-3">
+        <div className="flex-1 min-w-0 flex flex-col items-stretch md:items-end gap-3">
           {/* 검색 */}
           <input
             type="text"
@@ -134,7 +134,7 @@ function ProductList() {
             placeholder="순간, 카테고리, 스토리로 검색..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full max-w-[500px] rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-3)] px-4 py-3.5 text-sm font-normal text-[var(--color-text-primary)] outline-none transition-all duration-300 focus:border-[var(--color-accent-green)] focus:bg-[var(--color-overlay-4)]"
+            className="w-full md:max-w-[500px] rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-3)] px-4 py-3.5 text-sm font-normal text-[var(--color-text-primary)] outline-none transition-all duration-300 focus:border-[var(--color-accent-green)] focus:bg-[var(--color-overlay-4)]"
           />
 
           {/* 정렬 */}
@@ -200,7 +200,7 @@ function ProductList() {
 
       {/* 순간 카드 목록 */}
       {!isLoading && (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4 md:gap-6">
           {visibleEmotions?.map((emotion) => {
             // 장바구니에 담겨있으면 held 상태로 표시
             // 같은 productId를 가진 아이템이 있는지 확인
@@ -222,7 +222,7 @@ function ProductList() {
                 role="button"
                 tabIndex={0}
                 aria-label={`product-card-${emotion.id}`}
-                className="relative flex cursor-pointer flex-col rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] p-6 text-left backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-accent-green)] hover:bg-[var(--color-overlay-3)]"
+                className="relative flex cursor-pointer flex-col rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] p-4 md:p-6 text-left backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-accent-green)] hover:bg-[var(--color-overlay-3)]"
               >
                 {/* 상태 표시 */}
                 <div

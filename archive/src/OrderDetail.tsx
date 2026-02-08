@@ -2,6 +2,8 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useOrderStore } from 'products/orderStore';
+import { useAuthStore } from 'auth/authStore';
+import { deleteUserOrder } from 'auth/services/orderService';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
 import showConfirmToast from '@shared/components/showConfirmToast';
 import BackButton from '@shared/components/BackButton';
@@ -12,6 +14,7 @@ function OrderDetail() {
   const navigate = useNavigate();
   const getOrder = useOrderStore((state) => state.getOrder);
   const removeOrder = useOrderStore((state) => state.removeOrder);
+  const user = useAuthStore((state) => state.user);
 
   const order = getOrder(Number(orderId));
 
@@ -20,10 +23,19 @@ function OrderDetail() {
       title: '정말로 삭제하시겠어요?',
       confirmLabel: '삭제',
       cancelLabel: '취소',
-      onConfirm: () => {
-        removeOrder(Number(orderId));
-        toast.success('기억이 삭제되었습니다.');
-        navigate('/archive');
+      onConfirm: async () => {
+        try {
+          if (user && user.uid) {
+            await deleteUserOrder(user.uid, orderId!);
+          } else {
+            removeOrder(Number(orderId));
+          }
+          toast.success('기억이 삭제되었습니다.');
+          navigate('/archive');
+        } catch (err) {
+          console.error('Failed to delete order:', err);
+          toast.error('삭제 실패');
+        }
       },
     });
   };
@@ -68,7 +80,7 @@ function OrderDetail() {
 
       {/* 기록 정보 */}
       <div
-        className="mb-8 rounded-lg border bg-[rgba(67,86,99,0.15)] p-8 backdrop-blur-[10px]"
+        className="mb-8 rounded-lg border bg-[rgba(67,86,99,0.15)] p-5 md:p-8 backdrop-blur-[10px]"
         style={{ borderColor: statusConfig.color }}
       >
         <div className="mb-5 flex items-start justify-between">
@@ -103,10 +115,10 @@ function OrderDetail() {
               <div
                 key={product.id}
                 aria-label={`order-item-${product.id}`}
-                className="flex gap-6 rounded-lg border border-[rgba(255,248,212,0.15)] bg-[rgba(67,86,99,0.15)] p-6 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,248,212,0.25)] hover:bg-[rgba(67,86,99,0.25)]"
+                className="flex flex-wrap gap-4 md:gap-6 rounded-lg border border-[rgba(255,248,212,0.15)] bg-[rgba(67,86,99,0.15)] p-4 md:p-6 backdrop-blur-[10px] transition-all duration-300 hover:border-[rgba(255,248,212,0.25)] hover:bg-[rgba(67,86,99,0.25)]"
               >
               {/* 이모지 */}
-              <div className="shrink-0 text-[56px] leading-none opacity-90">{product.emoji}</div>
+              <div className="shrink-0 text-[40px] md:text-[56px] leading-none opacity-90">{product.emoji}</div>
 
               {/* 상품 정보 */}
               <div className="min-w-0 flex-1">
@@ -136,7 +148,7 @@ function OrderDetail() {
       </div>
 
       {/* 기록 요약 */}
-      <div className="rounded-lg border border-[rgba(163,176,135,0.2)] bg-[rgba(67,86,99,0.15)] p-8 backdrop-blur-[10px]">
+      <div className="rounded-lg border border-[rgba(163,176,135,0.2)] bg-[rgba(67,86,99,0.15)] p-5 md:p-8 backdrop-blur-[10px]">
         <div className="mb-4 flex items-center justify-between">
           <p className="m-0 text-[13px] font-normal tracking-wide text-[rgba(255,248,212,0.7)]">
             총 기록된 순간

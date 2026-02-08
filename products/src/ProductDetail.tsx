@@ -84,16 +84,16 @@ function ProductDetail(): React.ReactElement {
   const categoryLabel = emotion?.category ? CATEGORY_LABELS[emotion.category] ?? emotion.category : '';
 
   return (
-    <div className="mx-auto max-w-[900px] p-5">
+    <div className="mx-auto max-w-[900px] p-3 md:p-5">
       {/* 뒤로가기 버튼 */}
       <BackButton to="/" label="목록으로" className="mb-6" />
 
       {/* 순간 상세 정보 */}
-      <div className="rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-10 backdrop-blur-[10px]">
-        <div className="mb-10 flex flex-wrap gap-10">
+      <div className="rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-5 md:p-10 backdrop-blur-[10px]">
+        <div className="mb-6 md:mb-10 flex flex-wrap gap-5 md:gap-10">
           {/* 이모지 영역 */}
-          <div className="flex-[0_0_180px] text-center">
-            <div className="mb-4 text-[100px] leading-none opacity-90">{emotion?.emoji}</div>
+          <div className="flex-[0_0_100px] md:flex-[0_0_180px] text-center">
+            <div className="mb-4 text-[64px] md:text-[100px] leading-none opacity-90">{emotion?.emoji}</div>
             {/* 상태 표시 */}
             <div
               className={` rounded-sm border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-3 py-1.5 text-[11px] font-normal tracking-wider ${statusStyle.label ? 'inline-block' : 'hidden'}`}
@@ -104,7 +104,7 @@ function ProductDetail(): React.ReactElement {
           </div>
 
           {/* 기본 정보 */}
-          <div className="min-w-[300px] flex-1">
+          <div className="min-w-0 md:min-w-[300px] flex-1">
             <h1 className="mb-4 mt-0 text-[28px] font-normal leading-snug tracking-wider text-[#FFF8D4]">
               {emotion?.name}
             </h1>
@@ -128,7 +128,7 @@ function ProductDetail(): React.ReactElement {
         {/* 상황 스토리 */}
         <div className="mb-[30px]">
           <h2 className="mb-3 text-base font-normal tracking-wider text-[#FFF8D4]">상황 스토리</h2>
-          <div className="rounded border-l-2 border-[#A3B087] bg-[rgba(67,86,99,0.3)] p-6">
+          <div className="rounded border-l-2 border-[#A3B087] bg-[rgba(67,86,99,0.3)] p-4 md:p-6">
             <p className="m-0 text-[15px] font-normal italic leading-[1.9] text-[#FFF8D4]">
               "{emotion?.story}"
             </p>

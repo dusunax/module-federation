@@ -42,7 +42,7 @@ react, react-dom, react-router-dom, @tanstack/react-query, zustand, sonner
 
 - URL 파라미터: `id`
 - 표시: 이모지(100px), 이름, 에너지, 카테고리(한글 라벨), 설명, 스토리
-- 장바구니 담기: `addToCart(emotion)` → 토스트 ("담기" / "더 담기")
+- 장바구니 담기: `addToCart(emotion)` → 토스트 ("이 순간이 N만큼 담겨있어요")
 - remembering 아이템 제외하여 수량 계산
 - React Query: `['emotion', id]`
 
@@ -92,7 +92,14 @@ interface OrderState {
   itemProgress: Record<number, ItemProgress>;
   orderStatuses: Record<number, string>;
   completeOrder(): Order | null;
+  completeRememberingItems(): Order | null;
+  getOrder(orderId: number): Order | undefined;
+  removeOrder(orderId: number): void;
   startRemembering(itemIds?: number[]): void;
+  updateItemProgress(itemId: number, progress: number): void;
+  cancelItemRemembering(itemId: number): ItemProgress | null;
+  completeItemRemembering(itemId: number): Order | null;
+  updateProgress(newProgress: number): void;
   updateOrderStatus(productId: number, status: string): void;
   updateAllOrderStatuses(statuses: Record<number, string>): void;
   // ... 개별 아이템 remembering 관리 메서드들

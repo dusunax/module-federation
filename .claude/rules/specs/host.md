@@ -2,7 +2,7 @@
 
 ## Overview
 
-**앱 이름**: Love at First Sight
+**앱 이름**: Love at Sight
 **역할**: Module Federation 호스트 앱. 5개 리모트(header, products, cart, archive, auth)를 통합하고, 인증·대시보드·감정 관리 등 핵심 기능 제공.
 **포트**: `http://localhost:3000`
 
@@ -85,9 +85,9 @@ react, react-dom, react-router-dom, @tanstack/react-query, zustand, sonner
 - 유틸: `fillDateGaps()`, `formatDateLabel()`, `groupOrdersByDate()`, `getYTicks()`
 
 ### AdminEmotions (`/src/pages/AdminEmotions.tsx`)
-- 감정 목록 테이블 (ID, 이모지, 이름, 희귀도, 카테고리, 공개 여부)
-- 추가/수정 모달 (이름, 이모지, 희귀도, 카테고리, 설명, 스토리, 효과, 공개 토글)
-- 폼 검증: name, emoji, category 필수
+- 감정 목록 테이블 (ID, 이모지, 이름, 희귀도, 카테고리, 노출 조건, 공개 여부)
+- 추가/수정 모달 (이름, 이모지, 희귀도, 카테고리, 설명, 스토리, 공개 토글, 노출 조건: 시간/요일/날씨/계절/이벤트)
+- 폼 검증: name, emoji, category, rarity, description, story 필수 (미충족 시 저장 버튼 비활성화)
 - API: `emotionService.getAllEmotions()`, `createEmotion()`, `updateEmotion()`
 - React Query 캐시 (`['admin-emotions']`) 저장 후 무효화
 
@@ -164,24 +164,24 @@ interface Emotion {
   category: string;
   description: string;
   story: string;
-  effects: string[];
   published: boolean;
   image: string | null;
+  rarityOrder: number;
+  createdAt: { seconds: number };
+  visibility: VisibilityCondition;
 }
 ```
 
 ## Bootstrap 순서
 
-1. MSW 시작 (`worker.start({ onUnhandledRequest: 'bypass' })`)
-2. Firebase auth 리스너 초기화 (`initAuthListener()`)
-3. React 렌더링 (`createRoot(#root).render(<App />)`)
+1. Firebase auth 리스너 초기화 (`initAuthListener()`)
+2. React 렌더링 (`createRoot(#root).render(<App />)`)
 
 ## Testing
 
 - **프레임워크**: Vitest + jsdom + @testing-library/react
 - **모킹**: 모든 리모트 모듈을 `src/__mocks__/`에서 모킹
 - **테스트 헬퍼**: `__setAuthState()`, `__resetAuthState()`, `__setEnergyState()`, `__resetEnergyState()`
-- **MSW**: `src/mocks/handlers.ts` (API 인터셉트)
 - **테스트 파일**: ProtectedRoute, AdminRoute, Login, Dashboard, AdminEmotions
 
 ## Styling

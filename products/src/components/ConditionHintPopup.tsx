@@ -154,7 +154,7 @@ function ConditionHintPopup({ emotions, conditions, isOpen, onClose }: Props): R
       aria-label="condition-hint-overlay"
     >
       <div
-        className="relative max-h-[80vh] w-[340px] overflow-y-auto rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-bg-primary)] p-5 shadow-xl"
+        className="relative max-h-[80vh] w-[calc(100vw-32px)] max-w-[340px] overflow-y-auto rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-bg-primary)] p-5 shadow-xl"
         onClick={(e) => e.stopPropagation()}
         aria-label="condition-hint-popup"
       >

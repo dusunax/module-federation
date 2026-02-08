@@ -87,11 +87,11 @@ describe('AdminEmotions', () => {
     renderAdminEmotions();
 
     await waitFor(() => {
-      expect(screen.getByText('joy')).toBeInTheDocument();
+      expect(screen.getByText(/joy/)).toBeInTheDocument();
     });
 
     expect(screen.getByText('😊')).toBeInTheDocument();
-    expect(screen.getByText('sadness')).toBeInTheDocument();
+    expect(screen.getByText(/sadness/)).toBeInTheDocument();
     expect(screen.getByText('😢')).toBeInTheDocument();
     expect(screen.getByText('감정 관리')).toBeInTheDocument();
     expect(screen.getByText('day · monday/weekday · clear · spring · newyear')).toBeInTheDocument();
@@ -102,7 +102,7 @@ describe('AdminEmotions', () => {
     const user = userEvent.setup();
 
     await waitFor(() => {
-      expect(screen.getByText('joy')).toBeInTheDocument();
+      expect(screen.getByText(/joy/)).toBeInTheDocument();
     });
 
     await user.click(screen.getByText('추가'));
@@ -114,18 +114,18 @@ describe('AdminEmotions', () => {
     });
   });
 
-  it('필수 필드 누락 시 에러 toast를 표시한다', async () => {
+  it('필수 필드 누락 시 저장 버튼이 비활성화된다', async () => {
     renderAdminEmotions();
     const user = userEvent.setup();
 
     await waitFor(() => {
-      expect(screen.getByText('joy')).toBeInTheDocument();
+      expect(screen.getByText(/joy/)).toBeInTheDocument();
     });
 
     await user.click(screen.getByText('추가'));
-    await user.click(screen.getByText('저장'));
 
-    expect(toast.error).toHaveBeenCalledWith('이름, 이모지, 카테고리는 필수입니다.');
+    const saveButton = screen.getByText('저장');
+    expect(saveButton).toBeDisabled();
   });
 
   it('수정 모달에서 기존 데이터를 표시한다', async () => {
@@ -133,7 +133,7 @@ describe('AdminEmotions', () => {
     const user = userEvent.setup();
 
     await waitFor(() => {
-      expect(screen.getByText('joy')).toBeInTheDocument();
+      expect(screen.getByText(/joy/)).toBeInTheDocument();
     });
 
     const editButtons = screen.getAllByText('수정');

@@ -41,7 +41,7 @@ describe('Header', () => {
   it('제목, 에너지, 장바구니 수를 표시한다', () => {
     renderHeader();
 
-    expect(screen.getByText('Love at First Sight')).toBeInTheDocument();
+    expect(screen.getByText('Love at Sight')).toBeInTheDocument();
     expect(screen.getByLabelText('energy-badge')).toHaveTextContent('⚡ 3/5');
     const cartLink = screen.getByLabelText('장바구니 페이지로 이동');
     expect(cartLink.querySelector('span')).toHaveTextContent('3');

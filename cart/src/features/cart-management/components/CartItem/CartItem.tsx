@@ -45,9 +45,9 @@ export function CartItem({
   const timer = item?.addedAt ? timeRemaining[itemId] : null;
 
   return (
-    <div className="mb-4 flex items-center gap-5 rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-6 backdrop-blur-[10px]">
-      <div className="text-5xl opacity-90">{displayProduct.emoji}</div>
-      <div className="flex-1">
+    <div className="mb-4 flex flex-wrap items-center gap-3 md:gap-5 rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.2)] p-4 md:p-6 backdrop-blur-[10px]">
+      <div className="text-4xl md:text-5xl opacity-90">{displayProduct.emoji}</div>
+      <div className="min-w-[120px] flex-1">
         <h3 className="my-0 mb-2 text-base font-normal tracking-wide text-[#FFF8D4]">
           {displayProduct.name}
         </h3>
@@ -73,7 +73,7 @@ export function CartItem({
         <button
           onClick={() => updateQuantity(itemId, quantity - 1)}
           aria-label="cart-qty-decrease"
-          className="h-8 w-8 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] text-lg font-normal text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
+          className="h-9 w-9 md:h-8 md:w-8 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] text-lg font-normal text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
         >
           −
         </button>
@@ -83,12 +83,12 @@ export function CartItem({
         <button
           onClick={() => updateQuantity(itemId, quantity + 1)}
           aria-label="cart-qty-increase"
-          className="h-8 w-8 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] text-lg font-normal text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
+          className="h-9 w-9 md:h-8 md:w-8 cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] text-lg font-normal text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
         >
           +
         </button>
       </div>
-      <div className="min-w-[100px] text-right text-base font-normal tracking-wide text-[#A3B087]">
+      <div className="min-w-[60px] md:min-w-[100px] text-right text-sm md:text-base font-normal tracking-wide text-[#A3B087]">
         ⚡ {(displayProduct.energyCost || 1) * quantity}
       </div>
       <button
@@ -104,7 +104,7 @@ export function CartItem({
           });
         }}
         aria-label="cart-remove-item"
-        className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-3.5 py-2 text-xs font-normal tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
+        className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-2.5 py-1.5 md:px-3.5 md:py-2 text-xs font-normal tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
       >
         웃어 넘기기
       </button>

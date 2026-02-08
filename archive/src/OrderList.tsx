@@ -23,7 +23,7 @@ function OrderList() {
   React.useEffect(() => {
     if (!user || !user.uid) return;
     const unsubscribe = subscribeToUserOrders(user.uid, (dbOrders) => {
-      setOrders(dbOrders || []);
+      setOrders(dbOrders as Order[] || []);
     });
     return () => unsubscribe && unsubscribe();
   }, [user?.uid]);
@@ -80,12 +80,12 @@ function OrderList() {
               role="button"
               tabIndex={0}
               aria-label={`order-card-${order.id}`}
-              className="relative cursor-pointer rounded-lg border bg-[rgba(67,86,99,0.15)] p-8 backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgba(255,248,212,0.25)] hover:bg-[rgba(67,86,99,0.25)]"
+              className="relative cursor-pointer rounded-lg border bg-[rgba(67,86,99,0.15)] p-5 md:p-8 backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgba(255,248,212,0.25)] hover:bg-[rgba(67,86,99,0.25)]"
               style={{ borderColor: statusConfig.color }}
             >
               {/* 상태 배지 */}
               <div
-                className="absolute right-6 top-6 inline-flex items-center gap-1.5 rounded bg-[rgba(67,86,99,0.4)] px-3 py-1.5 text-[11px] font-normal tracking-wide"
+                className="absolute right-3 top-3 md:right-6 md:top-6 inline-flex items-center gap-1.5 rounded bg-[rgba(67,86,99,0.4)] px-3 py-1.5 text-[11px] font-normal tracking-wide"
                 style={{ color: statusConfig.color }}
               >
                 <span>{statusConfig.icon}</span>
@@ -112,7 +112,7 @@ function OrderList() {
               </div>
 
               {/* 기록 요약 */}
-              <div className="flex items-center justify-between border-t border-[rgba(255,248,212,0.1)] pt-5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-[rgba(255,248,212,0.1)] pt-5">
                 <div>
                   <p className="my-0 mb-1 text-[13px] font-normal tracking-wide text-[rgba(255,248,212,0.7)]">
                     기록된 순간
@@ -130,7 +130,7 @@ function OrderList() {
                       cancelLabel: '취소',
                       onConfirm: async () => {
                         try {
-                          const userObj = useAuthStore.getState().user;
+                          const userObj = user;
                           if (userObj && userObj.uid) {
                             await deleteUserOrder(userObj.uid, order.id);
                           } else {

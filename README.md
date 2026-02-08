@@ -1,4 +1,4 @@
-# Love at First Sight
+# Love at Sight
 
 **사랑에 대한 순간들**
 

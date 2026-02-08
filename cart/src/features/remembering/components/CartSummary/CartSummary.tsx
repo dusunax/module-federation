@@ -63,7 +63,7 @@ export function CartSummary({
 
   // Component UI
   return (
-    <div className="rounded border border-[rgba(163,176,135,0.3)] bg-[rgba(67,86,99,0.2)] p-[30px] backdrop-blur-[10px]">
+    <div className="rounded border border-[rgba(163,176,135,0.3)] bg-[rgba(67,86,99,0.2)] p-5 md:p-[30px] backdrop-blur-[10px]">
       <div className="mb-5 flex items-center justify-between">
         <span className="text-sm font-normal tracking-wide text-[rgba(255,248,212,0.9)]">
           총 {normalTotalItems}개 시간

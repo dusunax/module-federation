@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useEnergyStore } from 'auth/energyStore';
+import { CATEGORY_LABELS } from '@shared/constants/categories';
 
 interface DailyUsage {
   used: number;
@@ -298,7 +299,7 @@ function OrderRow({ order }: { order: Order }) {
               {emoji && <span className="text-base">{emoji}</span>}
               <span className="text-sm text-[var(--color-text-primary)]">{name}</span>
               {category && (
-                <span className="text-xs text-[var(--color-text-faded)]">{category}</span>
+                <span className="text-xs text-[var(--color-text-faded)]">{CATEGORY_LABELS[category] ?? category}</span>
               )}
             </div>
             <span className="text-xs text-[var(--color-text-muted)]">{cost}</span>
@@ -383,7 +384,7 @@ export default function Dashboard() {
 
       <section className="mb-6 rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-overlay-1)] p-4">
         <h2 className="mb-3 text-sm text-[var(--color-text-secondary)]">요약</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div className="rounded-md border border-[var(--color-border-faded)] bg-[var(--color-overlay-15)] p-3">
             <div className="text-xs text-[var(--color-text-faded)]">총 에너지 사용</div>
             <div className="mt-1 text-xl font-normal text-[var(--color-accent-green)]">

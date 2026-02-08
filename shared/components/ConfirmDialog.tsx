@@ -21,7 +21,7 @@ export default function ConfirmDialog({
 }: ConfirmDialogProps) {
   return ReactDOM.createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50">
-      <div className="flex min-w-[300px] flex-col gap-3 rounded-lg border border-[rgba(163,176,135,0.3)] bg-[rgba(67,86,99,0.95)] p-4 backdrop-blur-sm">
+      <div className="flex min-w-0 w-[calc(100vw-32px)] max-w-[300px] flex-col gap-3 rounded-lg border border-[rgba(163,176,135,0.3)] bg-[rgba(67,86,99,0.95)] p-4 backdrop-blur-sm">
         {title && <div className="text-sm font-normal tracking-wide text-[#FFF8D4]">{title}</div>}
         {description && <div className="text-xs font-normal text-[#A3B087]">{description}</div>}
         <div className="flex justify-end gap-2">

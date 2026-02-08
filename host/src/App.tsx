@@ -38,7 +38,7 @@ function AppContent() {
         <Header />
       </Suspense>
 
-      <main className="flex-1 px-1 py-5">
+      <main className="flex-1 px-2 sm:px-4 md:px-1 py-3 md:py-5">
         <Routes>
           <Route
             path="/"
@@ -123,7 +123,7 @@ function AppContent() {
         </Routes>
       </main>
 
-      <footer className="mt-10 border-t border-[var(--color-border-primary)] p-5 text-center">
+      <footer className="mt-6 md:mt-10 border-t border-[var(--color-border-primary)] p-3 md:p-5 text-center">
         <p className="text-sm font-normal text-[var(--color-text-secondary)]">
           Between Lines - Like Real People Do
         </p>

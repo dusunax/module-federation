@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import showConfirmToast from '@shared/components/showConfirmToast';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
-import { useRememberingStore, RememberingItem } from 'auth/rememberingStore';
+import { useRememberingStore } from 'auth/rememberingStore';
+import type { RememberingItem } from 'auth/store/rememberingStore';
 
 const DURATION = 60000; // 1 minute
 
@@ -64,7 +65,7 @@ function RememberingItemCard({ firestoreItem, cancelItemRemembering }: Rememberi
       onConfirm: async () => {
         try {
           // pass the Firestore-visible id (doc id) to cancel
-          await cancelItemRemembering(visibleItemId || String(id));
+          await cancelItemRemembering(visibleItemId || String(firestoreItem.id));
           toast.success('기억이 취소되었습니다.');
         } catch (err) {
           console.error('cancelItemRemembering failed', err);
@@ -75,9 +76,9 @@ function RememberingItemCard({ firestoreItem, cancelItemRemembering }: Rememberi
   };
 
   return (
-    <div className="mb-4 rounded border border-[rgba(163,176,135,0.3)] bg-[rgba(163,176,135,0.1)] p-6 backdrop-blur-[10px]">
-      <div className="flex items-center gap-5">
-        <div className="text-5xl opacity-90">{productInfo.emoji || '🧠'}</div>
+    <div className="mb-4 rounded border border-[rgba(163,176,135,0.3)] bg-[rgba(163,176,135,0.1)] p-4 md:p-6 backdrop-blur-[10px]">
+      <div className="flex flex-wrap items-center gap-3 md:gap-5">
+        <div className="text-4xl md:text-5xl opacity-90">{productInfo.emoji || '🧠'}</div>
         <div className="flex-1">
           <h3 className="my-0 mb-2 text-base font-normal tracking-wide text-[#FFF8D4]">
             {productInfo.name || '알 수 없는 항목'}
@@ -92,7 +93,7 @@ function RememberingItemCard({ firestoreItem, cancelItemRemembering }: Rememberi
             {statusStyle.icon} {statusStyle.label}
           </div>
         </div>
-        <div className="min-w-25 text-right text-base font-normal tracking-wide text-[#A3B087]">
+        <div className="min-w-[60px] md:min-w-25 text-right text-sm md:text-base font-normal tracking-wide text-[#A3B087]">
           ⚡ {energyCost}
         </div>
       </div>
@@ -134,7 +135,7 @@ interface RememberingSectionProps {
   cancelItemRemembering: (itemId: number | string) => Promise<RememberingItem | null>;
 }
 
-export function RememberingSection({ orderStatuses, cancelItemRemembering }: RememberingSectionProps): React.ReactElement | null {
+export function RememberingSection({ cancelItemRemembering }: RememberingSectionProps): React.ReactElement | null {
   const firestoreItems = useRememberingStore((state) => state.rememberingItems || {});
   const firestoreItemsList = Object.values(firestoreItems);
 
@@ -156,8 +157,8 @@ export function RememberingSection({ orderStatuses, cancelItemRemembering }: Rem
       <div className="mb-5">
         {firestoreItemsList.map((firestoreItem) => (
           <RememberingItemCard
-            key={firestoreItem.visibleItemId || firestoreItem.id}
-            firestoreItem={firestoreItem}
+            key={firestoreItem.id}
+            firestoreItem={firestoreItem as RememberingItem}
             cancelItemRemembering={cancelItemRemembering}
           />
         ))}
