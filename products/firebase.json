@@ -1,0 +1,8 @@
+{
+  "hosting": {
+    "site": "products-dusunax-001",
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [{ "source": "**", "destination": "/index.html" }]
+  }
+}

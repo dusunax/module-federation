@@ -11,6 +11,8 @@ build/
 .env
 .env.local
 .env.*.local
+.env.production
+**/.env.production
 
 # IDE
 .vscode/
@@ -33,3 +35,6 @@ Thumbs.db
 
 # Webpack
 .cache/
+
+# Firebase
+.firebase/

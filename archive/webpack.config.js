@@ -1,16 +1,25 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
+const Dotenv = require('dotenv-webpack');
 const path = require('path');
+const dotenv = require('dotenv');
 
-module.exports = {
-  entry: './src/index.ts',
-  mode: 'development',
+const remoteEntry = (envKey, fallback) => process.env[envKey] || fallback;
+
+module.exports = (_env, argv) => {
+  const mode = argv.mode || process.env.NODE_ENV || 'development';
+  dotenv.config({ path: path.resolve(__dirname, `.env.${mode}`) });
+  const publicPath = process.env.PUBLIC_PATH || 'http://localhost:3004/';
+
+  return {
+    entry: './src/index.ts',
+    mode,
   devServer: {
     port: 3004,
     historyApiFallback: true,
   },
   output: {
-    publicPath: 'http://localhost:3004/',
+    publicPath,
   },
   module: {
     rules: [
@@ -43,12 +52,16 @@ module.exports = {
     ],
   },
   plugins: [
+    new Dotenv({
+      path: path.resolve(__dirname, `.env.${mode}`),
+      silent: true,
+    }),
     new ModuleFederationPlugin({
       name: 'archive',
       filename: 'remoteEntry.js',
       remotes: {
-        products: 'products@http://localhost:3002/remoteEntry.js',
-        auth: 'auth@http://localhost:3005/remoteEntry.js',
+        products: `products@${remoteEntry('PRODUCTS_REMOTE', 'http://localhost:3002/remoteEntry.js')}`,
+        auth: `auth@${remoteEntry('AUTH_REMOTE', 'http://localhost:3005/remoteEntry.js')}`,
       },
       exposes: {
         './OrderList': './src/OrderList.tsx',
@@ -74,4 +87,5 @@ module.exports = {
       '@shared': path.resolve(__dirname, '../shared'),
     },
   },
+  };
 };

@@ -11,7 +11,6 @@ Module Federation의 호스트(메인) 애플리케이션입니다. 다른 마�
 - Header, Products, Cart, Archive 앱을 통합하는 컨테이너
 - 라우팅 관리 (React Router)
 - React Query 클라이언트 제공
-- MSW를 통한 API 모킹
 
 ## 원격 앱 (Remotes)
 

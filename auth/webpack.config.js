@@ -2,15 +2,21 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
 const Dotenv = require('dotenv-webpack');
 const path = require('path');
+const dotenv = require('dotenv');
 
-module.exports = {
-  entry: './src/index.ts',
-  mode: 'development',
+module.exports = (_env, argv) => {
+  const mode = argv.mode || process.env.NODE_ENV || 'development';
+  dotenv.config({ path: path.resolve(__dirname, `.env.${mode}`) });
+  const publicPath = process.env.PUBLIC_PATH || 'http://localhost:3005/';
+
+  return {
+    entry: './src/index.ts',
+    mode,
   devServer: {
     port: 3005,
   },
   output: {
-    publicPath: 'http://localhost:3005/',
+    publicPath,
   },
   module: {
     rules: [
@@ -43,7 +49,10 @@ module.exports = {
     ],
   },
   plugins: [
-    new Dotenv(),
+    new Dotenv({
+      path: path.resolve(__dirname, `.env.${mode}`),
+      silent: true,
+    }),
     new ModuleFederationPlugin({
       name: 'auth',
       filename: 'remoteEntry.js',
@@ -73,4 +82,5 @@ module.exports = {
       '@shared': path.resolve(__dirname, '../shared'),
     },
   },
+  };
 };

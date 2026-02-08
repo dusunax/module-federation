@@ -1,16 +1,25 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
+const Dotenv = require('dotenv-webpack');
 const path = require('path');
+const dotenv = require('dotenv');
 
-module.exports = {
-  entry: './src/index.ts',
-  mode: 'development',
+const remoteEntry = (envKey, fallback) => process.env[envKey] || fallback;
+
+module.exports = (_env, argv) => {
+  const mode = argv.mode || process.env.NODE_ENV || 'development';
+  dotenv.config({ path: path.resolve(__dirname, `.env.${mode}`) });
+  const publicPath = process.env.PUBLIC_PATH || 'http://localhost:3002/';
+
+  return {
+    entry: './src/index.ts',
+    mode,
   devServer: {
     port: 3002,
     historyApiFallback: true, // SPA 라우팅을 위해 필요
   },
   output: {
-    publicPath: 'http://localhost:3002/',
+    publicPath,
   },
   module: {
     rules: [
@@ -48,11 +57,15 @@ module.exports = {
     ],
   },
   plugins: [
+    new Dotenv({
+      path: path.resolve(__dirname, `.env.${mode}`),
+      silent: true,
+    }),
     new ModuleFederationPlugin({
       name: 'products',
       filename: 'remoteEntry.js',
       remotes: {
-        auth: 'auth@http://localhost:3005/remoteEntry.js',
+        auth: `auth@${remoteEntry('AUTH_REMOTE', 'http://localhost:3005/remoteEntry.js')}`,
       },
       exposes: {
         './ProductList': './src/ProductList.tsx',
@@ -86,4 +99,5 @@ module.exports = {
       '@shared': path.resolve(__dirname, '../shared'),
     },
   },
+  };
 };

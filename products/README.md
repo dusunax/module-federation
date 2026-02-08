@@ -12,7 +12,6 @@
 - 상품 상세 정보 표시 (ProductDetail)
 - 장바구니 상태 관리 (cartStore - Zustand)
 - 기억/주문 상태 관리 (orderStore - Zustand)
-- MSW를 통한 API 모킹
 
 ## Expose
 

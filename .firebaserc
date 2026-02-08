@@ -1,0 +1,30 @@
+{
+  "projects": {
+    "default": "module-federation-1"
+  },
+  "targets": {
+    "module-federation-1": {
+      "hosting": {
+        "host": [
+          "dusunax-001"
+        ],
+        "header": [
+          "header-dusunax-001"
+        ],
+        "products": [
+          "products-dusunax-001"
+        ],
+        "cart": [
+          "cart-dusunax-001"
+        ],
+        "archive": [
+          "archive-dusunax-001"
+        ],
+        "auth": [
+          "auth-dusunax-001"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

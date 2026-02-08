@@ -36,7 +36,7 @@ love-at-first-sight/
 | 스타일링 | Tailwind CSS 4 |
 | 인증/DB | Firebase (Authentication, Firestore) |
 | 토스트 | Sonner |
-| 테스트 | Vitest 4, @testing-library/react, MSW 2 |
+| 테스트 | Vitest 4, @testing-library/react |
 | 트랜스파일 | Babel (preset-typescript) |
 
 ## 아키텍처
@@ -108,6 +108,10 @@ cd archive && npm install && npm start
 ```
 
 모든 앱이 실행되면 `http://localhost:3000`에서 통합된 애플리케이션을 확인할 수 있습니다.
+
+## 배포
+
+- **Host 앱**: `https://dusunax-001.web.app/`
 
 ## 테스트
 
