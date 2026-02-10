@@ -1,14 +1,5 @@
-export interface OrderItem {
-  product: { id: number; name?: string; emoji?: string; description?: string; category?: string };
-  quantity: number;
-}
-
-export interface Order {
-  id: string;
-  orderDate: string;
-  items: OrderItem[];
-  totalItems: number;
-}
+export type OrderItem = import('@shared/types/api').OrderItem;
+export type Order = import('@shared/types/api').Order;
 
 type State = {
   orders: Order[];

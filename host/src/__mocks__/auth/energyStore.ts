@@ -1,27 +1,7 @@
 import { vi } from 'vitest';
+import type { DailyUsage, Order } from '@shared/types/api';
 
-interface DailyUsage {
-  used: number;
-  count: number;
-  date: string;
-}
-
-interface Order {
-  id: string;
-  items?: Array<{
-    product?: {
-      emoji?: string;
-      name?: string;
-      category?: string;
-      energyCost?: number;
-    };
-    quantity?: number;
-  }>;
-  totalEnergy?: number;
-  totalItems?: number;
-  orderDate: string;
-  status?: string;
-}
+type OrderSummary = Order;
 
 interface EnergyState {
   current: number;
@@ -37,7 +17,7 @@ interface EnergyState {
   clearEnergy: () => void;
   resetEnergy: () => Promise<void>;
   fetchDailyUsage: (days?: number) => Promise<DailyUsage[]>;
-  fetchRecentOrders: (count?: number) => Promise<Order[]>;
+  fetchRecentOrders: (count?: number) => Promise<OrderSummary[]>;
 }
 
 const defaultState: EnergyState = {

@@ -6,7 +6,7 @@ import './styles/tailwind.css';
 
 function App() {
   return (
-    <AppLayout subtitle="Cart - 독립 실행 모드 (포트 3003)">
+    <AppLayout subtitle="Booked by Feelings Cart - 독립 실행 모드 (포트 3003)">
       <Routes>
         <Route path="/" element={<Cart />} />
       </Routes>

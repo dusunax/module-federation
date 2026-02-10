@@ -42,14 +42,7 @@ declare module 'archive/EmotionCollection' {
 }
 
 declare module 'auth/authStore' {
-  interface User {
-    uid: string;
-    email: string | null;
-    displayName: string | null;
-    photoURL: string | null;
-    plan: string;
-    role?: string;
-  }
+  type User = import('@shared/types/api').User;
 
   interface AuthState {
     user: User | null;
@@ -66,21 +59,8 @@ declare module 'auth/authStore' {
 }
 
 declare module 'auth/energyStore' {
-  interface DailyUsage {
-    used: number;
-    count: number;
-    date: string;
-  }
-
-  interface Order {
-    id: string;
-    emoji?: string;
-    name: string;
-    category?: string;
-    energyCost?: number;
-    orderDate: string;
-    [key: string]: unknown;
-  }
+  type DailyUsage = import('@shared/types/api').DailyUsage;
+  type Order = import('@shared/types/api').Order;
 
   interface EnergyState {
     current: number;
@@ -104,27 +84,7 @@ declare module 'auth/energyStore' {
 }
 
 declare module 'auth/services/emotionService' {
-  interface Emotion {
-    id: number;
-    name: string;
-    emoji: string;
-    rarity: 'common' | 'rare' | 'epic';
-    energyCost: number;
-    category: string;
-    description: string;
-    story: string;
-    published: boolean;
-    image: string | null;
-    visibility: {
-      time: ('day' | 'night')[];
-      day: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday' | 'weekday' | 'weekend')[];
-      weather: ('clear' | 'cloudy' | 'rain' | 'snow' | 'storm')[];
-      season: ('spring' | 'summer' | 'autumn' | 'winter')[];
-      event: string[];
-    };
-    rarityOrder: number;
-    createdAt: { seconds: number };
-  }
+  type Emotion = import('@shared/types/api').Emotion;
 
   interface GetAllEmotionsOptions {
     includeAll?: boolean;

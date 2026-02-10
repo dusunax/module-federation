@@ -7,7 +7,7 @@ import './styles/tailwind.css';
 
 function App() {
   return (
-    <AppLayout subtitle="Archive - 독립 실행 모드 (포트 3004)">
+    <AppLayout subtitle="Booked by Feelings Archive - 독립 실행 모드 (포트 3004)">
       <Routes>
         <Route path="/" element={<OrderList />} />
         <Route path="/archive/:orderId" element={<OrderDetail />} />

@@ -1,8 +1,9 @@
 import { create } from 'zustand';
-import { doc, getDoc, setDoc, serverTimestamp, increment } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, increment, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
-import { getDailyUsage, DailyUsage } from '../services/energyService';
-import { getRecentOrders, Order } from '../services/orderService';
+import { getDailyUsage } from '../services/energyService';
+import { getRecentOrders } from '../services/orderService';
+import type { DailyUsage, FirestoreTimestamp, Order } from '@shared/types/api';
 
 const MAX_ENERGY_FREE = 5;
 const MAX_ENERGY_PREMIUM = 10;
@@ -10,6 +11,24 @@ const MAX_ENERGY_PREMIUM = 10;
 const getTodayDateString = (): string => {
   const today = new Date();
   return today.toISOString().split('T')[0];
+};
+
+const timestampFromDateKey = (dateKey: string): Timestamp =>
+  Timestamp.fromDate(new Date(`${dateKey}T00:00:00Z`));
+
+const dateKeyFromTimestamp = (value: Timestamp): string =>
+  value.toDate().toISOString().split('T')[0];
+
+const getDateKeyFromValue = (
+  value: Timestamp | FirestoreTimestamp | string | null | undefined,
+): string | null => {
+  if (!value) return null;
+  if (value instanceof Timestamp) return dateKeyFromTimestamp(value);
+  if (typeof value === 'string') return value.split('T')[0];
+  if (typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    return value.toDate().toISOString().split('T')[0];
+  }
+  return null;
 };
 
 interface EnergyState {
@@ -36,7 +55,6 @@ const useEnergyStore = create<EnergyState>((set, get) => ({
   loading: true,
   error: null,
   userId: null,
-
   initializeEnergy: async (userId, plan = 'none') => {
     if (!userId) {
       set({ loading: false, error: 'User ID is required' });
@@ -53,13 +71,12 @@ const useEnergyStore = create<EnergyState>((set, get) => ({
 
       if (energyDoc.exists()) {
         const data = energyDoc.data();
-        const lastResetDate = data.lastResetDate;
-
-        if (lastResetDate !== todayDate) {
+        const lastResetDateKey = getDateKeyFromValue(data.lastResetDate);
+        if (lastResetDateKey !== todayDate) {
           await setDoc(energyRef, {
             current: maxEnergy,
             maxEnergy,
-            lastResetDate: todayDate,
+            lastResetDate: timestampFromDateKey(todayDate),
             updatedAt: serverTimestamp(),
           });
 
@@ -73,7 +90,7 @@ const useEnergyStore = create<EnergyState>((set, get) => ({
           set({
             current: data.current,
             maxEnergy: data.maxEnergy,
-            lastResetDate: data.lastResetDate,
+            lastResetDate: lastResetDateKey,
             loading: false,
           });
         }
@@ -81,7 +98,7 @@ const useEnergyStore = create<EnergyState>((set, get) => ({
         await setDoc(energyRef, {
           current: maxEnergy,
           maxEnergy,
-          lastResetDate: todayDate,
+          lastResetDate: timestampFromDateKey(todayDate),
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
@@ -137,7 +154,7 @@ const useEnergyStore = create<EnergyState>((set, get) => ({
           {
             used: increment(cost),
             count: increment(count),
-            date: todayDate,
+            date: timestampFromDateKey(todayDate),
             updatedAt: serverTimestamp(),
           },
           { merge: true }
@@ -185,7 +202,7 @@ const useEnergyStore = create<EnergyState>((set, get) => ({
           {
             used: increment(-amount),
             count: increment(-count),
-            date: todayDate,
+            date: timestampFromDateKey(todayDate),
             updatedAt: serverTimestamp(),
           },
           { merge: true }
@@ -229,7 +246,7 @@ const useEnergyStore = create<EnergyState>((set, get) => ({
         energyRef,
         {
           current: maxEnergy,
-          lastResetDate: todayDate,
+          lastResetDate: timestampFromDateKey(todayDate),
           updatedAt: serverTimestamp(),
         },
         { merge: true }

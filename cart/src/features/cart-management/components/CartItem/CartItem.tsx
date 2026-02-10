@@ -95,7 +95,7 @@ export function CartItem({
         onClick={() => {
           showConfirmToast({
             title: '이 기억을 그냥 넘어갈까요?',
-            confirmLabel: '웃어 넘기기',
+            confirmLabel: '넘기기',
             cancelLabel: '취소',
             onConfirm: () => {
               removeFromCart(itemId);
@@ -104,9 +104,9 @@ export function CartItem({
           });
         }}
         aria-label="cart-remove-item"
-        className="cursor-pointer rounded border border-[rgba(255,248,212,0.2)] bg-[rgba(67,86,99,0.3)] px-2.5 py-1.5 md:px-3.5 md:py-2 text-xs font-normal tracking-wide text-[#FFF8D4] transition-all duration-300 hover:border-[#A3B087] hover:bg-[rgba(67,86,99,0.4)]"
+        className="cursor-pointer rounded border border-[rgba(229,115,115,0.3)] bg-[rgba(229,115,115,0.1)] px-2.5 py-1.5 md:px-3.5 md:py-2 text-xs font-normal tracking-wide text-[var(--color-text-danger)] transition-all duration-300 hover:bg-[rgba(229,115,115,0.2)]"
       >
-        웃어 넘기기
+        넘기기
       </button>
     </div>
   );

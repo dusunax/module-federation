@@ -48,7 +48,7 @@ function ProductDetail(): React.ReactElement {
     queryFn: () => getEmotionById(Number(id)),
   });
 
-  // 같은 productId를 가진 아이템이 있는지 확인
+  // 같은 product.id를 가진 아이템이 있는지 확인
   const isInCart = emotion && Object.values(items).some((item) => item.product.id === emotion.id);
 
   if (isLoading) {
@@ -79,9 +79,12 @@ function ProductDetail(): React.ReactElement {
     ? dbStatus
     : isInCart
       ? EMOTION_STATUS.HELD
-      : emotion?.status || EMOTION_STATUS.NOTICING;
+      : EMOTION_STATUS.NOTICING;
   const statusStyle = getStatusConfig(currentStatus);
   const categoryLabel = emotion?.category ? CATEGORY_LABELS[emotion.category] ?? emotion.category : '';
+  const intensityLabel = emotion?.intensity
+    ? { low: 'Low', middle: 'Middle', high: 'High' }[emotion.intensity] ?? emotion.intensity
+    : '';
 
   return (
     <div className="mx-auto max-w-[900px] p-3 md:p-5">
@@ -111,9 +114,16 @@ function ProductDetail(): React.ReactElement {
             <p className="mb-5 text-lg font-normal tracking-wide text-[#A3B087]">
               ⚡ {emotion?.energyCost} 에너지
             </p>
-            <span className="mb-5 inline-block rounded-sm bg-[rgba(67,86,99,0.3)] px-3.5 py-1.5 text-xs font-normal tracking-wider text-[rgba(255,248,212,0.9)]">
-              {categoryLabel}
-            </span>
+            <div className="mb-5 flex flex-wrap items-center gap-2">
+              <span className="inline-block rounded-sm bg-[rgba(67,86,99,0.3)] px-3.5 py-1.5 text-xs font-normal tracking-wider text-[rgba(255,248,212,0.9)]">
+                {categoryLabel}
+              </span>
+              {intensityLabel && (
+                <span className="inline-block rounded-sm border border-[rgba(163,176,135,0.35)] bg-[rgba(163,176,135,0.12)] px-3 py-1 text-[11px] font-normal tracking-wider text-[#A3B087]">
+                  강도 {intensityLabel}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 

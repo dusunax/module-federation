@@ -7,7 +7,7 @@ import './styles/tailwind.css';
 
 function App(): React.ReactElement {
   return (
-    <AppLayout subtitle="Like Real People Do - 독립 실행 모드 (포트 3002)">
+    <AppLayout subtitle="Booked by Feelings - 독립 실행 모드 (포트 3002)">
       <Routes>
         <Route path="/" element={<ProductList />} />
         <Route path="/detail/:id" element={<ProductDetail />} />

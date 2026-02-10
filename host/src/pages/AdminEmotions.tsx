@@ -10,7 +10,7 @@ type VisibilityCondition = Emotion['visibility'];
 interface FormData {
   name: string;
   emoji: string;
-  rarity: 'common' | 'rare' | 'epic';
+  intensity: 'low' | 'middle' | 'high';
   category: string;
   description: string;
   story: string;
@@ -25,7 +25,7 @@ interface FormData {
 const INITIAL_FORM: FormData = {
   name: '',
   emoji: '',
-  rarity: 'common',
+  intensity: 'low',
   category: '',
   description: '',
   story: '',
@@ -37,7 +37,7 @@ const INITIAL_FORM: FormData = {
   visibilityEvent: '',
 };
 
-const RARITY_OPTIONS = ['common', 'rare', 'epic'];
+const INTENSITY_OPTIONS = ['low', 'middle', 'high'];
 // 상태 값은 더 이상 사용하지 않음.
 const CATEGORY_OPTIONS = [
   { value: 'joy', label: '기쁨' },
@@ -47,6 +47,7 @@ const CATEGORY_OPTIONS = [
   { value: 'disgust', label: '혐오' },
   { value: 'surprise', label: '놀람' },
   { value: 'trust', label: '신뢰' },
+  { value: 'anticipation', label: '기대' },
 ];
 const COMPOSITE_OPTIONS = [
   { value: 'love', label: '사랑' },
@@ -58,6 +59,12 @@ const COMPOSITE_OPTIONS = [
   { value: 'discouragement', label: '낙담' },
   { value: 'guilt', label: '죄책감' },
   { value: 'hope', label: '희망' },
+  { value: 'submission', label: '복종' },
+  { value: 'awe', label: '경외' },
+  { value: 'disapproval', label: '비난' },
+  { value: 'remorse', label: '회한' },
+  { value: 'aggressiveness', label: '공격성' },
+  { value: 'optimism', label: '낙관' },
 ];
 const CATEGORY_LABELS = new Map([
   ...CATEGORY_OPTIONS.map((option) => [option.value, option.label] as const),
@@ -127,14 +134,14 @@ function EmotionModal({
           </label>
 
           <label className="flex flex-col gap-1">
-            <span className="text-xs font-normal text-(--color-text-muted)">희귀도 *</span>
+            <span className="text-xs font-normal text-(--color-text-muted)">강도 *</span>
             <select
-              value={form.rarity}
-              onChange={(e) => onChange('rarity', e.target.value)}
+              value={form.intensity}
+              onChange={(e) => onChange('intensity', e.target.value)}
               className="rounded border border-(--color-border-primary) bg-(--color-overlay-2) px-3 py-2 text-sm font-normal text-(--color-text-primary) outline-none focus:border-(--color-accent-green)"
             >
-              {RARITY_OPTIONS.map((r) => (
-                <option key={r} value={r}>{r}</option>
+              {INTENSITY_OPTIONS.map((value) => (
+                <option key={value} value={value}>{value}</option>
               ))}
             </select>
           </label>
@@ -303,10 +310,11 @@ function AdminEmotions() {
     form.name.trim() &&
     form.emoji.trim() &&
     form.category.trim() &&
-    form.rarity.trim() &&
+    form.intensity.trim() &&
     form.description.trim() &&
     form.story.trim(),
   );
+
 
   const { data: emotions = [], isLoading } = useQuery<Emotion[]>({
     queryKey: ['admin-emotions'],
@@ -329,7 +337,7 @@ function AdminEmotions() {
     setForm({
       name: emotion.name,
       emoji: emotion.emoji,
-      rarity: emotion.rarity,
+      intensity: emotion.intensity,
       category: emotion.category,
       description: emotion.description,
       story: emotion.story,
@@ -354,7 +362,7 @@ function AdminEmotions() {
   }, []);
 
   const handleSave = useCallback(async () => {
-    if (!form.name || !form.emoji || !form.category || !form.rarity || !form.description || !form.story) {
+    if (!form.name || !form.emoji || !form.category || !form.intensity || !form.description || !form.story) {
       toast.error('필수 항목을 모두 입력해주세요.');
       return;
     }
@@ -375,7 +383,7 @@ function AdminEmotions() {
       id: editingId ?? nextId,
       name: form.name,
       emoji: form.emoji,
-      rarity: form.rarity,
+      intensity: form.intensity,
       category: form.category,
       description: form.description,
       story: form.story,
@@ -387,16 +395,17 @@ function AdminEmotions() {
     setSaving(true);
     try {
       if (editingId !== null) {
-        await updateEmotion(editingId, baseEmotionData as Partial<Omit<import('auth/services/emotionService').Emotion, 'energyCost'>>);
+        await updateEmotion(editingId, baseEmotionData as Partial<Omit<RemoteEmotion, 'energyCost'>>);
         toast.success('감정이 수정되었습니다.');
       } else {
-        const newEmotionPayload: Omit<import('auth/services/emotionService').Emotion, 'energyCost'> = {
+        const newEmotionPayload = {
           ...baseEmotionData,
           // provide server-side-only fields client-side so the typed API accepts it
-          rarityOrder: RARITY_OPTIONS.indexOf(form.rarity),
-          createdAt: { seconds: Math.floor(Date.now() / 1000) },
+          intensityOrder: INTENSITY_OPTIONS.indexOf(form.intensity),
+          // lightweight createdAt compatible shape for local use (server will overwrite)
+          createdAt: ({ toDate: () => new Date() } as unknown) as RemoteEmotion['createdAt'],
         };
-        await createEmotion(newEmotionPayload);
+  await createEmotion(newEmotionPayload);
         toast.success('감정이 추가되었습니다.');
       }
       await queryClient.invalidateQueries({ queryKey: ['admin-emotions'] });
@@ -419,16 +428,18 @@ function AdminEmotions() {
 
   return (
     <div className="mx-auto max-w-4xl px-4">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
   <h1 className="text-lg font-normal tracking-wide text-(--color-text-primary)">
           감정 관리
         </h1>
-        <button
-          onClick={openAddModal}
-          className="cursor-pointer rounded border border-(--color-border-green-medium) bg-(--color-green-overlay-3) px-4 py-2 text-xs font-normal text-(--color-text-primary) transition-all duration-300 hover:bg-(--color-green-overlay-5)"
-        >
-          추가
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={openAddModal}
+            className="cursor-pointer rounded border border-(--color-border-green-medium) bg-(--color-green-overlay-3) px-4 py-2 text-xs font-normal text-(--color-text-primary) transition-all duration-300 hover:bg-(--color-green-overlay-5)"
+          >
+            추가
+          </button>
+        </div>
       </div>
 
   <div className="overflow-x-auto rounded-lg border border-(--color-border-primary)">
@@ -438,7 +449,7 @@ function AdminEmotions() {
               <th className="px-4 py-3 text-xs font-normal tracking-wider text-(--color-text-muted)">ID</th>
               <th className="px-4 py-3 text-xs font-normal tracking-wider text-(--color-text-muted)">이모지</th>
               <th className="px-4 py-3 text-xs font-normal tracking-wider text-(--color-text-muted)">이름</th>
-              <th className="px-4 py-3 text-xs font-normal tracking-wider text-(--color-text-muted)">희귀도</th>
+              <th className="px-4 py-3 text-xs font-normal tracking-wider text-(--color-text-muted)">강도</th>
               <th className="px-4 py-3 text-xs font-normal tracking-wider text-(--color-text-muted)">카테고리</th>
               <th className="px-4 py-3 text-xs font-normal tracking-wider text-(--color-text-muted)">노출 조건</th>
               <th className="px-4 py-3 text-xs font-normal tracking-wider text-(--color-text-muted)">퍼블리싱</th>
@@ -454,7 +465,7 @@ function AdminEmotions() {
                 <td className="px-4 py-3 text-(--color-text-faded)">{emotion.id}</td>
                 <td className="px-4 py-3">{emotion.emoji}</td>
                 <td className="px-4 py-3 text-(--color-text-primary)">{emotion.name}</td>
-                <td className="px-4 py-3 text-(--color-text-secondary)">{emotion.rarity}</td>
+                <td className="px-4 py-3 text-(--color-text-secondary)">{emotion.intensity}</td>
                 <td className="px-4 py-3 text-(--color-text-secondary)">
                   {CATEGORY_LABELS.has(emotion.category)
                     ? `${CATEGORY_LABELS.get(emotion.category)} (${emotion.category})`
@@ -472,7 +483,7 @@ function AdminEmotions() {
                     .join(' · ') || '항상'}
                 </td>
                 <td className="px-4 py-3">
-                  <span className={`inline-block h-2 w-2 rounded-full ${emotion.published ? 'bg-(--color-accent-green)' : 'bg-(--color-overlay-5)'}"`} />
+                  <span className={`inline-block h-2 w-2 rounded-full ${emotion.published ? 'bg-(--color-accent-green)' : 'bg-(--color-overlay-5)'}`} />
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button

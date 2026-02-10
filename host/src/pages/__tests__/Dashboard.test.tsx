@@ -3,15 +3,20 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import Dashboard from '../Dashboard';
 import { __setEnergyState, __resetEnergyState } from '../../__mocks__/auth/energyStore';
+import type { DailyUsage, Order, FirestoreTimestamp } from '@shared/types/api';
 
 // Utility functions are not exported from Dashboard, so we test them
 // indirectly through component behavior and also via a dedicated test module.
 
 // ---- Utility function tests (re-implemented for isolated testing) ----
 
-function formatDateLabel(dateStr: string): string {
-  const [, month, day] = dateStr.split('-');
-  return `${parseInt(month, 10)}/${parseInt(day, 10)}`;
+function makeDateLike(ms: number): FirestoreTimestamp {
+  return { toDate: () => new Date(ms) };
+}
+
+function formatDateLabel(dateValue: FirestoreTimestamp): string {
+  const date = dateValue.toDate();
+  return `${date.getMonth() + 1}/${date.getDate()}`;
 }
 
 function getYTicks(max: number): number[] {
@@ -23,16 +28,11 @@ function getYTicks(max: number): number[] {
   return ticks;
 }
 
-interface DailyUsage {
-  used: number;
-  count: number;
-  date: string;
-}
-
 function fillDateGaps(data: DailyUsage[], days: number): DailyUsage[] {
   const lookup = new Map<string, DailyUsage>();
   for (const d of data) {
-    lookup.set(d.date, d);
+    const key = d.date.toDate().toISOString().split('T')[0];
+    lookup.set(key, d);
   }
 
   const result: DailyUsage[] = [];
@@ -41,21 +41,22 @@ function fillDateGaps(data: DailyUsage[], days: number): DailyUsage[] {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
     const key = d.toISOString().split('T')[0];
-    result.push(lookup.get(key) ?? { date: key, used: 0, count: 0 });
+    result.push(
+      lookup.get(key) ?? {
+        date: makeDateLike(new Date(`${key}T00:00:00Z`).getTime()),
+        used: 0,
+        count: 0,
+        updatedAt: makeDateLike(new Date(`${key}T00:00:00Z`).getTime()),
+      }
+    );
   }
   return result;
-}
-
-interface Order {
-  id: string;
-  orderDate: string;
-  [key: string]: unknown;
 }
 
 function groupOrdersByDate(orders: Order[]): Map<string, Order[]> {
   const grouped = new Map<string, Order[]>();
   for (const order of orders) {
-    const dateKey = order.orderDate.split('T')[0];
+    const dateKey = order.orderDate.toDate().toISOString().split('T')[0];
     const existing = grouped.get(dateKey);
     if (existing) {
       existing.push(order);
@@ -69,15 +70,15 @@ function groupOrdersByDate(orders: Order[]): Map<string, Order[]> {
 describe('Dashboard utility functions', () => {
   describe('formatDateLabel', () => {
     it('"2024-01-05"를 "1/5"로 변환한다', () => {
-      expect(formatDateLabel('2024-01-05')).toBe('1/5');
+      expect(formatDateLabel(makeDateLike(new Date('2024-01-05T00:00:00Z').getTime()))).toBe('1/5');
     });
 
     it('"2024-12-25"를 "12/25"로 변환한다', () => {
-      expect(formatDateLabel('2024-12-25')).toBe('12/25');
+      expect(formatDateLabel(makeDateLike(new Date('2024-12-25T00:00:00Z').getTime()))).toBe('12/25');
     });
 
     it('앞자리 0을 제거한다', () => {
-      expect(formatDateLabel('2024-03-09')).toBe('3/9');
+      expect(formatDateLabel(makeDateLike(new Date('2024-03-09T00:00:00Z').getTime()))).toBe('3/9');
     });
   });
 
@@ -116,10 +117,20 @@ describe('Dashboard utility functions', () => {
 
     it('기존 데이터가 있으면 해당 날짜에 올바른 값을 반환한다', () => {
       const today = new Date().toISOString().split('T')[0];
-      const data: DailyUsage[] = [{ date: today, used: 10, count: 5 }];
+      const data: DailyUsage[] = [
+        {
+          date: makeDateLike(new Date(`${today}T00:00:00Z`).getTime()),
+          used: 10,
+          count: 5,
+          updatedAt: makeDateLike(new Date(`${today}T00:00:00Z`).getTime()),
+        },
+      ];
       const result = fillDateGaps(data, 3);
 
-      const todayEntry = result.find((d) => d.date === today);
+      const todayEntry = result.find((d) => {
+        const key = typeof d.date === 'string' ? d.date : typeof d.date === 'number' ? new Date(d.date).toISOString().split('T')[0] : d.date.toDate().toISOString().split('T')[0];
+        return key === today;
+      });
       expect(todayEntry?.used).toBe(10);
       expect(todayEntry?.count).toBe(5);
     });
@@ -128,9 +139,30 @@ describe('Dashboard utility functions', () => {
   describe('groupOrdersByDate', () => {
     it('같은 날짜의 주문을 그룹화한다', () => {
       const orders: Order[] = [
-        { id: '1', orderDate: '2024-01-15T10:00:00Z' },
-        { id: '2', orderDate: '2024-01-15T14:00:00Z' },
-        { id: '3', orderDate: '2024-01-16T09:00:00Z' },
+        {
+          id: '1',
+          orderDate: makeDateLike(new Date('2024-01-15T10:00:00Z').getTime()),
+          items: [],
+          totalEnergy: 0,
+          totalItems: 0,
+          status: 'completed',
+        },
+        {
+          id: '2',
+          orderDate: makeDateLike(new Date('2024-01-15T14:00:00Z').getTime()),
+          items: [],
+          totalEnergy: 0,
+          totalItems: 0,
+          status: 'completed',
+        },
+        {
+          id: '3',
+          orderDate: makeDateLike(new Date('2024-01-16T09:00:00Z').getTime()),
+          items: [],
+          totalEnergy: 0,
+          totalItems: 0,
+          status: 'completed',
+        },
       ];
 
       const grouped = groupOrdersByDate(orders);
@@ -170,7 +202,12 @@ describe('Dashboard component', () => {
   it('데이터 로드 후 요약 통계를 표시한다', async () => {
     const today = new Date().toISOString().split('T')[0];
     const mockUsage: DailyUsage[] = [
-      { date: today, used: 15, count: 3 },
+      {
+        date: makeDateLike(new Date(`${today}T00:00:00Z`).getTime()),
+        used: 15,
+        count: 3,
+        updatedAt: makeDateLike(new Date(`${today}T00:00:00Z`).getTime()),
+      },
     ];
 
     __setEnergyState({
@@ -182,11 +219,9 @@ describe('Dashboard component', () => {
 
     await waitFor(() => {
       expect(screen.getByText('총 에너지 사용')).toBeInTheDocument();
+      const summarySection = screen.getByText('요약').closest('section')!;
+      expect(summarySection.textContent).toContain('15');
+      expect(summarySection.textContent).toContain('3');
     });
-
-    const summarySection = screen.getByText('요약').closest('section')!;
-    expect(summarySection).toBeInTheDocument();
-    expect(summarySection.textContent).toContain('15');
-    expect(summarySection.textContent).toContain('3');
   });
 });

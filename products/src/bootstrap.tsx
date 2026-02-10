@@ -54,8 +54,8 @@ const startApp = () => {
 
         orders.forEach((order) => {
           const items = order.items || [];
-          items.forEach((it: { product?: { id?: number }; productId?: number; id?: number }) => {
-            const pid = it?.product?.id || it?.productId || it?.id;
+          items.forEach((it: { product?: { id?: number } }) => {
+            const pid = it?.product?.id;
             if (pid) statuses[pid] = 'remembered';
           });
         });

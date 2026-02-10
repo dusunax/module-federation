@@ -19,7 +19,7 @@ function App() {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center">
-      <h1 className="mb-4 text-2xl">Auth App</h1>
+      <h1 className="mb-4 text-2xl">Booked by Feelings Auth</h1>
       {user ? (
         <div className="text-center">
           <p>로그인됨: {user.displayName}</p>

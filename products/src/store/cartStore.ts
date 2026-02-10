@@ -8,6 +8,9 @@ export interface CartItem {
   productId?: number;
   quantity: number;
   addedAt: number;
+  eventCount: {
+    combine: number;
+  };
 }
 
 interface MinimalCartItem {
@@ -70,7 +73,7 @@ async function itemsFromMinimal(minimal: MinimalCartItem[]): Promise<{ items: Re
 
   const items = {};
   let nextId = 1;
-  minimal.forEach((m) => {
+    minimal.forEach((m) => {
     const id = m.id ?? nextId++;
     const productSnapshot = emotionMap.get(Number(m.productId));
     items[id] = {
@@ -85,6 +88,11 @@ async function itemsFromMinimal(minimal: MinimalCartItem[]): Promise<{ items: Re
       addedAt: m.addedAt || Date.now(),
     };
   });
+    // ensure each item has an eventCount for compatibility with CartItem
+    Object.keys(items).forEach((k) => {
+      const it = items[Number(k)];
+      if (!it.eventCount) it.eventCount = { combine: 1 };
+    });
   return { items, nextItemId: Object.keys(items).reduce((n, k) => Math.max(n, Number(k)), 0) + 1 };
 }
 
@@ -135,13 +143,14 @@ export const useCartStore = create<CartState>((set, get) => ({
         };
       } else {
         const newItemId = state.nextItemId;
-        const next = {
+    const next = {
           items: {
             ...state.items,
             [newItemId]: {
               id: newItemId,
               product,
-              quantity: 1,
+      quantity: 1,
+      eventCount: { combine: 1 },
               addedAt: Date.now(),
             },
           },

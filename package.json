@@ -1,9 +1,10 @@
 {
-  "name": "test-claud-code",
+  "name": "booked-by-feelings",
   "version": "1.0.0",
   "private": true,
   "description": "Module Federation monorepo",
   "dependencies": {
+    "firebase-admin": "^12.1.1",
     "sonner": "^2.0.7",
     "lucide-react": "^0.278.0"
   },

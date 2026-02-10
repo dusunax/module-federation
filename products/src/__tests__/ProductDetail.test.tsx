@@ -60,7 +60,12 @@ describe('ProductDetail', () => {
       story: '테스트 스토리',
       category: 'joy',
       energyCost: 2,
-      status: 'NOTICING',
+      intensity: 'low',
+      published: false,
+      image: null,
+      intensityOrder: 0,
+      createdAt: { toDate: () => new Date() },
+      visibility: { time: [], day: [], weather: [], season: [], event: [] },
     };
     __setMockEmotions([emotion]);
     __setMockEmotionById(emotion);

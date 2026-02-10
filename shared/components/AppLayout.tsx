@@ -10,7 +10,7 @@ function AppLayout({ subtitle, children }: AppLayoutProps) {
     <div className="flex min-h-screen flex-col">
       <header className="flex items-center justify-between border-b border-[var(--color-border-primary)] bg-black px-3 md:px-6 py-2">
         <h1 className="font-normal tracking-wider text-[var(--color-text-primary)]">
-          Between Lines
+          Booked by Feelings
         </h1>
         {subtitle && (
           <p className="text-xs font-normal text-[var(--color-text-secondary)] opacity-70">
