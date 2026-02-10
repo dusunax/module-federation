@@ -83,9 +83,9 @@ function Header() {
     >
       <nav className="flex items-center justify-between">
         <Link to="/" className="text-[var(--color-text-primary)] no-underline">
-          <h2 className="m-0 text-lg md:text-4xl font-normal tracking-[1px]">Love at Sight</h2>
+          <h2 className="m-0 text-lg md:text-4xl font-normal tracking-[1px]">Booked by Feelings</h2>
           <p className="mb-0 mt-1 text-xs font-normal text-[var(--color-text-secondary)] hidden sm:block">
-            기억하고, 저장하며, 마음에 남겨두세요
+            감정 기록 및 책 추천
           </p>
         </Link>
         <ul className="m-0 flex list-none items-center gap-1.5 sm:gap-3 p-0">

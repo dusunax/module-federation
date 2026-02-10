@@ -9,15 +9,7 @@ import {
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useEnergyStore } from './energyStore';
-
-interface User {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  photoURL: string | null;
-  plan: string;
-  role?: string;
-}
+import type { User } from '@shared/types/api';
 
 interface AuthState {
   user: User | null;

@@ -125,7 +125,7 @@ function AppContent() {
 
       <footer className="mt-6 md:mt-10 border-t border-[var(--color-border-primary)] p-3 md:p-5 text-center">
         <p className="text-sm font-normal text-[var(--color-text-secondary)]">
-          Between Lines - Like Real People Do
+          Booked by Feelings - 감정 기록 및 책 추천
         </p>
       </footer>
     </div>

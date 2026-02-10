@@ -1,14 +1,8 @@
 import { create } from 'zustand';
-import { useCartStore, CartItem } from './cartStore';
+import { Timestamp } from 'firebase/firestore';
+import { useCartStore } from './cartStore';
 
-export interface Order {
-  id: number;
-  items: CartItem[];
-  totalEnergy: number;
-  totalItems: number;
-  orderDate: string;
-  status: string;
-}
+export type Order = import('@shared/types/api').Order;
 
 interface ItemProgress {
   progress: number;
@@ -22,8 +16,8 @@ interface OrderState {
   orderStatuses: Record<number, string>;
   completeOrder: () => Order | null;
   completeRememberingItems: () => Order | null;
-  getOrder: (orderId: number) => Order | undefined;
-  removeOrder: (orderId: number) => void;
+  getOrder: (orderId: string | number) => Order | undefined;
+  removeOrder: (orderId: string | number) => void;
   startRemembering: (itemIds?: number[]) => void;
   updateItemProgress: (itemId: number, progress: number) => void;
   cancelItemRemembering: (itemId: number) => ItemProgress | null;
@@ -68,11 +62,16 @@ export const useOrderStore = create<OrderState>((set, get) => ({
 
     // 새 기억 생성
     const newOrder = {
-      id: Date.now(), // 간단한 ID 생성
-      items: cartItems,
+      id: String(Date.now()), // 간단한 ID 생성 (string)
+      items: cartItems.map((item) => ({
+        product: item.product,
+        quantity: item.quantity,
+        addedAt: Timestamp.fromMillis(item.addedAt ?? Date.now()),
+        eventCount: { combine: item.eventCount?.combine ?? 1 },
+      })),
       totalEnergy,
       totalItems,
-      orderDate: new Date().toISOString(),
+      orderDate: Timestamp.now(),
       status: 'completed',
     };
 
@@ -114,11 +113,16 @@ export const useOrderStore = create<OrderState>((set, get) => ({
 
     // 새 기억 생성
     const newOrder = {
-      id: Date.now(),
-      items: rememberingItems,
+  id: String(Date.now()),
+      items: rememberingItems.map((item) => ({
+        product: item.product,
+        quantity: item.quantity,
+        addedAt: Timestamp.fromMillis(item.addedAt ?? Date.now()),
+        eventCount: { combine: item.eventCount?.combine ?? 1 },
+      })),
       totalEnergy,
       totalItems,
-      orderDate: new Date().toISOString(),
+      orderDate: Timestamp.now(),
       status: 'completed',
     };
 
@@ -139,13 +143,13 @@ export const useOrderStore = create<OrderState>((set, get) => ({
   // 특정 기억 조회
   getOrder: (orderId) => {
     const state = get();
-    return state.orders.find((order) => order.id === orderId);
+    return state.orders.find((order) => String(order.id) === String(orderId));
   },
 
   // 기억 삭제
   removeOrder: (orderId) => {
     set((state) => ({
-      orders: state.orders.filter((order) => order.id !== orderId),
+      orders: state.orders.filter((order) => String(order.id) !== String(orderId)),
     }));
   },
 
@@ -222,11 +226,17 @@ export const useOrderStore = create<OrderState>((set, get) => ({
 
     // 새 기억 생성 (단일 아이템)
     const newOrder = {
-      id: Date.now(),
-      items: [item],
+      id: String(Date.now()),
+      items: [
+        {
+          ...item,
+          eventCount: { combine: item.eventCount?.combine ?? 1 },
+          addedAt: Timestamp.fromMillis(item.addedAt ?? Date.now()),
+        },
+      ],
       totalEnergy: (item.product.energyCost || 1) * item.quantity,
       totalItems: item.quantity,
-      orderDate: new Date().toISOString(),
+      orderDate: Timestamp.now(),
       status: 'completed',
     };
 

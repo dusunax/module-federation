@@ -1,19 +1,13 @@
-import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getDocs, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
+import type { DailyUsage } from '@shared/types/api';
 
-export interface DailyUsage {
-  date: string;
-  displayDate: string;
-  used: number;
-  count: number;
+function dateKeyFromTimestamp(value: Timestamp): string {
+  return value.toDate().toISOString().split('T')[0];
 }
 
-function utcDateToKstDateStr(utcDateStr: string): string {
-  // utcDateStr is 'YYYY-MM-DD' representing UTC date at 00:00:00Z
-  const d = new Date(`${utcDateStr}T00:00:00Z`);
-  // add 9 hours for KST
-  const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
-  return kst.toISOString().split('T')[0];
+function timestampFromDateKey(dateKey: string): Timestamp {
+  return Timestamp.fromDate(new Date(`${dateKey}T00:00:00Z`));
 }
 
 export async function getDailyUsage(userId: string, days = 30): Promise<DailyUsage[]> {
@@ -26,12 +20,19 @@ export async function getDailyUsage(userId: string, days = 30): Promise<DailyUsa
   const items: DailyUsage[] = [];
   snap.forEach((doc) => {
     const data = doc.data();
-    const utcDate = data.date || doc.id;
+    const dateValue = data.date;
+    const dateKey =
+      typeof dateValue === 'string'
+        ? dateValue
+        : dateValue instanceof Timestamp
+          ? dateKeyFromTimestamp(dateValue)
+          : doc.id;
+    const dateTs = dateValue instanceof Timestamp ? dateValue : timestampFromDateKey(dateKey);
     items.push({
-      date: utcDate,
-      displayDate: utcDate ? utcDateToKstDateStr(utcDate) : utcDate,
+      date: dateTs,
       used: data.used || 0,
       count: data.count || 0,
+      updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt : dateTs,
     });
   });
 

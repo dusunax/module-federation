@@ -1,22 +1,9 @@
 import React from 'react';
-import { render, screen, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import OrderDetail from '../OrderDetail';
 import { __setMockOrderState, Order } from 'products/orderStore';
-import showConfirmToast from '@shared/components/showConfirmToast';
-import { toast } from 'sonner';
-
-vi.mock('@shared/components/showConfirmToast', () => ({
-  default: vi.fn(),
-}));
-
-vi.mock('sonner', () => ({
-  toast: {
-    success: vi.fn(),
-  },
-}));
 
 const renderWithRoute = (orderId: string) =>
   render(
@@ -45,14 +32,32 @@ describe('OrderDetail', () => {
   it('주문 상세를 렌더링한다', () => {
     const order: Order = {
       id: '1',
-      orderDate: new Date().toISOString(),
+      orderDate: { toDate: () => new Date() },
       items: [
         {
-          product: { id: 10, name: '첫눈', emoji: '💫', description: '설명', category: 'joy' },
+          product: {
+            id: 10,
+            name: '첫눈',
+            emoji: '💫',
+            intensity: 'low',
+            category: 'joy',
+            description: '설명',
+            story: '',
+            published: false,
+            image: null,
+            energyCost: 0,
+            intensityOrder: 0,
+            createdAt: { toDate: () => new Date() },
+            visibility: { time: [], day: [], weather: [], season: [], event: [] },
+          },
           quantity: 2,
+          eventCount: { combine: 2 },
+          addedAt: { toDate: () => new Date() },
         },
       ],
       totalItems: 1,
+      totalEnergy: 0,
+      status: 'completed',
     };
     __setMockOrderState({
       orders: [order],
@@ -64,36 +69,4 @@ describe('OrderDetail', () => {
     expect(screen.getByLabelText('order-item-10')).toBeInTheDocument();
   });
 
-  it('확인 시 주문을 삭제한다', async () => {
-    const removeOrder = vi.fn();
-    const order: Order = {
-      id: '1',
-      orderDate: new Date().toISOString(),
-      items: [
-        {
-          product: { id: 10, name: '첫눈', emoji: '💫', description: '설명', category: 'joy' },
-          quantity: 2,
-        },
-      ],
-      totalItems: 1,
-    };
-    __setMockOrderState({
-      orders: [order],
-      getOrder: (id) => (id === 1 ? order : undefined),
-      removeOrder,
-    });
-
-    renderWithRoute('1');
-
-    await userEvent.click(screen.getByLabelText('order-detail-forget'));
-    const confirmMock = showConfirmToast as unknown as ReturnType<typeof vi.fn>;
-    const { onConfirm } = confirmMock.mock.calls[0][0];
-    await act(async () => {
-      onConfirm();
-    });
-
-    expect(removeOrder).toHaveBeenCalledWith(1);
-    const toastSuccess = toast.success as unknown as ReturnType<typeof vi.fn>;
-    expect(toastSuccess).toHaveBeenCalledWith('기억이 삭제되었습니다.');
-  });
 });

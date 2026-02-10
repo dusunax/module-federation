@@ -11,7 +11,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
-const REMEMBERING_DURATION = 60000; // 1분
+const REMEMBERING_DURATION = 20000; // 20초
 
 export interface ProductInfo {
   id?: number;

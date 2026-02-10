@@ -1,15 +1,6 @@
 declare module 'products/orderStore' {
-  export interface OrderItem {
-    product: { id: number; name?: string; emoji?: string; description?: string; category?: string };
-    quantity: number;
-  }
-
-  export interface Order {
-    id: string;
-    orderDate: string;
-    items: OrderItem[];
-    totalItems: number;
-  }
+  export type OrderItem = import('@shared/types/api').OrderItem;
+  export type Order = import('@shared/types/api').Order;
 
   export const __setMockOrderState: (next: {
     orders?: Order[];
@@ -42,4 +33,11 @@ declare module 'auth/authStore' {
 declare module 'auth/services/orderService' {
   export const subscribeToUserOrders: (uid: string, cb: (orders: unknown[]) => void) => () => void;
   export const deleteUserOrder: (uid: string, orderId: string) => Promise<void>;
+  export const getUserOrderById: (uid: string, orderId: string | number) => Promise<unknown | null>;
+}
+
+declare module 'auth/services/emotionService' {
+  export type Emotion = import('@shared/types/api').Emotion;
+
+  export function getAllEmotions(searchTerm?: string, options?: { includeAll?: boolean }): Promise<Emotion[]>;
 }

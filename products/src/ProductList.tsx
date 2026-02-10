@@ -14,19 +14,22 @@ import { InfoIcon } from 'lucide-react';
 import { CATEGORY_LABELS } from '@shared/constants/categories';
 
 type SortDirection = 'asc' | 'desc' | null;
+type CollectionFilter = 'all' | 'collected' | 'uncollected';
 
 interface SortPrefs {
-  dateSort: SortDirection;
   energySort: SortDirection;
 }
 
 const STORAGE_KEY = 'emotion-sort-prefs';
-const DATE_STATES: SortDirection[] = ['desc', 'asc', null];
 const ENERGY_STATES: SortDirection[] = ['asc', 'desc', null];
 
-const DATE_LABELS: Record<string, string> = { desc: '최신순', asc: '오래된순' };
 const ENERGY_LABELS: Record<string, string> = { asc: '낮은순', desc: '높은순' };
 const ARROW: Record<string, string> = { asc: '↑', desc: '↓' };
+const INTENSITY_LABELS: Record<string, string> = {
+  low: 'Low',
+  middle: 'Middle',
+  high: 'High',
+};
 
 function loadSortPrefs(): SortPrefs {
   try {
@@ -35,18 +38,19 @@ function loadSortPrefs(): SortPrefs {
   } catch {
     /* ignore */
   }
-  return { dateSort: 'desc', energySort: null };
+  return { energySort: null };
 }
 
-function saveSortPrefs(dateSort: SortDirection, energySort: SortDirection) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ dateSort, energySort }));
+function saveSortPrefs(energySort: SortDirection) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ energySort }));
 }
 
 function ProductList() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortPrefs, setSortPrefs] = useState<SortPrefs>(loadSortPrefs);
   const [hintOpen, setHintOpen] = useState(false);
-  const { dateSort, energySort } = sortPrefs;
+  const [collectionFilter, setCollectionFilter] = useState<CollectionFilter>('all');
+  const { energySort } = sortPrefs;
   const navigate = useNavigate();
   const cartItems = useCartStore((state) => state.items);
   const orderStatuses = useOrderStore((state) => state.orderStatuses);
@@ -62,14 +66,14 @@ function ProductList() {
     queryFn: () => getAllEmotions(searchTerm || undefined),
   });
 
-  const updateSort = useCallback((nextDate: SortDirection, nextEnergy: SortDirection) => {
-    setSortPrefs({ dateSort: nextDate, energySort: nextEnergy });
-    saveSortPrefs(nextDate, nextEnergy);
+  const updateSort = useCallback((nextEnergy: SortDirection) => {
+    setSortPrefs({ energySort: nextEnergy });
+    saveSortPrefs(nextEnergy);
   }, []);
 
   const sortedEmotions = React.useMemo((): Emotion[] | undefined => {
     if (!emotions) return emotions;
-    if (!dateSort && !energySort) return emotions;
+    if (!energySort) return emotions;
     const sorted = [...emotions];
     sorted.sort((a: Emotion, b: Emotion) => {
       if (energySort) {
@@ -77,34 +81,35 @@ function ProductList() {
         const diff = (a.energyCost - b.energyCost) * dir;
         if (diff !== 0) return diff;
       }
-      if (dateSort) {
-        const dir = dateSort === 'desc' ? 1 : -1;
-        const timeA = a.createdAt?.seconds ?? 0;
-        const timeB = b.createdAt?.seconds ?? 0;
-        if (timeA !== timeB) return (timeB - timeA) * dir;
-        return (b.id - a.id) * dir;
-      }
       return 0;
     });
     return sorted;
-  }, [emotions, dateSort, energySort]);
+  }, [emotions, energySort]);
 
   const visibleEmotions = React.useMemo((): Emotion[] | undefined => {
     if (!sortedEmotions) return sortedEmotions;
-    return sortedEmotions.filter((emotion) => isEmotionVisible(emotion, conditions));
-  }, [sortedEmotions, conditions]);
-
-  const handleDateToggle = useCallback(() => {
-    const idx = DATE_STATES.indexOf(dateSort);
-    const next = DATE_STATES[(idx + 1) % DATE_STATES.length];
-    updateSort(next, energySort);
-  }, [dateSort, energySort, updateSort]);
+    const filtered = sortedEmotions.filter((emotion) => isEmotionVisible(emotion, conditions));
+    if (collectionFilter === 'all') return filtered;
+    return filtered.filter((emotion) => {
+      const status = orderStatuses?.[emotion.id];
+      const collected = status === EMOTION_STATUS.REMEMBERED;
+      return collectionFilter === 'collected' ? collected : !collected;
+    });
+  }, [sortedEmotions, conditions, collectionFilter, orderStatuses]);
 
   const handleEnergyToggle = useCallback(() => {
     const idx = ENERGY_STATES.indexOf(energySort);
     const next = ENERGY_STATES[(idx + 1) % ENERGY_STATES.length];
-    updateSort(dateSort, next);
-  }, [dateSort, energySort, updateSort]);
+    updateSort(next);
+  }, [energySort, updateSort]);
+
+  const handleCollectionToggle = useCallback(() => {
+    setCollectionFilter((prev) => {
+      if (prev === 'all') return 'collected';
+      if (prev === 'collected') return 'uncollected';
+      return 'all';
+    });
+  }, []);
 
   const handleProductClick = (id: number) => {
     navigate(`/detail/${id}`);
@@ -137,24 +142,8 @@ function ProductList() {
             className="w-full md:max-w-[500px] rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-3)] px-4 py-3.5 text-sm font-normal text-[var(--color-text-primary)] outline-none transition-all duration-300 focus:border-[var(--color-accent-green)] focus:bg-[var(--color-overlay-4)]"
           />
 
-          {/* 정렬 */}
-          <div className="mb-3 flex items-center gap-2">
-            <button
-              onClick={handleDateToggle}
-              aria-label="products-sort-date"
-              className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-normal tracking-wide transition-all duration-200 ${
-                dateSort
-                  ? 'border-[var(--color-border-green)] bg-[var(--color-green-overlay-1)] text-[var(--color-accent-green)]'
-                  : 'border-[var(--color-border-faded)] bg-transparent text-[var(--color-text-faded)] hover:border-[var(--color-border-primary)] hover:text-[var(--color-text-muted)]'
-              }`}
-            >
-              날짜
-              {dateSort && (
-                <span className="text-[10px] opacity-80">
-                  {ARROW[dateSort]} {DATE_LABELS[dateSort]}
-                </span>
-              )}
-            </button>
+          {/* 정렬/필터 */}
+          <div className="mb-3 flex flex-wrap items-center gap-2">
             <button
               onClick={handleEnergyToggle}
               aria-label="products-sort-energy"
@@ -170,6 +159,19 @@ function ProductList() {
                   {ARROW[energySort]} {ENERGY_LABELS[energySort]}
                 </span>
               )}
+            </button>
+            <button
+              onClick={handleCollectionToggle}
+              aria-label="products-filter-collection"
+              className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-normal tracking-wide transition-all duration-200 ${
+                collectionFilter === 'all'
+                  ? 'border-[var(--color-border-faded)] bg-transparent text-[var(--color-text-faded)] hover:border-[var(--color-border-primary)] hover:text-[var(--color-text-muted)]'
+                  : 'border-[var(--color-border-green)] bg-[var(--color-green-overlay-1)] text-[var(--color-accent-green)]'
+              }`}
+            >
+              {collectionFilter === 'all' && '수집 필터: 끔'}
+              {collectionFilter === 'collected' && '수집만'}
+              {collectionFilter === 'uncollected' && '미수집만'}
             </button>
           </div>
 
@@ -203,7 +205,7 @@ function ProductList() {
         <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4 md:gap-6">
           {visibleEmotions?.map((emotion) => {
             // 장바구니에 담겨있으면 held 상태로 표시
-            // 같은 productId를 가진 아이템이 있는지 확인
+            // 같은 product.id를 가진 아이템이 있는지 확인
             const hasInCart = Object.values(cartItems).some(
               (item) => item.product.id === emotion.id
             );
@@ -213,7 +215,7 @@ function ProductList() {
               ? dbStatus
               : hasInCart
                 ? EMOTION_STATUS.HELD
-                : emotion.status;
+                : EMOTION_STATUS.NOTICING;
             const statusStyle = getStatusConfig(currentStatus);
             return (
               <div
@@ -240,9 +242,16 @@ function ProductList() {
                   {emotion.description}
                 </p>
                 <div className="mt-5 flex items-center justify-between border-t border-[var(--color-border-faded)] pt-4">
-                  <span className="rounded-sm bg-[var(--color-overlay-3)] px-2.5 py-1 text-[11px] font-normal tracking-wider text-[var(--color-text-muted)]">
-                    {CATEGORY_LABELS[emotion.category] ?? emotion.category}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-sm bg-[var(--color-overlay-3)] px-2.5 py-1 text-[11px] font-normal tracking-wider text-[var(--color-text-muted)]">
+                      {CATEGORY_LABELS[emotion.category] ?? emotion.category}
+                    </span>
+                    {emotion.intensity && (
+                      <span className="rounded-sm border border-[rgba(163,176,135,0.35)] bg-[rgba(163,176,135,0.12)] px-2 py-0.5 text-[10px] font-normal tracking-wider text-[#A3B087]">
+                        강도 {INTENSITY_LABELS[emotion.intensity] ?? emotion.intensity}
+                      </span>
+                    )}
+                  </div>
                   <span className="text-sm font-normal tracking-wider text-[var(--color-accent-green)]">
                     ⚡ {emotion.energyCost}
                   </span>

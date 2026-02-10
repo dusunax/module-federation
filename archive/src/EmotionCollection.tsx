@@ -6,23 +6,23 @@ import { Order } from 'products/orderStore';
 import { LockIcon } from 'lucide-react';
 import { CATEGORY_LABELS } from '@shared/constants/categories';
 
-interface RarityStyle {
+interface IntensityStyle {
   border: string;
   glow: string;
 }
 
-const RARITY_STYLES: Record<string, RarityStyle> = {
-  common: {
-    border: 'border-[rgba(255,248,212,0.2)]',
-    glow: '',
+const INTENSITY_STYLES: Record<string, IntensityStyle> = {
+  low: {
+    border: 'border-[rgba(120,206,140,0.55)]',
+    glow: 'shadow-[0_0_10px_rgba(120,206,140,0.25)]',
   },
-  rare: {
-    border: 'border-[#5B8DEF]',
-    glow: 'shadow-[0_0_12px_rgba(91,141,239,0.3)]',
+  middle: {
+    border: 'border-[#F4C35E]',
+    glow: 'shadow-[0_0_12px_rgba(244,195,94,0.28)]',
   },
-  epic: {
-    border: 'border-[#A855F7]',
-    glow: 'shadow-[0_0_12px_rgba(168,85,247,0.3)]',
+  high: {
+    border: 'border-[#E36A6A]',
+    glow: 'shadow-[0_0_12px_rgba(227,106,106,0.3)]',
   },
 };
 
@@ -113,16 +113,16 @@ function EmotionCollection() {
 
       {/* Emotion grid */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-          {allEmotions.sort((a, b) => (a.rarityOrder ?? 0) - (b.rarityOrder ?? 0)).map((emotion) => {
+          {allEmotions.sort((a, b) => (a.intensityOrder ?? 0) - (b.intensityOrder ?? 0)).map((emotion) => {
           const isCollected = collectedIds.has(emotion.id);
-          const rarity = RARITY_STYLES[emotion.rarity] || RARITY_STYLES.common;
+          const intensity = INTENSITY_STYLES[emotion.intensity] || INTENSITY_STYLES.low;
           const categoryLabel = CATEGORY_LABELS[emotion.category] ?? emotion.category;
 
           if (isCollected) {
             return (
               <div
                 key={emotion.id}
-                className={`flex flex-col items-center gap-2 rounded-lg border-2 bg-[rgba(67,86,99,0.2)] p-5 backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[rgba(67,86,99,0.3)] ${rarity.border} ${rarity.glow}`}
+                className={`flex flex-col items-center gap-2 rounded-lg border-2 bg-[rgba(67,86,99,0.2)] p-5 backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[rgba(67,86,99,0.3)] ${intensity.border} ${intensity.glow}`}
               >
                 <span className="text-[40px] leading-none">{emotion.emoji}</span>
                 <span className="text-center text-sm font-normal tracking-wide text-[#FFF8D4]">

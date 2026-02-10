@@ -1,31 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useEnergyStore } from 'auth/energyStore';
 import { CATEGORY_LABELS } from '@shared/constants/categories';
-
-interface DailyUsage {
-  used: number;
-  count: number;
-  date: string;
-}
-
-interface OrderItem {
-  product?: {
-    emoji?: string;
-    name?: string;
-    category?: string;
-    energyCost?: number;
-  };
-  quantity?: number;
-}
-
-interface Order {
-  id: string;
-  items?: OrderItem[];
-  totalEnergy?: number;
-  totalItems?: number;
-  orderDate: string;
-  status?: string;
-}
+import type { DailyUsage, Order, FirestoreTimestamp } from '@shared/types/api';
 
 interface ChartProps {
   data?: DailyUsage[];
@@ -35,9 +11,9 @@ const CHART_WIDTH = 600;
 const CHART_HEIGHT = 200;
 const PADDING = { top: 20, right: 20, bottom: 40, left: 45 };
 
-function formatDateLabel(dateStr: string): string {
-  const [, month, day] = dateStr.split('-');
-  return `${parseInt(month, 10)}/${parseInt(day, 10)}`;
+function formatDateLabel(dateValue: FirestoreTimestamp): string {
+  const date = dateValue.toDate();
+  return `${date.getMonth() + 1}/${date.getDate()}`;
 }
 
 function getYTicks(max: number): number[] {
@@ -196,10 +172,18 @@ function UsageChart({ data = [] }: ChartProps) {
 
 const CHART_DAYS = 14;
 
+function dateKeyFromTimestamp(value: FirestoreTimestamp): string {
+  return value.toDate().toISOString().split('T')[0];
+}
+
+function makeDateLikeFromKey(dateKey: string): FirestoreTimestamp {
+  return { toDate: () => new Date(`${dateKey}T00:00:00Z`) };
+}
+
 function fillDateGaps(data: DailyUsage[], days: number): DailyUsage[] {
   const lookup = new Map<string, DailyUsage>();
   for (const d of data) {
-    lookup.set(d.date, d);
+    lookup.set(dateKeyFromTimestamp(d.date), d);
   }
 
   const result: DailyUsage[] = [];
@@ -208,13 +192,20 @@ function fillDateGaps(data: DailyUsage[], days: number): DailyUsage[] {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
     const key = d.toISOString().split('T')[0];
-    result.push(lookup.get(key) ?? { date: key, used: 0, count: 0 });
+    result.push(
+      lookup.get(key) ?? {
+        date: makeDateLikeFromKey(key),
+        used: 0,
+        count: 0,
+        updatedAt: makeDateLikeFromKey(key),
+      }
+    );
   }
   return result;
 }
 
-function formatOrderDate(isoString: string): string {
-  const date = new Date(isoString);
+function formatOrderDate(value: FirestoreTimestamp): string {
+  const date = value.toDate();
   const month = date.getMonth() + 1;
   const day = date.getDate();
   return `${month}/${day}`;
@@ -223,7 +214,7 @@ function formatOrderDate(isoString: string): string {
 function groupOrdersByDate(orders: Order[]): Map<string, Order[]> {
   const grouped = new Map<string, Order[]>();
   for (const order of orders) {
-    const dateKey = order.orderDate.split('T')[0];
+    const dateKey = dateKeyFromTimestamp(order.orderDate);
     const existing = grouped.get(dateKey);
     if (existing) {
       existing.push(order);
@@ -347,7 +338,6 @@ export default function Dashboard() {
 
   const totalUsed = useMemo(() => data.reduce((s, d) => s + (d.used || 0), 0), [data]);
   const totalCount = useMemo(() => data.reduce((s, d) => s + (d.count || 0), 0), [data]);
-
   return (
     <div className="mx-auto max-w-3xl">
       <h1 className="mb-4 text-2xl font-normal text-[var(--color-text-primary)]">대시보드</h1>

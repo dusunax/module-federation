@@ -63,6 +63,7 @@ module.exports = (_env, argv) => {
         './rememberingStore': './src/store/rememberingStore.ts',
         './services/orderService': './src/services/orderService.ts',
         './services/emotionService': './src/services/emotionService.ts',
+        './services/energyService': './src/services/energyService.ts',
       },
       shared: {
         react: { singleton: true, requiredVersion: '^18.2.0' },

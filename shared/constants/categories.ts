@@ -9,6 +9,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
   disgust: '혐오',
   surprise: '놀람',
   trust: '신뢰',
+  anticipation: '기대',
   love: '사랑',
   obsession: '집착',
   anxiety: '불안',
@@ -18,4 +19,48 @@ export const CATEGORY_LABELS: Record<string, string> = {
   discouragement: '낙담',
   guilt: '죄책감',
   hope: '희망',
+  anticipation: '기대',
+  submission: '복종',
+  awe: '경외',
+  disapproval: '비난',
+  remorse: '회한',
+  aggressiveness: '공격성',
+  optimism: '낙관',
 };
+
+export const BASE_CATEGORIES = [
+  'joy',
+  'sadness',
+  'anger',
+  'fear',
+  'disgust',
+  'surprise',
+  'trust',
+  'anticipation',
+] as const;
+
+export const COMPOSITE_CATEGORIES = [
+  'love',
+  'obsession',
+  'anxiety',
+  'jealousy',
+  'disappointment',
+  'contempt',
+  'discouragement',
+  'guilt',
+  'hope',
+  'submission',
+  'awe',
+  'disapproval',
+  'remorse',
+  'aggressiveness',
+  'optimism',
+] as const;
+
+export function isBaseCategory(category?: string | null): boolean {
+  return !!category && BASE_CATEGORIES.includes(category as (typeof BASE_CATEGORIES)[number]);
+}
+
+export function isCompositeCategory(category?: string | null): boolean {
+  return !!category && COMPOSITE_CATEGORIES.includes(category as (typeof COMPOSITE_CATEGORIES)[number]);
+}

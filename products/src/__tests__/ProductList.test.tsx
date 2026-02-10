@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, beforeEach, vi } from 'vitest';
+import { Timestamp } from 'firebase/firestore';
 import ProductList from '../ProductList';
 import { __setMockEmotions, Emotion } from 'auth/services/emotionService';
 
@@ -30,6 +31,7 @@ const renderWithProviders = (ui: React.ReactElement) => {
 
 describe('ProductList', () => {
   beforeEach(() => {
+    const now = Date.now();
     const data: Emotion[] = [
       {
         id: 1,
@@ -38,8 +40,13 @@ describe('ProductList', () => {
         description: '테스트 설명',
         category: 'joy',
         energyCost: 2,
-        status: 'NOTICING',
-        createdAt: { seconds: 10 },
+        intensity: 'low',
+        story: '',
+        published: false,
+        image: null,
+        intensityOrder: 0,
+        createdAt: Timestamp.fromMillis(now),
+        visibility: { time: [], day: [], weather: [], season: [], event: [] },
       },
       {
         id: 2,
@@ -48,8 +55,13 @@ describe('ProductList', () => {
         description: '두 번째 설명',
         category: 'sadness',
         energyCost: 5,
-        status: 'NOTICING',
-        createdAt: { seconds: 20 },
+        intensity: 'low',
+        story: '',
+        published: false,
+        image: null,
+        intensityOrder: 0,
+        createdAt: Timestamp.fromMillis(now + 1),
+        visibility: { time: [], day: [], weather: [], season: [], event: [] },
       },
     ];
     __setMockEmotions(data);
@@ -59,8 +71,8 @@ describe('ProductList', () => {
     renderWithProviders(<ProductList />);
 
     expect(screen.getByLabelText('products-search')).toBeInTheDocument();
-    expect(screen.getByLabelText('products-sort-date')).toBeInTheDocument();
     expect(screen.getByLabelText('products-sort-energy')).toBeInTheDocument();
+    expect(screen.getByLabelText('products-filter-collection')).toBeInTheDocument();
     expect(await screen.findByLabelText('product-card-1')).toBeInTheDocument();
     expect(screen.getByLabelText('product-card-2')).toBeInTheDocument();
   });

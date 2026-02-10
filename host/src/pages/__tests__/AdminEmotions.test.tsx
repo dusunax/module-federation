@@ -5,8 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import AdminEmotions from '../AdminEmotions';
 import { getAllEmotions } from '../../__mocks__/auth/services/emotionService';
-import type { Emotion } from 'auth/services/emotionService';
 import { toast } from 'sonner';
+import type { Emotion } from 'auth/services/emotionService';
 
 vi.mock('sonner', () => ({
   toast: {
@@ -20,7 +20,7 @@ const MOCK_EMOTIONS: Emotion[] = [
     id: 1,
     name: '기쁨',
     emoji: '😊',
-    rarity: 'common',
+    intensity: 'low',
     energyCost: 1,
     category: 'joy',
     description: '기쁜 감정',
@@ -34,14 +34,14 @@ const MOCK_EMOTIONS: Emotion[] = [
       season: ['spring'],
       event: ['newyear'],
     },
-    rarityOrder: 1,
-    createdAt: { seconds: 1620000000 },
+    intensityOrder: 1,
+    createdAt: { toDate: () => new Date(1620000000000) },
   },
   {
     id: 2,
     name: '슬픔',
     emoji: '😢',
-    rarity: 'rare',
+    intensity: 'middle',
     energyCost: 2,
     category: 'sadness',
     description: '슬픈 감정',
@@ -55,8 +55,8 @@ const MOCK_EMOTIONS: Emotion[] = [
       season: [],
       event: [],
     },
-    rarityOrder: 2,
-    createdAt: { seconds: 1620000000 },
+    intensityOrder: 2,
+    createdAt: { toDate: () => new Date(1620000000000) },
   },
 ];
 

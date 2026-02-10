@@ -8,6 +8,7 @@ import { useAuthStore } from 'auth/authStore';
 import { saveUserOrder } from 'auth/services/orderService';
 
 const INTERVAL = 100; // 100ms마다 체크
+const makeDateLike = () => ({ toDate: () => new Date() });
 
 export function useRememberProgress() {
   const rememberingItems = useRememberingStore((state) => state.rememberingItems);
@@ -108,11 +109,16 @@ export function useRememberProgress() {
 
           const newOrder = {
             id: Date.now(),
-            items: completedCartItems.map(({ cartItem }) => cartItem),
+            items: completedCartItems.map(({ cartItem }) => ({
+              product: cartItem.product,
+              quantity: cartItem.quantity,
+              addedAt: { toDate: () => new Date(cartItem.addedAt ?? Date.now()) },
+              eventCount: { combine: cartItem.eventCount?.combine ?? 1 },
+            })),
             // 가격은 더 이상 사용하지 않음. 에너지 합계를 저장합니다.
             totalEnergy,
             totalItems: totalItemsCount,
-            orderDate: new Date().toISOString(),
+            orderDate: makeDateLike(),
             status: 'completed',
           };
 

@@ -5,7 +5,7 @@ import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
 import { useRememberingStore } from 'auth/rememberingStore';
 import type { RememberingItem } from 'auth/store/rememberingStore';
 
-const DURATION = 60000; // 1 minute
+const DURATION = 30000; // 30 seconds
 
 function formatRemainingTime(progress: number) {
   const remainingMs = ((100 - progress) / 100) * DURATION;

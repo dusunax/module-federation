@@ -17,13 +17,7 @@ export type SeasonType = 'spring' | 'summer' | 'autumn' | 'winter';
 
 export type EventType = string;
 
-export interface VisibilityCondition {
-  time: TimeOfDay[];
-  day: DayOfWeek[];
-  weather: WeatherType[];
-  season: SeasonType[];
-  event: EventType[];
-}
+export type VisibilityCondition = import('@shared/types/api').VisibilityCondition;
 
 export interface CurrentConditions {
   time: TimeOfDay;
