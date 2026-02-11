@@ -64,3 +64,14 @@ export function isBaseCategory(category?: string | null): boolean {
 export function isCompositeCategory(category?: string | null): boolean {
   return !!category && COMPOSITE_CATEGORIES.includes(category as (typeof COMPOSITE_CATEGORIES)[number]);
 }
+
+export const COMPOSITE_CATEGORY_PAIRS: Record<string, [string, string]> = {
+  love: ['joy', 'trust'],
+  submission: ['trust', 'fear'],
+  awe: ['fear', 'surprise'],
+  disapproval: ['surprise', 'sadness'],
+  remorse: ['sadness', 'disgust'],
+  contempt: ['disgust', 'anger'],
+  aggressiveness: ['anger', 'anticipation'],
+  optimism: ['anticipation', 'joy'],
+};
