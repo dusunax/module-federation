@@ -137,7 +137,7 @@ function ProductList() {
 
   return (
     <div className="mx-auto max-w-[1400px] px-3 md:px-5">
-      <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center gap-4">
         <div className="flex relative">
           {/* 현재 조건 */}
           <CurrentConditionUI view={view} />
@@ -255,7 +255,7 @@ function ProductList() {
 
           {/* 순간 카드 목록 */}
           {!isLoading && (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4 md:gap-6">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4 md:gap-6 mt-6">
               {visibleEmotions?.map((emotion) => {
                 const hasInCart = Object.values(cartItems).some(
                   (item) => item.product.id === emotion.id

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { X } from 'lucide-react';
 import { Emotion } from 'auth/services/emotionService';
@@ -11,7 +11,6 @@ import {
   getSegmentPath,
   getSegmentCentroid,
   getCompositePosition,
-  polarToCartesian,
 } from '../constants/plutchikWheelConfig';
 import {
   CATEGORY_LABELS,
@@ -154,11 +153,87 @@ function PlutchikWheel({ emotions, conditions, onAddToCart }: PlutchikWheelProps
 
   const segmentKey = (s: SegmentData) => `${s.category}-${s.intensity}`;
 
+  const SIZE_MIN = 400;
+  const SIZE_MAX = 1200;
+  const SIZE_STEP = 100;
+  const [wheelSize, setWheelSize] = useState(700);
+  const sizeLevel = Math.min(9, Math.max(1, Math.round((wheelSize - SIZE_MIN) / SIZE_STEP) + 1));
+
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragRef = useRef<{ startX: number; startY: number; startOx: number; startOy: number } | null>(null);
+
+  const handleCenterPointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      e.stopPropagation();
+      dragRef.current = { startX: e.clientX, startY: e.clientY, startOx: offset.x, startOy: offset.y };
+      (e.target as Element).setPointerCapture(e.pointerId);
+      setIsDragging(true);
+    },
+    [offset]
+  );
+
+  const handleCenterPointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!dragRef.current) return;
+      setOffset({
+        x: dragRef.current.startOx + (e.clientX - dragRef.current.startX),
+        y: dragRef.current.startOy + (e.clientY - dragRef.current.startY),
+      });
+    },
+    []
+  );
+
+  const handleCenterPointerUp = useCallback(() => {
+    dragRef.current = null;
+    setIsDragging(false);
+  }, []);
+
+  const svgRef = useRef<SVGSVGElement>(null);
+  const handleWheel = useCallback((e: WheelEvent) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -20 : 20;
+    setWheelSize((s) => Math.min(SIZE_MAX, Math.max(SIZE_MIN, s + delta)));
+  }, []);
+
+  React.useEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [handleWheel]);
+
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center -translate-y-8 select-none">
+      <div className="mb-3 flex items-center gap-2 relative z-10 bg-[#121626]/80 rounded-full p-1">
+        <button
+          onClick={() => setWheelSize((s) => Math.max(SIZE_MIN, s - SIZE_STEP))}
+          disabled={wheelSize <= SIZE_MIN}
+          aria-label="wheel-size-decrease"
+          className="flex h-7 w-7 cursor-pointer bg-white/20 items-center justify-center rounded-full border border-[var(--color-border-faded)] text-sm text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-border-primary)] hover:text-[var(--color-text-primary)] disabled:cursor-default disabled:opacity-30"
+        >
+          −
+        </button>
+        <span className="min-w-[3ch] text-center text-[11px] text-[var(--color-text-faded)]">
+          {sizeLevel}
+        </span>
+        <button
+          onClick={() => setWheelSize((s) => Math.min(SIZE_MAX, s + SIZE_STEP))}
+          disabled={wheelSize >= SIZE_MAX}
+          aria-label="wheel-size-increase"
+          className="flex h-7 w-7 cursor-pointer bg-white/20 items-center justify-center rounded-full border border-[var(--color-border-faded)] text-sm text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-border-primary)] hover:text-[var(--color-text-primary)] disabled:cursor-default disabled:opacity-30"
+        >
+          +
+        </button>
+      </div>
       <svg
+        ref={svgRef}
         viewBox={`0 0 ${VIEW_SIZE + 100} ${VIEW_SIZE + 100}`}
-        className="w-full max-w-[600px]"
+        className="w-full"
+        style={{
+          maxWidth: `${wheelSize}px`,
+          transform: `translate(${offset.x}px, ${offset.y}px)`,
+        }}
         role="img"
         aria-label="Plutchik 감정 바퀴"
       >
@@ -227,7 +302,7 @@ function PlutchikWheel({ emotions, conditions, onAddToCart }: PlutchikWheelProps
             );
           })}
 
-          {/* Center decoration */}
+          {/* Center decoration — drag handle */}
           <circle
             cx={CENTER}
             cy={CENTER}
@@ -235,6 +310,12 @@ function PlutchikWheel({ emotions, conditions, onAddToCart }: PlutchikWheelProps
             fill="var(--color-bg-primary)"
             stroke="var(--color-border-primary)"
             strokeWidth={1}
+            className="touch-none"
+            style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+            onPointerDown={handleCenterPointerDown}
+            onPointerMove={handleCenterPointerMove}
+            onPointerUp={handleCenterPointerUp}
+            onPointerCancel={handleCenterPointerUp}
           />
           <text
             x={CENTER}
