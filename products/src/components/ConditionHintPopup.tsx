@@ -7,8 +7,9 @@ import {
 } from '../utils/conditions';
 
 interface EmotionLike {
-  emoji?: string;
-  visibility?: VisibilityCondition;
+  emoji: string;
+  published: boolean;
+  visibility: VisibilityCondition;
 }
 
 interface Props {
@@ -187,7 +188,7 @@ function ConditionHintPopup({ emotions, conditions, isOpen, onClose }: Props): R
                     : 'bg-[var(--color-overlay-2)] opacity-50'
                 }`}
               >
-                <div className="flex min-w-0 items-center gap-2">
+                <div className="flex shrink-0 items-center gap-2">
                   {group.isMet ? (
                     <Check size={16} className="shrink-0 text-[var(--color-accent-green)]" />
                   ) : (
@@ -195,7 +196,7 @@ function ConditionHintPopup({ emotions, conditions, isOpen, onClose }: Props): R
                   )}
                   <span className="shrink-0 text-sm">{group.conditionLabel}:</span>
                 </div>
-                <div className="flex flex-wrap justify-end gap-1 text-[var(--color-text-muted)]">
+                <div className="flex flex-1 flex-wrap justify-end gap-1 text-[var(--color-text-muted)]">
                   {group.isMet && group.emotionEmojis.length > 0 ? (
                     group.emotionEmojis.map((emoji, i) => (
                       <span key={i} className="text-base text-[var(--color-text-primary)]">

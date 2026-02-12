@@ -30,9 +30,9 @@ const ENERGY_STATES: SortDirection[] = ['asc', 'desc', null];
 const ENERGY_LABELS: Record<string, string> = { asc: '낮은순', desc: '높은순' };
 const ARROW: Record<string, string> = { asc: '↑', desc: '↓' };
 const INTENSITY_LABELS: Record<string, string> = {
-  low: 'Low',
-  middle: 'Middle',
   high: 'High',
+  middle: 'Middle',
+  low: 'Low',
 };
 
 function loadSortPrefs(): SortPrefs {
@@ -131,6 +131,11 @@ function ProductList() {
     [addToCart]
   );
 
+  const cartProductIds = React.useMemo(
+    () => new Set(Object.values(cartItems).map((item) => item.product.id)),
+    [cartItems]
+  );
+
   const handleProductClick = (id: number) => {
     navigate(`/detail/${id}`);
   };
@@ -138,7 +143,7 @@ function ProductList() {
   return (
     <div className="mx-auto max-w-[1400px] px-3 md:px-5">
       <div className="flex flex-col md:flex-row md:items-center gap-4">
-        <div className="flex relative">
+        <div className="flex relative z-10">
           {/* 현재 조건 */}
           <CurrentConditionUI view={view} />
           
@@ -330,6 +335,7 @@ function ProductList() {
               emotions={emotions}
               conditions={conditions}
               onAddToCart={handleAddToCart}
+              cartProductIds={cartProductIds}
             />
           )}
         </>

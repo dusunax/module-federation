@@ -1,11 +1,12 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ToastHost from './components/ToastHost';
 import { useRememberProgress } from 'cart/features/remembering/hooks/useRememberProgress';
 import { useRememberingSync } from 'cart/features/remembering/hooks/useRememberingSync';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
+import { useAuthStore } from 'auth/authStore';
 import './styles/tailwind.css';
 
 const Header = lazy(() => import('header/Header'));
@@ -29,6 +30,9 @@ const queryClient = new QueryClient({
 });
 
 function AppContent() {
+  const location = useLocation();
+  const user = useAuthStore((state) => state.user);
+
   useRememberingSync();
   useRememberProgress();
 

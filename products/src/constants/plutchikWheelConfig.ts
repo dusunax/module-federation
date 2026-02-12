@@ -1,54 +1,50 @@
-export interface PlutchikSector {
-  category: string;
-  startAngle: number;
-  colors: [string, string, string]; // [high, middle, low]
-}
+/**
+ * Plutchik 바퀴 SVG 지오메트리
+ *
+ * 감정 데이터(라벨, 색상)는 @shared/constants/categories 참조.
+ * 이 파일은 바퀴 렌더링에 필요한 좌표/경로 계산만 담당.
+ */
+import {
+  BASE_EMOTIONS,
+  INTENSITY_LEVELS,
+  getIntensityColors,
+} from '@shared/constants/categories';
 
-const ANGLE_STEP = 45;
-const ANGLE_OFFSET = -90; // joy starts at 12 o'clock
-
-const SECTOR_ORDER = [
-  'joy',
-  'trust',
-  'fear',
-  'surprise',
-  'sadness',
-  'disgust',
-  'anger',
-  'anticipation',
-] as const;
-
-const SECTOR_COLORS: Record<string, [string, string, string]> = {
-  joy: ['#FFEB3B', '#FFF176', '#FFF9C4'],
-  trust: ['#8BC34A', '#AED581', '#DCEDC8'],
-  fear: ['#4CAF50', '#81C784', '#C8E6C9'],
-  surprise: ['#00BCD4', '#4DD0E1', '#B2EBF2'],
-  sadness: ['#2196F3', '#64B5F6', '#BBDEFB'],
-  disgust: ['#9C27B0', '#BA68C8', '#E1BEE7'],
-  anger: ['#F44336', '#E57373', '#FFCDD2'],
-  anticipation: ['#FF9800', '#FFB74D', '#FFE0B2'],
-};
-
-export const PLUTCHIK_SECTORS: PlutchikSector[] = SECTOR_ORDER.map(
-  (category, i) => ({
-    category,
-    startAngle: ANGLE_OFFSET + i * ANGLE_STEP,
-    colors: SECTOR_COLORS[category],
-  })
-);
-
-// Ring radii: high (innermost) → low (outermost)
-export const RING_RADII: [number, number][] = [
-  [60, 120],   // high
-  [120, 185],  // middle
-  [185, 245],  // low
-];
-
-export const RING_NAMES = ['high', 'middle', 'low'] as const;
+// ─── SVG 상수 ─────────────────────────────────────────
 
 export const CENTER = 250;
 export const VIEW_SIZE = 500;
 export const COMPOSITE_LABEL_RADIUS = 270;
+
+const ANGLE_STEP = 45;
+const ANGLE_OFFSET = -90; // joy = 12시
+
+/** Ring 반경: highest(안쪽) → lowest(바깥쪽) */
+export const RING_RADII: [number, number][] = [
+  [60, 120],   // highest
+  [120, 185],  // middle
+  [185, 245],  // lowest
+];
+
+export const RING_NAMES = INTENSITY_LEVELS;
+
+// ─── 섹터 (BASE_EMOTIONS에서 파생) ───────────────────
+
+export interface PlutchikSector {
+  category: string;
+  startAngle: number;
+  colors: string[];
+}
+
+export const PLUTCHIK_SECTORS: PlutchikSector[] = BASE_EMOTIONS.map(
+  (emotion, i) => ({
+    category: emotion.code,
+    startAngle: ANGLE_OFFSET + i * ANGLE_STEP,
+    colors: getIntensityColors(emotion.code),
+  })
+);
+
+// ─── SVG 경로 유틸 ───────────────────────────────────
 
 function toRadians(deg: number): number {
   return (deg * Math.PI) / 180;
@@ -79,7 +75,6 @@ export function describeArc(
   const outerEnd = polarToCartesian(cx, cy, outerR, endAngle);
   const innerStart = polarToCartesian(cx, cy, innerR, endAngle);
   const innerEnd = polarToCartesian(cx, cy, innerR, startAngle);
-
   const largeArc = endAngle - startAngle > 180 ? 1 : 0;
 
   return [
@@ -94,9 +89,7 @@ export function describeArc(
 export function getSegmentPath(sectorIndex: number, ringIndex: number): string {
   const sector = PLUTCHIK_SECTORS[sectorIndex];
   const [innerR, outerR] = RING_RADII[ringIndex];
-  const startAngle = sector.startAngle;
-  const endAngle = startAngle + ANGLE_STEP;
-  return describeArc(CENTER, CENTER, innerR, outerR, startAngle, endAngle);
+  return describeArc(CENTER, CENTER, innerR, outerR, sector.startAngle, sector.startAngle + ANGLE_STEP);
 }
 
 export function getSegmentCentroid(
@@ -105,15 +98,12 @@ export function getSegmentCentroid(
 ): { x: number; y: number } {
   const sector = PLUTCHIK_SECTORS[sectorIndex];
   const [innerR, outerR] = RING_RADII[ringIndex];
-  const midAngle = sector.startAngle + ANGLE_STEP / 2;
-  const midR = (innerR + outerR) / 2;
-  return polarToCartesian(CENTER, CENTER, midR, midAngle);
+  return polarToCartesian(CENTER, CENTER, (innerR + outerR) / 2, sector.startAngle + ANGLE_STEP / 2);
 }
 
 export function getCompositePosition(
   sectorIndex: number
 ): { x: number; y: number } {
   const sector = PLUTCHIK_SECTORS[sectorIndex];
-  const midAngle = sector.startAngle + ANGLE_STEP;
-  return polarToCartesian(CENTER, CENTER, COMPOSITE_LABEL_RADIUS, midAngle);
+  return polarToCartesian(CENTER, CENTER, COMPOSITE_LABEL_RADIUS, sector.startAngle + ANGLE_STEP);
 }
