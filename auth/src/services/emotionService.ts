@@ -2,7 +2,7 @@ import { collection, doc, getDocs, getDoc, setDoc, updateDoc, query, orderBy, Ti
 import { db } from '../firebase';
 import { BASE_CATEGORIES, COMPOSITE_CATEGORIES } from '@shared/constants/categories';
 import { resolveIntensityByName, IntensityLevel } from '@shared/constants/plutchikIntensity';
-import type { Emotion, VisibilityCondition } from '@shared/types/api';
+import type { Emotion } from '@shared/types/api';
 
 interface IntensityConfig {
   [key: string]: {

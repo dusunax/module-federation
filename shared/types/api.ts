@@ -17,7 +17,7 @@ export interface Emotion {
   id: number;
   name: string;
   emoji: string;
-  intensity: 'low' | 'middle' | 'high';
+  intensity: 'high' | 'middle' | 'low';
   category: string;
   description: string;
   story: string;

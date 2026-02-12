@@ -1,6 +1,7 @@
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, beforeEach, vi } from 'vitest';
 import { Timestamp } from 'firebase/firestore';
@@ -70,7 +71,10 @@ describe('ProductList', () => {
   it('API 데이터로 상품 카드가 렌더링된다', async () => {
     renderWithProviders(<ProductList />);
 
-    expect(screen.getByLabelText('products-search')).toBeInTheDocument();
+    const user = userEvent.setup();
+    await user.click(screen.getByLabelText('view-mode-list'));
+
+    expect(await screen.findByLabelText('products-search')).toBeInTheDocument();
     expect(screen.getByLabelText('products-sort-energy')).toBeInTheDocument();
     expect(screen.getByLabelText('products-filter-collection')).toBeInTheDocument();
     expect(await screen.findByLabelText('product-card-1')).toBeInTheDocument();
