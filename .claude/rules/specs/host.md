@@ -154,20 +154,22 @@ updateEmotion(id: number, data: Partial<Omit<Emotion, 'energyCost'>>): Promise<v
 
 ### Emotion 타입
 
+`shared/types/api.ts` 참조. 주요 필드:
+
 ```typescript
 interface Emotion {
   id: number;
   name: string;
   emoji: string;
-  rarity: 'common' | 'rare' | 'epic';
-  energyCost?: number;
-  category: string;
+  intensity: 'high' | 'middle' | 'low';  // Plutchik 강도
+  category: string;                        // 소문자 영문 코드
   description: string;
   story: string;
   published: boolean;
   image: string | null;
-  rarityOrder: number;
-  createdAt: { seconds: number };
+  energyCost: number;
+  intensityOrder: number;
+  createdAt: FirestoreTimestamp;
   visibility: VisibilityCondition;
 }
 ```

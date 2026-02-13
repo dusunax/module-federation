@@ -32,11 +32,14 @@ react, react-dom, react-router-dom, @tanstack/react-query, zustand, sonner
 
 ### ProductList (`src/ProductList.tsx`)
 
-- 검색: 이름, 카테고리, 스토리 실시간 검색
-- 정렬: 날짜(최신/오래된), 에너지(낮은/높은) — localStorage(`emotion-sort-prefs`) 저장
-- 상품 카드: 이모지, 이름, 설명(5줄), 카테고리(한글 라벨), 에너지(⚡), 상태 뱃지
-- 상태 우선순위: DB(orderStatuses) > 장바구니(HELD) > emotion.status
+- **뷰 모드 토글**: 감정 바퀴(wheel) / 목록(list) — 기본값 `wheel`
+- 검색: 이름, 카테고리, 스토리 실시간 검색 (목록 모드에서만 표시)
+- 정렬: 에너지(낮은/높은) — localStorage(`emotion-sort-prefs`) 저장 (목록 모드에서만)
+- 수집 필터: 전체/수집만/미수집만 토글 (목록 모드에서만)
+- 상품 카드: 이모지, 이름, 설명(5줄), 카테고리(한글 라벨), 강도, 에너지(⚡), 상태 뱃지
+- 상태 우선순위: DB(orderStatuses) > 장바구니(HELD) > NOTICING
 - React Query: `['emotions', searchTerm]`
+- `cartProductIds`: 장바구니에 담긴 감정 ID Set → PlutchikWheel에 전달
 
 ### ProductDetail (`src/ProductDetail.tsx`)
 
@@ -106,6 +109,16 @@ interface OrderState {
 }
 ```
 
+## Plutchik 감정 바퀴
+
+상세: [`plutchik-wheel.md`](./plutchik-wheel.md) 참조.
+
+- 감정 시스템 단일 소스: `shared/constants/categories.ts`
+- SVG 지오메트리: `src/constants/plutchikWheelConfig.ts`
+- 바퀴 컴포넌트: `src/components/PlutchikWheel.tsx`
+- 섹터 클릭 (1회=low, 2회=middle, 3회=high) → 1초 후 장바구니 담기
+- `cartProductIds` prop으로 장바구니 아이템 하이라이트
+
 ## Constants
 
 ### EMOTION_STATUS (`src/constants/emotionStatus.ts`)
@@ -167,7 +180,7 @@ interface VisibilityCondition {
 ### UI 컴포넌트
 
 - `CurrentConditionUI` (`src/components/CurrentConditionUI.tsx`): 정렬 바 아래 뱃지 바
-- `ConditionHintPopup` (`src/components/ConditionHintPopup.tsx`): 조건별 그룹핑 모달, Lucide 아이콘 + 이모지 전용
+- `ConditionHintPopup` (`src/components/ConditionHintPopup.tsx`): 조건별 그룹핑 모달, Lucide 아이콘 + 이모지 전용, `published === false` 감정 숨김
 
 ### ProductList 통합
 
