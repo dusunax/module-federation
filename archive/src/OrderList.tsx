@@ -13,7 +13,6 @@ function OrderList() {
   const [orders, setOrders] = React.useState<Order[]>(ordersFromStore || []);
 
   React.useEffect(() => {
-    // keep local store in sync initially
     setOrders(ordersFromStore || []);
   }, [ordersFromStore]);
 
@@ -86,13 +85,12 @@ function OrderList() {
               style={{ borderColor: statusConfig.color }}
             >
               {/* 기록 날짜 */}
-              <div className="mb-2 text-[12px] font-normal tracking-wide text-[rgba(255,248,212,0.7)]">
+              <div className="mb-2 text-[12px] flex justify-between items-center font-normal tracking-wide text-[rgba(255,248,212,0.7)]">
                 <span>
-
-                {order.totalItems}개 감정 기록 | ⚡ {order.totalEnergy ?? 0} 에너지 사용
+                  {order.totalItems}개 감정 기록 | ⚡ {order.totalEnergy ?? 0} 에너지 사용
                 </span>
                 <span>
-{formatDate(order.orderDate)} 
+                  {formatDate(order.orderDate)} 
                 </span>
               </div>
 

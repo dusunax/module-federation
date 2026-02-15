@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-import { useOrderStore, Order } from 'products/orderStore';
-import { useCartStore, CartItem } from 'products/cartStore';
-import { useRememberingStore, RememberingItem } from 'auth/rememberingStore';
+import { useOrderStore } from 'products/orderStore';
+import { useCartStore } from 'products/cartStore';
+import type { Order } from '@shared/types/api';
+import { useRememberingStore } from 'auth/rememberingStore';
 import { EMOTION_STATUS } from 'products/utils/statusStyle';
 import { useAuthStore } from 'auth/authStore';
 import { saveUserOrder } from 'auth/services/orderService';
@@ -107,8 +108,8 @@ export function useRememberProgress() {
             0
           );
 
-          const newOrder = {
-            id: Date.now(),
+          const newOrder: Order = {
+            id: String(Date.now()),
             items: completedCartItems.map(({ cartItem }) => ({
               product: cartItem.product,
               quantity: cartItem.quantity,
@@ -126,18 +127,25 @@ export function useRememberProgress() {
           const previousOrders = orderState.orders || [];
           useOrderStore.setState({ orders: [newOrder, ...previousOrders] });
 
-          // 저장: Firestore에도 기록 once
+          // 저장: Firestore에 기록 + 결과 로그
           try {
             const user = useAuthStore.getState().user;
-            if (user && user.uid) {
-              await saveUserOrder(user.uid, newOrder);
+            if (user?.uid) {
+              const result = await saveUserOrder(user.uid, newOrder);
+              console.info('[remembering] saveUserOrder success:', {
+                uid: user.uid,
+                orderId: newOrder.id,
+                result,
+              });
+            } else {
+              console.warn('[remembering] saveUserOrder skipped: no user');
             }
           } catch (err) {
             console.error('Failed to save order to Firestore:', err);
           }
 
           // 장바구니에서 제거 및 상태 업데이트 for each item
-          completedCartItems.forEach(({ item, cartItem }) => {
+          completedCartItems.forEach(({ item }) => {
             cartState.removeFromCart(item.cartItemId);
             updateOrderStatus(item.productInfo.id, EMOTION_STATUS.REMEMBERED);
           });

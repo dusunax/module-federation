@@ -151,7 +151,7 @@ function ProductList() {
           <button
             onClick={() => setHintOpen(true)}
             aria-label="condition-hint-button"
-            className="self-end flex absolute bottom-0 right-0 md:static h-8 w-8 shrink-0 items-center md:-translate-x-1/2  justify-center rounded-full border-2 text-2xl no-underline transition-colors bg-[var(--color-overlay-3)] border-[var(--color-border-primary)] hover:bg-[var(--color-overlay-3)] cursor-pointer" 
+            className="self-end flex absolute bottom-0 right-0 md:static h-8 w-8 shrink-0 items-center md:-translate-x-1/2 justify-center rounded-full border-2 text-2xl no-underline transition-colors bg-[var(--color-overlay-3)] border-[var(--color-border-primary)] hover:bg-[var(--color-overlay-3)] cursor-pointer" 
           >
             <InfoIcon className="h-4 w-4" />
           </button>

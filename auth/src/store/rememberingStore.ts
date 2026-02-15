@@ -10,8 +10,26 @@ import {
   Unsubscribe,
 } from 'firebase/firestore';
 import { db } from '../firebase';
+import { REMEMBERING_DURATION_MS } from '@shared/constants/remembering';
 
-const REMEMBERING_DURATION = 20000; // 20초
+function toMillis(value: unknown): number | undefined {
+  if (!value) return undefined;
+  if (typeof value === 'number') return value;
+  if (value instanceof Timestamp) return value.toMillis();
+  if (typeof value === 'object' && value && 'toMillis' in (value as Record<string, unknown>)) {
+    const maybe = value as { toMillis?: () => number };
+    if (typeof maybe.toMillis === 'function') return maybe.toMillis();
+  }
+  if (typeof value === 'object' && value && 'toDate' in (value as Record<string, unknown>)) {
+    const maybe = value as { toDate?: () => Date };
+    if (typeof maybe.toDate === 'function') return maybe.toDate().getTime();
+  }
+  if (typeof value === 'object' && value && 'seconds' in (value as Record<string, unknown>)) {
+    const seconds = (value as { seconds?: number }).seconds;
+    if (typeof seconds === 'number') return seconds * 1000;
+  }
+  return undefined;
+}
 
 export interface ProductInfo {
   id?: number;
@@ -84,13 +102,13 @@ const useRememberingStore = create<RememberingState>((set, get) => ({
         const items: Record<string, RememberingItem> = {};
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
+          const startTime = toMillis(data.startTime);
           items[docSnap.id] = {
             visibleItemId: docSnap.id,
             cartItemId: data.cartItemId,
             productInfo: data.productInfo,
-            startTime:
-              data.startTime instanceof Timestamp ? data.startTime.toMillis() : data.startTime,
-            duration: data.duration,
+            startTime: startTime ?? 0,
+            duration: typeof data.duration === 'number' ? data.duration : REMEMBERING_DURATION_MS,
             energyCost: data.energyCost,
             status: data.status,
           };
@@ -130,7 +148,7 @@ const useRememberingStore = create<RememberingState>((set, get) => ({
       cartItemId,
       productInfo,
       startTime: serverTimestamp(),
-      duration: REMEMBERING_DURATION,
+      duration: REMEMBERING_DURATION_MS,
       energyCost,
       status: 'in_progress',
       createdAt: serverTimestamp(),
@@ -164,7 +182,7 @@ const useRememberingStore = create<RememberingState>((set, get) => ({
         cartItemId,
         productInfo,
         startTime: serverTimestamp(),
-        duration: REMEMBERING_DURATION,
+        duration: REMEMBERING_DURATION_MS,
         energyCost,
         status: 'in_progress',
         createdAt: serverTimestamp(),

@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import showConfirmToast from '@shared/components/showConfirmToast';
+import { REMEMBERING_DURATION_MS } from '@shared/constants/remembering';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
-import { useRememberingStore } from 'auth/rememberingStore';
-import type { RememberingItem } from 'auth/store/rememberingStore';
+import { RememberingItem, useRememberingStore } from 'auth/rememberingStore';
 
-const DURATION = 30000; // 30 seconds
-
-function formatRemainingTime(progress: number) {
-  const remainingMs = ((100 - progress) / 100) * DURATION;
+function formatRemainingTime(progress: number, duration: number) {
+  const remainingMs = ((100 - progress) / 100) * duration;
   const remainingSeconds = Math.ceil(remainingMs / 1000);
   const minutes = Math.floor(remainingSeconds / 60);
   const seconds = remainingSeconds % 60;
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-function useRealtimeProgress(startTime: number | undefined) {
+function useRealtimeProgress(startTime: number | undefined, duration: number) {
   const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
@@ -28,14 +26,14 @@ function useRealtimeProgress(startTime: number | undefined) {
     const tick = () => {
       const now = Date.now();
       const elapsed = Math.max(0, now - start);
-      const p = Math.min(100, (elapsed / DURATION) * 100);
+      const p = Math.min(100, (elapsed / duration) * 100);
       setProgress(p);
     };
 
     tick();
     const id = setInterval(tick, 500);
     return () => clearInterval(id);
-  }, [startTime]);
+  }, [startTime, duration]);
 
   return progress;
 }
@@ -50,11 +48,12 @@ function RememberingItemCard({ firestoreItem, cancelItemRemembering }: Rememberi
     productInfo = {} as RememberingItem['productInfo'],
     status = EMOTION_STATUS.BEING_UNDERSTOOD,
     startTime,
+    duration = REMEMBERING_DURATION_MS,
     energyCost = 1,
     visibleItemId,
   } = firestoreItem;
   const statusStyle = getStatusConfig(status);
-  const progress = useRealtimeProgress(startTime);
+  const progress = useRealtimeProgress(startTime, duration);
 
   const handleCancel = () => {
     showConfirmToast({
@@ -65,7 +64,7 @@ function RememberingItemCard({ firestoreItem, cancelItemRemembering }: Rememberi
       onConfirm: async () => {
         try {
           // pass the Firestore-visible id (doc id) to cancel
-          await cancelItemRemembering(visibleItemId || String(firestoreItem.id));
+          await cancelItemRemembering(visibleItemId || String(firestoreItem.cartItemId));
           toast.success('기억이 취소되었습니다.');
         } catch (err) {
           console.error('cancelItemRemembering failed', err);
@@ -101,7 +100,7 @@ function RememberingItemCard({ firestoreItem, cancelItemRemembering }: Rememberi
       <div className="mt-4 rounded bg-[rgba(67,86,99,0.3)] p-3">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-[12px] font-normal tracking-wide text-[rgba(255,248,212,0.8)]">
-            이해되는 중... {formatRemainingTime(progress)} 남음
+            이해되는 중... {formatRemainingTime(progress, duration)} 남음
           </span>
           <div className="flex items-center gap-3">
             <span className="text-[12px] font-normal tracking-wide text-[#A3B087]">
@@ -155,10 +154,10 @@ export function RememberingSection({ cancelItemRemembering }: RememberingSection
       </div>
 
       <div className="mb-5">
-        {firestoreItemsList.map((firestoreItem) => (
+        {firestoreItemsList.map((firestoreItem, index) => (
           <RememberingItemCard
-            key={firestoreItem.id}
-            firestoreItem={firestoreItem as RememberingItem}
+            key={firestoreItem.visibleItemId ?? firestoreItem.cartItemId ?? index}
+            firestoreItem={firestoreItem}
             cancelItemRemembering={cancelItemRemembering}
           />
         ))}

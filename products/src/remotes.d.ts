@@ -47,9 +47,47 @@ declare module 'auth/services/orderService' {
   ): Promise<void>;
 }
 
+declare module 'auth/store/rememberingStore' {
+  export interface ProductInfo {
+    id?: number;
+    name?: string;
+    emoji?: string;
+    energyCost?: number;
+  }
+
+  export interface RememberingItem {
+    visibleItemId: string;
+    cartItemId: number;
+    productInfo: ProductInfo;
+    startTime: number;
+    duration: number;
+    energyCost: number;
+    status: string;
+  }
+}
+
 declare module 'auth/rememberingStore' {
-  export const __setMockRememberingState: (next: { rememberingItems?: Record<number, { id: number }> }) => void;
-  export const useRememberingStore: ((selector?: (state: { rememberingItems: Record<number, { id: number }> }) => unknown) => unknown) & {
-    getState: () => { rememberingItems: Record<number, { id: number }> };
+  import { RememberingItem } from 'auth/store/rememberingStore';
+
+  export interface RememberingState {
+    rememberingItems: Record<string, RememberingItem>;
+    loading: boolean;
+    error: string | null;
+    userId: string | null;
+    unsubscribe: unknown | null;
+    initializeListener: (userId: string) => void;
+    cleanup: () => void;
+    startRemembering: (cartItemId: number, productInfo: any, energyCost: number) => Promise<string>;
+    startRememberingBatch: (items: Array<{ cartItemId: number; productInfo: any; energyCost: number }>) => Promise<void>;
+    cancelItemRemembering: (visibleItemId: string) => Promise<RememberingItem | null>;
+    cancelAllRemembering: () => Promise<number>;
+    completeItemRemembering: (visibleItemId: string) => Promise<RememberingItem | null>;
+    getProgress: (visibleItemId: string) => number;
+    getAllProgress: () => Record<string, { progress: number; startTime: number; energyCost: number; cartItemId: number }>;
+  }
+
+  export const __setMockRememberingState: (next: { rememberingItems?: Record<string, RememberingItem> }) => void;
+  export const useRememberingStore: ((selector?: (state: RememberingState) => unknown) => unknown) & {
+    getState: () => RememberingState;
   };
 }

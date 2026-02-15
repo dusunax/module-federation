@@ -281,7 +281,7 @@ function PlutchikWheel({ emotions, conditions, onAddToCart, cartProductIds }: Pl
   }, [handleWheel]);
 
   return (
-    <div className="flex flex-col items-center -translate-y-8 select-none">
+    <div className="flex flex-col items-center mt-12 md:mt-0 translate-y-0 md:-translate-y-8 select-none">
       <div className="mb-3 fixed -top-12 flex items-center gap-2 z-10 bg-[#121626]/80 rounded-full p-1">
         <button
           onClick={() => setWheelSize((s) => Math.max(SIZE_MIN, s - SIZE_STEP))}
