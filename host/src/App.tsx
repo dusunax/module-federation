@@ -1,12 +1,13 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import ToastHost from './components/ToastHost';
 import { useRememberProgress } from 'cart/features/remembering/hooks/useRememberProgress';
 import { useRememberingSync } from 'cart/features/remembering/hooks/useRememberingSync';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import { useAuthStore } from 'auth/authStore';
+import { seedEmotions } from 'auth/services/seedService';
 import './styles/tailwind.css';
 
 const Header = lazy(() => import('header/Header'));
@@ -29,10 +30,33 @@ const queryClient = new QueryClient({
   },
 });
 
+function useEmotionsSeed(enabled: boolean) {
+  const seeded = useRef(false);
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    if (!enabled) return;
+    if (seeded.current) return;
+    seeded.current = true;
+
+    seedEmotions()
+      .then((created) => {
+        qc.invalidateQueries({ queryKey: ['emotions'] });
+        qc.invalidateQueries({ queryKey: ['admin-emotions'] });
+        console.info(`Seeded emotions: ${created} added.`);
+      })
+      .catch((err) => {
+      console.error('Seed check failed:', err);
+      seeded.current = false;
+      });
+  }, [enabled, qc]);
+}
+
 function AppContent() {
   const location = useLocation();
   const user = useAuthStore((state) => state.user);
 
+  useEmotionsSeed(false);
   useRememberingSync();
   useRememberProgress();
 

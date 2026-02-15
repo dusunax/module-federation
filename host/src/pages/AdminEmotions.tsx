@@ -8,12 +8,13 @@ type Emotion = RemoteEmotion;
 type VisibilityCondition = Emotion['visibility'];
 
 interface FormData {
-  name: string;
+  nameKo: string;
+  nameEn: string;
   emoji: string;
   intensity: 'low' | 'middle' | 'high';
   category: string;
-  description: string;
-  story: string;
+  descriptionKo: string;
+  descriptionEn: string;
   published: boolean;
   visibilityTime: string;
   visibilityDay: string;
@@ -23,12 +24,13 @@ interface FormData {
 }
 
 const INITIAL_FORM: FormData = {
-  name: '',
+  nameKo: '',
+  nameEn: '',
   emoji: '',
   intensity: 'low',
   category: '',
-  description: '',
-  story: '',
+  descriptionKo: '',
+  descriptionEn: '',
   published: false,
   visibilityTime: '',
   visibilityDay: '',
@@ -115,11 +117,20 @@ function EmotionModal({
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 
           <label className="flex flex-col gap-1">
-            <span className="text-xs font-normal text-(--color-text-muted)">이름 *</span>
+            <span className="text-xs font-normal text-(--color-text-muted)">이름 (한국어) *</span>
             <input
               type="text"
-              value={form.name}
-              onChange={(e) => onChange('name', e.target.value)}
+              value={form.nameKo}
+              onChange={(e) => onChange('nameKo', e.target.value)}
+              className="rounded border border-(--color-border-primary) bg-(--color-overlay-2) px-3 py-2 text-sm font-normal text-(--color-text-primary) outline-none focus:border-(--color-accent-green)"
+            />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-xs font-normal text-(--color-text-muted)">이름 (영어) *</span>
+            <input
+              type="text"
+              value={form.nameEn}
+              onChange={(e) => onChange('nameEn', e.target.value)}
               className="rounded border border-(--color-border-primary) bg-(--color-overlay-2) px-3 py-2 text-sm font-normal text-(--color-text-primary) outline-none focus:border-(--color-accent-green)"
             />
           </label>
@@ -171,20 +182,20 @@ function EmotionModal({
           </label>
 
           <label className="flex flex-col gap-1 md:col-span-2">
-            <span className="text-xs font-normal text-(--color-text-muted)">설명 *</span>
+            <span className="text-xs font-normal text-(--color-text-muted)">설명 (한국어) *</span>
             <textarea
-              value={form.description}
-              onChange={(e) => onChange('description', e.target.value)}
+              value={form.descriptionKo}
+              onChange={(e) => onChange('descriptionKo', e.target.value)}
               rows={2}
               className="resize-none rounded border border-(--color-border-primary) bg-(--color-overlay-2) px-3 py-2 text-sm font-normal text-(--color-text-primary) outline-none focus:border-(--color-accent-green)"
             />
           </label>
 
           <label className="flex flex-col gap-1 md:col-span-2">
-            <span className="text-xs font-normal text-(--color-text-muted)">스토리 *</span>
+            <span className="text-xs font-normal text-(--color-text-muted)">설명 (영어) *</span>
             <textarea
-              value={form.story}
-              onChange={(e) => onChange('story', e.target.value)}
+              value={form.descriptionEn}
+              onChange={(e) => onChange('descriptionEn', e.target.value)}
               rows={2}
               className="resize-none rounded border border-(--color-border-primary) bg-(--color-overlay-2) px-3 py-2 text-sm font-normal text-(--color-text-primary) outline-none focus:border-(--color-accent-green)"
             />
@@ -307,12 +318,13 @@ function AdminEmotions() {
   const [form, setForm] = useState<FormData>(INITIAL_FORM);
   const [saving, setSaving] = useState(false);
   const isFormValid = Boolean(
-    form.name.trim() &&
+    form.nameKo.trim() &&
+    form.nameEn.trim() &&
     form.emoji.trim() &&
     form.category.trim() &&
     form.intensity.trim() &&
-    form.description.trim() &&
-    form.story.trim(),
+    form.descriptionKo.trim() &&
+    form.descriptionEn.trim(),
   );
 
 
@@ -335,12 +347,13 @@ function AdminEmotions() {
   const openEditModal = useCallback((emotion: Emotion) => {
     setEditingId(emotion.id);
     setForm({
-      name: emotion.name,
+  nameKo: emotion.name.ko,
+  nameEn: emotion.name.en,
       emoji: emotion.emoji,
       intensity: emotion.intensity,
       category: emotion.category,
-      description: emotion.description,
-      story: emotion.story,
+  descriptionKo: emotion.description.ko,
+  descriptionEn: emotion.description.en,
       published: emotion.published ?? false,
       visibilityTime: emotion.visibility?.time?.[0] ?? '',
       visibilityDay: emotion.visibility?.day?.[0] ?? '',
@@ -362,7 +375,7 @@ function AdminEmotions() {
   }, []);
 
   const handleSave = useCallback(async () => {
-    if (!form.name || !form.emoji || !form.category || !form.intensity || !form.description || !form.story) {
+    if (!form.nameKo || !form.nameEn || !form.emoji || !form.category || !form.intensity || !form.descriptionKo || !form.descriptionEn) {
       toast.error('필수 항목을 모두 입력해주세요.');
       return;
     }
@@ -375,18 +388,14 @@ function AdminEmotions() {
       event: form.visibilityEvent ? [form.visibilityEvent] : [],
     };
 
-    // Generate ID for new emotions. Use timestamp * 1000 + random to reduce collision risk.
-    // Note: This client-side approach still has a small race condition risk.
-    // Ideally, this should be server-side (Cloud Function) or use Firestore auto IDs.
     const nextId = editingId ?? Date.now() * 1000 + Math.floor(Math.random() * 1000);
     const baseEmotionData = {
       id: editingId ?? nextId,
-      name: form.name,
+      name: { ko: form.nameKo, en: form.nameEn },
       emoji: form.emoji,
       intensity: form.intensity,
       category: form.category,
-      description: form.description,
-      story: form.story,
+      description: { ko: form.descriptionKo, en: form.descriptionEn },
       published: form.published,
       image: null,
       visibility,
@@ -464,7 +473,7 @@ function AdminEmotions() {
               >
                 <td className="px-4 py-3 text-(--color-text-faded)">{emotion.id}</td>
                 <td className="px-4 py-3">{emotion.emoji}</td>
-                <td className="px-4 py-3 text-(--color-text-primary)">{emotion.name}</td>
+                <td className="px-4 py-3 text-(--color-text-primary)">{emotion.name.ko}</td>
                 <td className="px-4 py-3 text-(--color-text-secondary)">{emotion.intensity}</td>
                 <td className="px-4 py-3 text-(--color-text-secondary)">
                   {CATEGORY_LABELS.has(emotion.category)

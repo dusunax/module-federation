@@ -77,7 +77,7 @@ export function useRememberingState(): UseRememberingStateReturn {
           cartItemId: item.id,
           productInfo: {
             id: item.product.id,
-            name: item.product.name,
+            name: typeof item.product.name === 'string' ? item.product.name : item.product.name.ko,
             emoji: item.product.emoji,
             energyCost: item.product.energyCost || 1,
           },

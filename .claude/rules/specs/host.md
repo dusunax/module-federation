@@ -85,9 +85,9 @@ react, react-dom, react-router-dom, @tanstack/react-query, zustand, sonner
 - 유틸: `fillDateGaps()`, `formatDateLabel()`, `groupOrdersByDate()`, `getYTicks()`
 
 ### AdminEmotions (`/src/pages/AdminEmotions.tsx`)
-- 감정 목록 테이블 (ID, 이모지, 이름, 희귀도, 카테고리, 노출 조건, 공개 여부)
-- 추가/수정 모달 (이름, 이모지, 희귀도, 카테고리, 설명, 스토리, 공개 토글, 노출 조건: 시간/요일/날씨/계절/이벤트)
-- 폼 검증: name, emoji, category, rarity, description, story 필수 (미충족 시 저장 버튼 비활성화)
+- 감정 목록 테이블 (ID, 이모지, 이름, 강도, 카테고리, 노출 조건, 공개 여부)
+- 추가/수정 모달 (이름 ko/en, 이모지, 강도, 카테고리, 설명 ko/en, 공개 토글, 노출 조건: 시간/요일/날씨/계절/이벤트)
+- 폼 검증: nameKo, nameEn, emoji, category, intensity, descriptionKo, descriptionEn 필수 (미충족 시 저장 버튼 비활성화)
 - API: `emotionService.getAllEmotions()`, `createEmotion()`, `updateEmotion()`
 - React Query 캐시 (`['admin-emotions']`) 저장 후 무효화
 
@@ -157,14 +157,18 @@ updateEmotion(id: number, data: Partial<Omit<Emotion, 'energyCost'>>): Promise<v
 `shared/types/api.ts` 참조. 주요 필드:
 
 ```typescript
+interface I18nText {
+  ko: string;
+  en: string;
+}
+
 interface Emotion {
   id: number;
-  name: string;
+  name: I18nText;
   emoji: string;
   intensity: 'high' | 'middle' | 'low';  // Plutchik 강도
   category: string;                        // 소문자 영문 코드
-  description: string;
-  story: string;
+  description: I18nText;
   published: boolean;
   image: string | null;
   energyCost: number;
@@ -178,6 +182,7 @@ interface Emotion {
 
 1. Firebase auth 리스너 초기화 (`initAuthListener()`)
 2. React 렌더링 (`createRoot(#root).render(<App />)`)
+3. AppContent에서 emotions 컬렉션 시드 체크 (`isEmotionsCollectionEmpty()` → `seedEmotions()`)
 
 ## Testing
 

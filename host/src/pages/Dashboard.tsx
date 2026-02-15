@@ -280,8 +280,8 @@ function OrderRow({ order }: { order: Order }) {
     <div className="rounded-md border border-[var(--color-border-faded)] bg-[var(--color-overlay-15)] px-3 py-2">
       {items.map((item, idx) => {
         const product = item.product;
-        const emoji = product?.emoji ?? '';
-        const name = product?.name ?? '알 수 없는 항목';
+  const emoji = product?.emoji ?? '';
+  const name = product?.name ? (product.name.ko || product.name.en || '알 수 없는 항목') : '알 수 없는 항목';
         const category = product?.category;
         const cost = (product?.energyCost ?? 1) * (item.quantity ?? 1);
         return (

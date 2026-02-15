@@ -21,8 +21,10 @@ function mapRarityToIntensity(rarity?: string): IntensityLevel | null {
 }
 
 function resolveIntensityByPlutchik(emotion: Emotion): IntensityLevel | null {
-  const byName = resolveIntensityByName(emotion.name);
-  if (byName) return byName;
+  const byKo = resolveIntensityByName(emotion.name.ko);
+  if (byKo) return byKo;
+  const byEn = resolveIntensityByName(emotion.name.en);
+  if (byEn) return byEn;
 
   if (BASE_CATEGORIES.includes(emotion.category as (typeof BASE_CATEGORIES)[number])) return 'middle';
   if (COMPOSITE_CATEGORIES.includes(emotion.category as (typeof COMPOSITE_CATEGORIES)[number])) return 'middle';
@@ -128,13 +130,12 @@ export async function getAllEmotions(searchTerm?: string, { includeAll = false }
 
   if (searchTerm) {
     const term = searchTerm.toLowerCase();
-    results = results.filter(
-      (e) =>
-        e.name.toLowerCase().includes(term) ||
-        e.category.toLowerCase().includes(term) ||
-        e.description.toLowerCase().includes(term) ||
-        e.story.toLowerCase().includes(term),
-    );
+      results = results.filter(
+        (e) =>
+          (typeof e.name === 'string' ? e.name : e.name.ko).toLowerCase().includes(term) ||
+          e.category.toLowerCase().includes(term) ||
+          (typeof e.description === 'string' ? e.description : e.description.ko).toLowerCase().includes(term),
+      );
   }
 
   return results;

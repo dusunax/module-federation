@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuthStore } from 'auth/authStore';
 import { subscribeToUserOrders } from 'auth/services/orderService';
-import { getAllEmotions, Emotion } from 'auth/services/emotionService';
-import { Order } from 'products/orderStore';
+import { getAllEmotions } from 'auth/services/emotionService';
+import type { Emotion, Order } from '@shared/types/api';
 import { LockIcon } from 'lucide-react';
 import { CATEGORY_LABELS } from '@shared/constants/categories';
 
@@ -45,7 +45,7 @@ function EmotionCollection() {
 
   useEffect(() => {
     if (!user?.uid) return;
-    const unsubscribe = subscribeToUserOrders(user.uid, (dbOrders) => {
+    const unsubscribe = subscribeToUserOrders(user.uid, (dbOrders: Order[] | null) => {
       setOrders(dbOrders || []);
     });
     return () => unsubscribe && unsubscribe();
@@ -101,11 +101,11 @@ function EmotionCollection() {
         <div className="flex items-center gap-3">
           <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-[rgba(255,248,212,0.1)]">
             <div
-              className="h-full rounded-full bg-[var(--color-accent-green)] transition-all duration-500"
+              className="h-full rounded-full bg-(--color-accent-green) transition-all duration-500"
               style={{ width: `${percentage}%` }}
             />
           </div>
-          <span className="min-w-[40px] text-right text-sm font-normal tracking-wide text-[rgba(255,248,212,0.7)]">
+          <span className="min-w-10 text-right text-sm font-normal tracking-wide text-[rgba(255,248,212,0.7)]">
             {percentage}%
           </span>
         </div>
@@ -126,7 +126,7 @@ function EmotionCollection() {
               >
                 <span className="text-[40px] leading-none">{emotion.emoji}</span>
                 <span className="text-center text-sm font-normal tracking-wide text-[#FFF8D4]">
-                  {emotion.name}
+                  {emotion.name.ko}
                 </span>
                 <span className="text-xs font-normal tracking-wide text-[rgba(255,248,212,0.5)]">
                   {categoryLabel}

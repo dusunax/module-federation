@@ -13,14 +13,18 @@ export interface VisibilityCondition {
   event: string[];
 }
 
+export interface I18nText {
+  ko: string;
+  en: string;
+}
+
 export interface Emotion {
   id: number;
-  name: string;
+  name: I18nText;
   emoji: string;
   intensity: 'high' | 'middle' | 'low';
   category: string;
-  description: string;
-  story: string;
+  description: I18nText;
   published: boolean;
   image: string | null;
   energyCost: number;

@@ -109,7 +109,7 @@ function ProductDetail(): React.ReactElement {
           {/* 기본 정보 */}
           <div className="min-w-0 md:min-w-[300px] flex-1">
             <h1 className="mb-4 mt-0 text-[28px] font-normal leading-snug tracking-wider text-[#FFF8D4]">
-              {emotion?.name}
+              {emotion?.name.ko}
             </h1>
             <p className="mb-5 text-lg font-normal tracking-wide text-[#A3B087]">
               ⚡ {emotion?.energyCost} 에너지
@@ -131,18 +131,8 @@ function ProductDetail(): React.ReactElement {
         <div className="mb-[30px]">
           <h2 className="mb-3 text-base font-normal tracking-wider text-[#FFF8D4]">설명</h2>
           <p className="text-[15px] font-normal leading-[1.8] text-[rgba(255,248,212,0.9)]">
-            {emotion?.description}
+            {emotion?.description.ko}
           </p>
-        </div>
-
-        {/* 상황 스토리 */}
-        <div className="mb-[30px]">
-          <h2 className="mb-3 text-base font-normal tracking-wider text-[#FFF8D4]">상황 스토리</h2>
-          <div className="rounded border-l-2 border-[#A3B087] bg-[rgba(67,86,99,0.3)] p-4 md:p-6">
-            <p className="m-0 text-[15px] font-normal italic leading-[1.9] text-[#FFF8D4]">
-              "{emotion?.story}"
-            </p>
-          </div>
         </div>
 
         {/* 장바구니 추가 버튼 */}

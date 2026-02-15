@@ -96,6 +96,11 @@ declare module 'auth/services/emotionService' {
   export function updateEmotion(id: number, data: Partial<Omit<Emotion, 'energyCost'>>): Promise<void>;
 }
 
+declare module 'auth/services/seedService' {
+  export function isEmotionsCollectionEmpty(): Promise<boolean>;
+  export function seedEmotions(): Promise<number>;
+}
+
 declare module '*.css' {
   const content: Record<string, string>;
   export default content;

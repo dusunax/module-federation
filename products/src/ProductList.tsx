@@ -8,7 +8,8 @@ import { useOrderStore } from './store/orderStore';
 import { getStatusConfig } from './utils/statusStyle';
 import { isEmotionVisible } from './utils/conditions';
 import { EMOTION_STATUS } from './constants';
-import { getAllEmotions, Emotion } from 'auth/services/emotionService';
+import { getAllEmotions } from 'auth/services/emotionService';
+import type { Emotion } from '@shared/types/api';
 import { useCurrentConditions } from './hooks/useCurrentConditions';
 import ConditionHintPopup from './components/ConditionHintPopup';
 import CurrentConditionUI from './components/CurrentConditionUI';
@@ -162,7 +163,7 @@ function ProductList() {
             <input
               type="text"
               aria-label="products-search"
-              placeholder="순간, 카테고리, 스토리로 검색..."
+              placeholder="순간, 카테고리로 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full md:max-w-[500px] rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-3)] px-4 py-3.5 text-sm font-normal text-[var(--color-text-primary)] outline-none transition-all duration-300 focus:border-[var(--color-accent-green)] focus:bg-[var(--color-overlay-4)]"
@@ -290,10 +291,10 @@ function ProductList() {
 
                     <div className="mb-4 text-5xl opacity-90">{emotion.emoji}</div>
                     <h3 className="mb-1 text-base font-normal leading-6 tracking-wide ">
-                      {emotion.name}
+                      {emotion.name.ko}
                     </h3>
                     <p className="mb-4 line-clamp-5 min-h-0 flex-1 text-[13px] font-normal leading-relaxed text-[var(--color-text-secondary)]">
-                      {emotion.description}
+                      {emotion.description.ko}
                     </p>
                     <div className="mt-5 flex items-center justify-between border-t border-[var(--color-border-faded)] pt-4">
                       <div className="flex flex-wrap items-center gap-2">

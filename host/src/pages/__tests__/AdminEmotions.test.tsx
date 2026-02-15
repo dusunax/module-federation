@@ -18,13 +18,12 @@ vi.mock('sonner', () => ({
 const MOCK_EMOTIONS: Emotion[] = [
   {
     id: 1,
-    name: '기쁨',
+    name: { ko: '기쁨', en: 'Joy' },
     emoji: '😊',
     intensity: 'low',
     energyCost: 1,
     category: 'joy',
-    description: '기쁜 감정',
-    story: '기쁨의 이야기',
+    description: { ko: '기쁜 감정', en: 'Happy emotion' },
     published: true,
     image: null,
     visibility: {
@@ -39,13 +38,12 @@ const MOCK_EMOTIONS: Emotion[] = [
   },
   {
     id: 2,
-    name: '슬픔',
+    name: { ko: '슬픔', en: 'Sadness' },
     emoji: '😢',
     intensity: 'middle',
     energyCost: 2,
     category: 'sadness',
-    description: '슬픈 감정',
-    story: '슬픔의 이야기',
+    description: { ko: '슬픈 감정', en: 'Sad emotion' },
     published: false,
     image: null,
     visibility: {

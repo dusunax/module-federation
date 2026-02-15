@@ -62,6 +62,12 @@ function OrderDetail() {
 
   const statusConfig = getStatusConfig(EMOTION_STATUS.REMEMBERED);
 
+  const renderI18n = (value: string | { ko?: string; en?: string } | undefined) => {
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+    return value.ko ?? value.en ?? String(value);
+  };
+
   return (
     <div className="max-w-225 mx-auto px-5 py-10">
       <div className="mb-7.5 flex items-center justify-between">
@@ -113,13 +119,13 @@ function OrderDetail() {
                 {/* 상품 정보 */}
                 <div className="min-w-0 flex-1">
                   <h3 className="my-0 mb-2 text-lg font-normal leading-snug tracking-wide text-[#FFF8D4]">
-                    {product.name}
+                      {renderI18n(product.name)}
                   </h3>
-                  {product.description && (
-                    <p className="my-0 mb-3 text-sm font-normal leading-relaxed tracking-[0.2px] text-[rgba(255,248,212,0.8)]">
-                      {product.description}
-                    </p>
-                  )}
+                    {(product.description && renderI18n(product.description)) && (
+                      <p className="my-0 mb-3 text-sm font-normal leading-relaxed tracking-[0.2px] text-[rgba(255,248,212,0.8)]">
+                        {renderI18n(product.description)}
+                      </p>
+                    )}
                   {categoryLabel && (
                     <div className="inline-block rounded border border-[rgba(163,176,135,0.3)] bg-[rgba(163,176,135,0.15)] px-2.5 py-1 text-[11px] font-normal tracking-wide text-[#A3B087]">
                       {categoryLabel}

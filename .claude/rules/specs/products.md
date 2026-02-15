@@ -33,7 +33,7 @@ react, react-dom, react-router-dom, @tanstack/react-query, zustand, sonner
 ### ProductList (`src/ProductList.tsx`)
 
 - **뷰 모드 토글**: 감정 바퀴(wheel) / 목록(list) — 기본값 `wheel`
-- 검색: 이름, 카테고리, 스토리 실시간 검색 (목록 모드에서만 표시)
+- 검색: 이름, 카테고리 실시간 검색 (목록 모드에서만 표시)
 - 정렬: 에너지(낮은/높은) — localStorage(`emotion-sort-prefs`) 저장 (목록 모드에서만)
 - 수집 필터: 전체/수집만/미수집만 토글 (목록 모드에서만)
 - 상품 카드: 이모지, 이름, 설명(5줄), 카테고리(한글 라벨), 강도, 에너지(⚡), 상태 뱃지
@@ -44,7 +44,7 @@ react, react-dom, react-router-dom, @tanstack/react-query, zustand, sonner
 ### ProductDetail (`src/ProductDetail.tsx`)
 
 - URL 파라미터: `id`
-- 표시: 이모지(100px), 이름, 에너지, 카테고리(한글 라벨), 설명, 스토리
+- 표시: 이모지(100px), 이름, 에너지, 카테고리(한글 라벨), 설명
 - 장바구니 담기: `addToCart(emotion)` → 토스트 ("이 순간이 N만큼 담겨있어요")
 - remembering 아이템 제외하여 수량 계산
 - React Query: `['emotion', id]`

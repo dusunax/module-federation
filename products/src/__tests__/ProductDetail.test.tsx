@@ -54,10 +54,9 @@ describe('ProductDetail', () => {
   beforeEach(() => {
     const emotion: Emotion = {
       id: 1,
-      name: '첫눈에 반함',
+      name: { ko: '첫눈에 반함', en: 'Love at First Sight' },
       emoji: '💫',
-      description: '테스트 설명',
-      story: '테스트 스토리',
+      description: { ko: '테스트 설명', en: 'Test description' },
       category: 'joy',
       energyCost: 2,
       intensity: 'low',
@@ -83,9 +82,6 @@ describe('ProductDetail', () => {
     renderWithProviders(<App />, '/detail/1');
 
     expect(await screen.findByText('첫눈에 반함')).toBeInTheDocument();
-    expect(
-      screen.getByText((content) => content.replace(/\s/g, '') === '"테스트스토리"')
-    ).toBeInTheDocument();
   });
 
   it('상품을 장바구니에 담고 토스트를 보여준다', async () => {

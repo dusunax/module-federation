@@ -37,12 +37,11 @@ describe('OrderDetail', () => {
         {
           product: {
             id: 10,
-            name: '첫눈',
+            name: { ko: '첫눈', en: 'First Snow' },
             emoji: '💫',
             intensity: 'low',
             category: 'joy',
-            description: '설명',
-            story: '',
+            description: { ko: '설명', en: 'Description' },
             published: false,
             image: null,
             energyCost: 0,

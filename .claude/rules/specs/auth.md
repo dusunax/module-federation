@@ -17,6 +17,7 @@
 | `./firebase` | `src/firebase/index.ts` |
 | `./services/orderService` | `src/services/orderService.ts` |
 | `./services/emotionService` | `src/services/emotionService.ts` |
+| `./services/seedService` | `src/services/seedService.ts` |
 
 ### Remotes
 
@@ -135,8 +136,22 @@ createEmotion(data: Omit<Emotion, 'energyCost'>): Promise<void>
 updateEmotion(id: number, data: Partial<Omit<Emotion, 'energyCost'>>): Promise<void>
 ```
 
-- `config/rarity` 문서에서 희귀도별 energyCost/order 조회 (인메모리 캐시)
+- `config/intensity` 문서에서 강도별 energyCost/order 조회 (인메모리 캐시)
 - published 필터링 (includeAll=true 시 전체)
+- 검색: name.ko, name.en, category, description.ko, description.en
+
+### seedService (`src/services/seedService.ts`)
+
+```typescript
+isEmotionsCollectionEmpty(): Promise<boolean>
+seedEmotions(): Promise<void>
+```
+
+- emotions 컬렉션이 비어있을 때 78개 감정 데이터를 일괄 삽입
+  - 72개 기본 감정 (8 base × 3 intensities × 3 emotions)
+  - 6개 이벤트 감정 (newyear, valentines, whiteday, halloween, christmas, chuseok)
+- `config/intensity` 문서가 없으면 함께 생성
+- `writeBatch`로 일괄 삽입
 
 ### orderService (`src/services/orderService.ts`)
 
@@ -163,6 +178,6 @@ users/{uid}/
   ├── processing/{id}    [cartItemId, productInfo, startTime, duration, energyCost, status]
   └── orders/{orderId}   [id, orderDate, items[], totalEnergy, totalItems, status]
 
-emotions/{id}            [id, name, emoji, rarity, category, description, story, published, image, visibility]
-config/rarity            [key: { energyCost, order }]
+emotions/{id}            [id, name: {ko, en}, emoji, intensity, category, description: {ko, en}, published, image, visibility]
+config/intensity         [key: { energyCost, order }]
 ```

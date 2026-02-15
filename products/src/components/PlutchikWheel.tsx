@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { X } from 'lucide-react';
-import { Emotion } from 'auth/services/emotionService';
+import type { Emotion } from '@shared/types/api';
 import { CurrentConditions, isEmotionVisible } from '../utils/conditions';
 import {
   PLUTCHIK_SECTORS,
@@ -560,7 +560,7 @@ function PlutchikWheel({ emotions, conditions, onAddToCart, cartProductIds }: Pl
                       <span className="text-xl shrink-0">{emotion.emoji}</span>
                       <div className="min-w-0">
                         <p className="text-sm text-[var(--color-text-primary)] truncate">
-                          {emotion.name}
+                          {emotion.name.ko}
                         </p>
                         <p className="text-[11px] text-[var(--color-text-muted)]">
                           ⚡ {emotion.energyCost}

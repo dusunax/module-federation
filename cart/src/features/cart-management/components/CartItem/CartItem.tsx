@@ -2,7 +2,7 @@ import React from 'react';
 import { toast } from 'sonner';
 import showConfirmToast from '@shared/components/showConfirmToast';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
-import { Emotion } from 'auth/services/emotionService';
+import type { Emotion } from '@shared/types/api';
 import { CartItem as CartItemType } from 'products/cartStore';
 import { TimeRemaining } from '../../hooks/useCartTimer';
 
@@ -28,17 +28,16 @@ export function CartItem({
   removeFromCart,
 }: CartItemProps): React.ReactElement {
   // If product metadata is missing (rehydrated from cookie), use a local placeholder.
-  const displayProduct =
-    product && product.name
-      ? product
-      : product && (product.id || product.productId)
-        ? {
-            id: product.id || product.productId,
-            name: '알 수 없는 순간',
-            emoji: '❓',
-            energyCost: 1,
-          }
-        : { id: null, name: '알 수 없는 순간', emoji: '❓', energyCost: 1 };
+  const displayProduct = product && product.name?.ko
+    ? product
+    : product && product.id
+    ? ({
+        id: product.id,
+        name: { ko: '알 수 없는 순간', en: 'Unknown' },
+        emoji: '❓',
+        energyCost: 1,
+      } as Emotion)
+    : ({ id: null as any, name: { ko: '알 수 없는 순간', en: 'Unknown' }, emoji: '❓', energyCost: 1 } as Emotion);
 
   const currentStatus = orderStatuses[displayProduct.id] || EMOTION_STATUS.HELD;
   const statusStyle = getStatusConfig(currentStatus);
@@ -49,7 +48,7 @@ export function CartItem({
       <div className="text-4xl md:text-5xl opacity-90">{displayProduct.emoji}</div>
       <div className="min-w-[120px] flex-1">
         <h3 className="my-0 mb-2 text-base font-normal tracking-wide text-[#FFF8D4]">
-          {displayProduct.name}
+          {displayProduct.name.ko}
         </h3>
         <p className="my-0 mb-1.5 text-sm font-normal tracking-wide text-[#A3B087]">
           ⚡ {displayProduct.energyCost || 1}

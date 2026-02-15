@@ -48,12 +48,11 @@ function normalizeOrder(raw: Order): Order {
     if (product) return product;
     return {
       id: 0,
-      name: '',
+      name: { ko: '', en: '' },
       emoji: '',
       intensity: 'low',
       category: '',
-      description: '',
-      story: '',
+      description: { ko: '', en: '' },
       published: false,
       image: null,
       energyCost: 0,

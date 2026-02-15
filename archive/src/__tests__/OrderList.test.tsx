@@ -34,12 +34,11 @@ describe('OrderList', () => {
           {
             product: {
               id: 1,
-              name: '',
+              name: { ko: '', en: '' },
               emoji: '💫',
               intensity: 'low',
               category: '',
-              description: '',
-              story: '',
+              description: { ko: '', en: '' },
               published: false,
               image: null,
               energyCost: 0,
