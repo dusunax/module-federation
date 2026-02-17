@@ -1,102 +1,31 @@
-export type TimeOfDay = 'day' | 'night';
+export type {
+  TimeOfDay,
+  DayOfWeek,
+  WeatherType,
+  SeasonType,
+  EventType,
+  VisibilityCondition,
+  CurrentConditions,
+  ConditionType,
+} from './conditionConstants';
 
-export type DayOfWeek =
-  | 'monday'
-  | 'tuesday'
-  | 'wednesday'
-  | 'thursday'
-  | 'friday'
-  | 'saturday'
-  | 'sunday'
-  | 'weekday'
-  | 'weekend';
+export {
+  CONDITION_META,
+  CONDITION_TYPE_LABEL,
+  EVENT_DATES,
+  getConditionLabel,
+} from './conditionConstants';
 
-export type WeatherType = 'clear' | 'cloudy' | 'rain' | 'snow' | 'storm';
-
-export type SeasonType = 'spring' | 'summer' | 'autumn' | 'winter';
-
-export type EventType = string;
-
-export type VisibilityCondition = import('@shared/types/api').VisibilityCondition;
-
-export interface CurrentConditions {
-  time: TimeOfDay;
-  day: DayOfWeek;
-  dayExtras: DayOfWeek[];
-  weather: WeatherType;
-  temperature?: number;
-  season: SeasonType;
-  events: EventType[];
-}
-
-interface ConditionMeta {
-  label: string;
-  emoji?: string;
-}
-
-export const CONDITION_META: Record<string, ConditionMeta> = {
-  day: { label: '낮' },
-  night: { label: '밤', emoji: '🌃🌙' },
-  monday: { label: '월요일' },
-  tuesday: { label: '화요일' },
-  wednesday: { label: '수요일' },
-  thursday: { label: '목요일' },
-  friday: { label: '금요일' },
-  saturday: { label: '토요일' },
-  sunday: { label: '일요일' },
-  weekday: { label: '평일' },
-  weekend: { label: '주말' },
-  clear: { label: '맑음' },
-  cloudy: { label: '흐림' },
-  rain: { label: '비' },
-  snow: { label: '눈' },
-  storm: { label: '폭풍' },
-  spring: { label: '봄' },
-  summer: { label: '여름' },
-  autumn: { label: '가을' },
-  winter: { label: '겨울' },
-  newyear: { label: '새해' },
-  valentines: { label: '발렌타인' },
-  whiteday: { label: '화이트데이' },
-  halloween: { label: '할로윈' },
-  christmas: { label: '크리스마스' },
-  chuseok: { label: '추석' },
-};
-
-interface EventDateRange {
-  ranges: Array<{ startMonth: number; startDay: number; endMonth: number; endDay: number }>;
-  yearlyDates?: Record<number, Array<{ startMonth: number; startDay: number; endMonth: number; endDay: number }>>;
-}
-
-export const EVENT_DATES: Record<string, EventDateRange> = {
-  newyear: {
-    ranges: [
-      { startMonth: 12, startDay: 31, endMonth: 12, endDay: 31 },
-      { startMonth: 1, startDay: 1, endMonth: 1, endDay: 2 },
-    ],
-  },
-  valentines: {
-    ranges: [{ startMonth: 2, startDay: 13, endMonth: 2, endDay: 15 }],
-  },
-  whiteday: {
-    ranges: [{ startMonth: 3, startDay: 13, endMonth: 3, endDay: 15 }],
-  },
-  halloween: {
-    ranges: [{ startMonth: 10, startDay: 30, endMonth: 11, endDay: 1 }],
-  },
-  christmas: {
-    ranges: [{ startMonth: 12, startDay: 24, endMonth: 12, endDay: 26 }],
-  },
-  chuseok: {
-    yearlyDates: {
-      2024: [{ startMonth: 9, startDay: 16, endMonth: 9, endDay: 18 }],
-      2025: [{ startMonth: 10, startDay: 5, endMonth: 10, endDay: 7 }],
-      2026: [{ startMonth: 9, startDay: 24, endMonth: 9, endDay: 26 }],
-      2027: [{ startMonth: 9, startDay: 14, endMonth: 9, endDay: 16 }],
-    },
-    ranges: [],
-  },
-};
+import type {
+  TimeOfDay,
+  DayOfWeek,
+  WeatherType,
+  SeasonType,
+  EventType,
+  CurrentConditions,
+  VisibilityCondition,
+} from './conditionConstants';
+import { EVENT_DATES } from './conditionConstants';
 
 interface EmotionLike {
   visibility?: VisibilityCondition;

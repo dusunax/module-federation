@@ -6,6 +6,7 @@ import {
   getCurrentDayInfo,
   getCurrentSeason,
   getActiveEvents,
+  getConditionLabel,
 } from '../utils/conditions';
 
 export interface ConditionViewModel {
@@ -20,47 +21,6 @@ export interface ConditionViewModel {
   eventLabels: string[];
   temperatureText?: string;
 }
-
-const DAY_LABELS: Record<string, string> = {
-  monday: '월',
-  tuesday: '화',
-  wednesday: '수',
-  thursday: '목',
-  friday: '금',
-  saturday: '토',
-  sunday: '일',
-  weekday: '평일',
-  weekend: '주말',
-};
-
-const TIME_LABELS: Record<string, string> = {
-  day: '낮',
-  night: '밤',
-};
-
-const WEATHER_LABELS: Record<string, string> = {
-  clear: '맑음',
-  cloudy: '흐림',
-  rain: '비',
-  snow: '눈',
-  storm: '폭풍',
-};
-
-const SEASON_LABELS: Record<string, string> = {
-  spring: '봄',
-  summer: '여름',
-  autumn: '가을',
-  winter: '겨울',
-};
-
-const EVENT_LABELS: Record<string, string> = {
-  newyear: '새해',
-  valentines: '발렌타인',
-  whiteday: '화이트데이',
-  halloween: '할로윈',
-  christmas: '크리스마스',
-  chuseok: '추석',
-};
 
 function buildConditions(
   weather: ReturnType<typeof useWeather>['weather'],
@@ -82,16 +42,16 @@ function buildViewModel(conditions: CurrentConditions, now: Date): ConditionView
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
   const dayLabels = [conditions.day, ...conditions.dayExtras]
-    .map((key) => DAY_LABELS[key] ?? key)
+    .map((key) => getConditionLabel(key, true))
     .filter(Boolean);
   const isNight = conditions.time === 'night';
   const dayText = dayLabels.join('·');
-  const timeLabel = TIME_LABELS[conditions.time] ?? conditions.time;
-  const weatherLabel = WEATHER_LABELS[conditions.weather];
-  const seasonLabel = SEASON_LABELS[conditions.season];
+  const timeLabel = getConditionLabel(conditions.time);
+  const weatherLabel = getConditionLabel(conditions.weather);
+  const seasonLabel = getConditionLabel(conditions.season);
   const eventLabels = conditions.events
-    .map((event) => EVENT_LABELS[event])
-    .filter((label): label is string => Boolean(label));
+    .map((event) => getConditionLabel(event))
+    .filter(Boolean);
   const temperatureText =
     typeof conditions.temperature === 'number'
       ? `${Math.round(conditions.temperature)}°C`

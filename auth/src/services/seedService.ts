@@ -98,8 +98,13 @@ interface EventDef {
 const EVENT_EMOTIONS: EventDef[] = [
   {
     event: 'newyear', category: 'anticipation', intensity: 'middle', emoji: '🎆',
-    name: { ko: '새해의 설렘', en: 'New Year Excitement' },
-    description: { ko: '새로운 시작에 대한 기대와 희망이 가득한 감정', en: 'A feeling full of expectation and hope for new beginnings' },
+    name: { ko: '새해 복 많이 받으세요', en: 'Happy New Year!' },
+    description: { ko: '새로운 시작에 대한 기대와 희망', en: 'A feeling full of expectation and hope for new beginnings' },
+  },
+  {
+    event: 'seollal', category: 'joy', intensity: 'middle', emoji: '🧧',
+    name: { ko: '설날의 포근함', en: 'Seollal Warmth' },
+    description: { ko: '가족과 함께하는 설날의 포근한 정서', en: 'A warm feeling shared with family during Seollal' },
   },
   {
     event: 'valentines', category: 'joy', intensity: 'high', emoji: '💝',

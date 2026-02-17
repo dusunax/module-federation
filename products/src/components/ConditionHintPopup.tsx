@@ -4,8 +4,11 @@ import {
   VisibilityCondition,
   CurrentConditions,
   CONDITION_META,
+  CONDITION_TYPE_LABEL,
   EVENT_DATES,
+  getConditionLabel,
 } from '../utils/conditions';
+import type { ConditionType } from '../utils/conditions';
 
 interface EmotionLike {
   emoji: string;
@@ -32,51 +35,30 @@ interface ConditionCategory {
   keys: string[];
 }
 
-type ConditionType = 'time' | 'weather' | 'season' | 'day' | 'event';
-
 type Tab = 'current' | 'all';
 
-const TIME_KEYS = ['day', 'night'];
-const WEATHER_KEYS = ['clear', 'cloudy', 'rain', 'snow', 'storm'];
-const SEASON_KEYS = ['spring', 'summer', 'autumn', 'winter'];
-const DAY_KEYS = ['weekday', 'weekend', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-const CONDITION_TYPE_LABEL: Record<ConditionType, string> = {
-  time: '시간',
-  weather: '날씨',
-  season: '계절',
-  day: '요일',
-  event: '이벤트',
-};
-
 function getConditionType(key: string): ConditionType {
-  if (TIME_KEYS.includes(key)) return 'time';
-  if (WEATHER_KEYS.includes(key)) return 'weather';
-  if (SEASON_KEYS.includes(key)) return 'season';
-  if (DAY_KEYS.includes(key)) return 'day';
-  return 'event';
+  return CONDITION_META[key]?.type ?? 'event';
 }
 
 function splitConditionKey(conditionKey: string): string[] {
   return conditionKey.split('&&').map((part) => part.trim()).filter(Boolean);
 }
 
-function getConditionLabel(conditionKey: string): string {
+function formatConditionLabel(conditionKey: string): string {
   const keys = splitConditionKey(conditionKey);
-  const labels = keys.map((key) => CONDITION_META[key]?.label ?? key);
-  return labels.join(' · ');
+  return keys.map((key) => getConditionLabel(key)).join(' · ');
 }
 
 function isSingleConditionMet(conditionKey: string, conditions: CurrentConditions): boolean {
-  const allDays = [conditions.day, ...conditions.dayExtras];
-
-  if (TIME_KEYS.includes(conditionKey)) return conditions.time === conditionKey;
-  if (DAY_KEYS.includes(conditionKey)) {
-    return allDays.includes(conditionKey as typeof conditions.day);
+  const type = getConditionType(conditionKey);
+  switch (type) {
+    case 'time': return conditions.time === conditionKey;
+    case 'day': return [conditions.day, ...conditions.dayExtras].includes(conditionKey as typeof conditions.day);
+    case 'weather': return conditions.weather === conditionKey;
+    case 'season': return conditions.season === conditionKey;
+    default: return conditions.events.includes(conditionKey);
   }
-  if (WEATHER_KEYS.includes(conditionKey)) return conditions.weather === conditionKey;
-  if (SEASON_KEYS.includes(conditionKey)) return conditions.season === conditionKey;
-  return conditions.events.includes(conditionKey);
 }
 
 function isConditionMet(conditionKey: string, conditions: CurrentConditions): boolean {
@@ -420,7 +402,7 @@ function ConditionHintPopup({ emotions, conditions, isOpen, onClose }: Props): R
 
     const conditionGroups = Array.from(groupMap.entries()).map(([key, emojis]) => ({
       conditionKey: key,
-      conditionLabel: getConditionLabel(key),
+      conditionLabel: formatConditionLabel(key),
       emotionEmojis: Array.from(emojis),
       isMet: isConditionMet(key, conditions),
       isComposite: key.includes('&&'),
