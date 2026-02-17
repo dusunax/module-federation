@@ -281,6 +281,15 @@ a:hover {
   color: var(--color-accent-green);
 }
 
+@layer utilities {
+  .scrollbar-hide {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    scrollbar-width: none;
+  }
+}
+
 /* 반응형 */
 @media (max-width: 768px) {
   body {

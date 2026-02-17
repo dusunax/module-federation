@@ -1,54 +1,99 @@
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, it, expect } from 'vitest';
 import ConditionHintPopup from '../components/ConditionHintPopup';
 import { CurrentConditions, VisibilityCondition } from '../utils/conditions';
 
+const baseConditions: CurrentConditions = {
+  time: 'day',
+  day: 'monday',
+  dayExtras: ['weekday'],
+  weather: 'clear',
+  season: 'spring',
+  events: [],
+};
+
 describe('ConditionHintPopup', () => {
-  it('항상 그룹을 표시하고 활성/비활성 그룹을 정렬한다', () => {
-    const emotions: Array<{ emoji?: string; visibility?: VisibilityCondition }> = [
-      { emoji: '😄', visibility: { time: [], day: [], weather: [], season: [], event: [] } },
-      { emoji: '🌙', visibility: { time: ['night'], day: [], weather: [], season: [], event: [] } },
-      { emoji: '☀️', visibility: { time: ['day'], day: [], weather: [], season: [], event: [] } },
+  it('기본 탭은 현재 조건이며, 활성 조건만 표시한다', () => {
+    const emotions = [
+      { emoji: '😄', published: true, visibility: { time: [], day: [], weather: [], season: [], event: [] } },
+      { emoji: '🌙', published: true, visibility: { time: ['night'] as const, day: [], weather: [], season: [], event: [] } },
+      { emoji: '☀️', published: true, visibility: { time: ['day'] as const, day: [], weather: [], season: [], event: [] } },
     ];
-    const conditions: CurrentConditions = {
-      time: 'day',
-      day: 'monday',
-      dayExtras: ['weekday'],
-      weather: 'clear',
-      season: 'spring',
-      events: [],
-    };
 
     render(
       <ConditionHintPopup
         emotions={emotions}
-        conditions={conditions}
+        conditions={baseConditions}
         isOpen
         onClose={() => {}}
       />
     );
 
-    const popup = screen.getByLabelText('condition-hint-popup');
-    const labels = within(popup).getAllByText(/:$/).map((el) => el.textContent);
-    expect(labels).toEqual(['항상:', '낮:', '밤:']);
-    expect(within(popup).getByText('단일 조건')).toBeInTheDocument();
+    const currentTab = screen.getByLabelText('current-conditions-tab');
+    expect(within(currentTab).getByText(/항상/)).toBeInTheDocument();
+    expect(within(currentTab).getByText('☀️')).toBeInTheDocument();
 
-    const nightLabel = screen.getByText('밤:');
-    const nightRow = nightLabel.closest('div')?.parentElement;
-    expect(nightRow).toBeTruthy();
-    expect(within(nightRow as HTMLElement).getByText('-')).toBeInTheDocument();
-
-    const dayLabel = screen.getByText('낮:');
-    const dayRow = dayLabel.closest('div')?.parentElement;
-    expect(dayRow).toBeTruthy();
-    expect(within(dayRow as HTMLElement).queryByText('-')).toBeNull();
-    expect(within(dayRow as HTMLElement).getByText('☀️')).toBeInTheDocument();
+    const labels = within(currentTab).getAllByText(/:$/).map((el) => el.textContent);
+    expect(labels).toContain('항상:');
+    expect(labels).toContain('낮:');
+    expect(labels).not.toContain('밤:');
   });
 
-  it('여러 조건을 조합한 항목을 표시한다', () => {
-    const emotions: Array<{ emoji?: string; visibility?: VisibilityCondition }> = [
-      { emoji: '❄️', visibility: { time: [], day: ['weekend'], weather: ['clear'], season: ['winter'], event: [] } },
+  it('전체 조건 탭으로 전환하면 비활성 조건도 표시된다', async () => {
+    const user = userEvent.setup();
+    const emotions = [
+      { emoji: '😄', published: true, visibility: { time: [], day: [], weather: [], season: [], event: [] } },
+      { emoji: '🌙', published: true, visibility: { time: ['night'] as const, day: [], weather: [], season: [], event: [] } },
+      { emoji: '☀️', published: true, visibility: { time: ['day'] as const, day: [], weather: [], season: [], event: [] } },
+    ];
+
+    render(
+      <ConditionHintPopup
+        emotions={emotions}
+        conditions={baseConditions}
+        isOpen
+        onClose={() => {}}
+      />
+    );
+
+    await user.click(screen.getByLabelText('tab-all'));
+
+    const allTab = screen.getByLabelText('all-conditions-tab');
+    expect(within(allTab).getByText(/단일 조건/)).toBeInTheDocument();
+    expect(within(allTab).getByText(/항상/)).toBeInTheDocument();
+  });
+
+  it('전체 조건 탭에서 비활성화 섹션을 토글할 수 있다', async () => {
+    const user = userEvent.setup();
+    const emotions = [
+      { emoji: '☀️', published: true, visibility: { time: ['day'] as const, day: [], weather: [], season: [], event: [] } },
+      { emoji: '🌙', published: true, visibility: { time: ['night'] as const, day: [], weather: [], season: [], event: [] } },
+    ];
+
+    render(
+      <ConditionHintPopup
+        emotions={emotions}
+        conditions={baseConditions}
+        isOpen
+        onClose={() => {}}
+      />
+    );
+
+    await user.click(screen.getByLabelText('tab-all'));
+
+    const allTab = screen.getByLabelText('all-conditions-tab');
+    expect(within(allTab).queryByText('밤:')).not.toBeInTheDocument();
+
+    await user.click(screen.getByLabelText('toggle-비활성화'));
+    expect(within(allTab).getByText('밤:')).toBeInTheDocument();
+  });
+
+  it('복합 조건을 전체 조건 탭에서 별도 섹션으로 표시한다', async () => {
+    const user = userEvent.setup();
+    const emotions = [
+      { emoji: '❄️', published: true, visibility: { time: [], day: ['weekend'] as const, weather: ['clear'] as const, season: ['winter'] as const, event: [] } },
     ];
     const conditions: CurrentConditions = {
       time: 'day',
@@ -68,29 +113,26 @@ describe('ConditionHintPopup', () => {
       />
     );
 
-    const popup = screen.getByLabelText('condition-hint-popup');
-    const labels = within(popup).getAllByText(/:$/).map((el) => el.textContent);
-    expect(labels).toEqual(['주말 · 맑음 · 겨울:']);
-    expect(within(popup).getByText('복합 조건')).toBeInTheDocument();
+    await user.click(screen.getByLabelText('tab-all'));
 
-    const comboLabel = screen.getByText('주말 · 맑음 · 겨울:');
-    const comboRow = comboLabel.closest('div')?.parentElement;
-    expect(comboRow).toBeTruthy();
-    expect(within(comboRow as HTMLElement).getByText('❄️')).toBeInTheDocument();
+    const allTab = screen.getByLabelText('all-conditions-tab');
+    expect(within(allTab).getByText(/복합 조건/)).toBeInTheDocument();
+    expect(within(allTab).getByText('주말 · 맑음 · 겨울:')).toBeInTheDocument();
   });
 
-  it('항상 그룹을 단일 조건 섹션에 포함한다', () => {
-    const emotions: Array<{ emoji?: string; visibility?: VisibilityCondition }> = [
-      { emoji: '🙂', visibility: { time: [], day: [], weather: [], season: [], event: [] } },
-      { emoji: '🌙', visibility: { time: ['night'], day: [], weather: [], season: [], event: [] } },
+  it('이벤트 조건을 시즌 이벤트 섹션으로 분리하여 날짜 범위를 표시한다', async () => {
+    const user = userEvent.setup();
+    const emotions = [
+      { emoji: '🎄', published: true, visibility: { time: [], day: [], weather: [], season: [], event: ['christmas'] } },
+      { emoji: '🎃', published: true, visibility: { time: [], day: [], weather: [], season: [], event: ['halloween'] } },
     ];
     const conditions: CurrentConditions = {
-      time: 'night',
+      time: 'day',
       day: 'monday',
       dayExtras: ['weekday'],
       weather: 'clear',
-      season: 'spring',
-      events: [],
+      season: 'winter',
+      events: ['christmas'],
     };
 
     render(
@@ -102,9 +144,58 @@ describe('ConditionHintPopup', () => {
       />
     );
 
-    const popup = screen.getByLabelText('condition-hint-popup');
-    const singleHeader = within(popup).getByText('단일 조건');
-    const alwaysLabel = within(popup).getByText('항상:');
-    expect(singleHeader.compareDocumentPosition(alwaysLabel) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    await user.click(screen.getByLabelText('tab-all'));
+
+    const allTab = screen.getByLabelText('all-conditions-tab');
+    expect(within(allTab).getByText(/시즌 이벤트/)).toBeInTheDocument();
+    expect(within(allTab).getByText(/12\/24 ~ 12\/26/)).toBeInTheDocument();
+  });
+
+  it('단일 조건을 카테고리별로 그룹핑하여 서브헤더를 표시한다', async () => {
+    const user = userEvent.setup();
+    const emotions = [
+      { emoji: '☀️', published: true, visibility: { time: ['day'] as const, day: [], weather: [], season: [], event: [] } },
+      { emoji: '🌸', published: true, visibility: { time: [], day: [], weather: [], season: ['spring'] as const, event: [] } },
+      { emoji: '🌧️', published: true, visibility: { time: [], day: [], weather: ['clear'] as const, season: [], event: [] } },
+    ];
+
+    render(
+      <ConditionHintPopup
+        emotions={emotions}
+        conditions={baseConditions}
+        isOpen
+        onClose={() => {}}
+      />
+    );
+
+    const currentTab = screen.getByLabelText('current-conditions-tab');
+    expect(within(currentTab).getByText('시간')).toBeInTheDocument();
+    expect(within(currentTab).getByText('계절')).toBeInTheDocument();
+    expect(within(currentTab).getByText('날씨')).toBeInTheDocument();
+  });
+
+  it('현재 조건 탭에서 활성 조건이 없으면 항상 그룹만 표시한다', () => {
+    const emotions = [
+      { emoji: '😄', published: true, visibility: { time: [], day: [], weather: [], season: [], event: [] } },
+      { emoji: '🌙', published: true, visibility: { time: ['night'] as const, day: [], weather: [], season: [], event: [] } },
+    ];
+    const conditions: CurrentConditions = {
+      ...baseConditions,
+      time: 'day',
+    };
+
+    render(
+      <ConditionHintPopup
+        emotions={emotions}
+        conditions={conditions}
+        isOpen
+        onClose={() => {}}
+      />
+    );
+
+    const currentTab = screen.getByLabelText('current-conditions-tab');
+    expect(within(currentTab).getByText(/항상/)).toBeInTheDocument();
+    const labels = within(currentTab).getAllByText(/:$/).map((el) => el.textContent);
+    expect(labels).toEqual(['항상:']);
   });
 });

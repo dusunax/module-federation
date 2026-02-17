@@ -16,6 +16,7 @@ booked-by-feelings/
 ├── auth/            # 인증 앱 (포트 3005) - Google 로그인, Firebase, 에너지 시스템
 ├── shared/          # 공유 리소스
 │   ├── components/    # 공통 컴포넌트 (AppLayout, BackButton, ConfirmDialog 등)
+│   ├── constants/     # 공통 상수 (remembering duration 등)
 │   └── styles/        # 공통 스타일 (globals.css, 디자인 시스템)
 └── .claude/         # Claude Code 설정
     ├── commands/      # 슬래시 커맨드 (code-review, refactor-clean)
