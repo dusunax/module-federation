@@ -31,7 +31,12 @@ function WheelFallback() {
 }
 
 function ListFallback() {
-  return <ProductListSkeleton />;
+  return (
+    <>
+      <CurrentConditionSkeleton />
+      <ProductListSkeleton />
+    </>
+  );
 }
 
 function ProductListFallback() {
