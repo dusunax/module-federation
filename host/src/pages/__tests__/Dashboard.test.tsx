@@ -183,7 +183,7 @@ describe('Dashboard component', () => {
     __resetEnergyState();
   });
 
-  it('로딩 상태에서 스피너를 렌더링한다', async () => {
+  it('로딩 상태에서 스켈레톤을 렌더링한다', async () => {
     __setEnergyState({
       fetchDailyUsage: vi.fn(async () => []),
       fetchRecentOrders: vi.fn(async () => []),
@@ -192,7 +192,7 @@ describe('Dashboard component', () => {
     const { container } = render(<Dashboard />);
 
     expect(screen.getByText('대시보드')).toBeInTheDocument();
-    expect(container.querySelector('.animate-spin')).toBeInTheDocument();
+    expect(container.querySelector('.animate-pulse')).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByText('총 에너지 사용')).toBeInTheDocument();

@@ -5,6 +5,7 @@ import { getAllEmotions } from 'auth/services/emotionService';
 import type { Emotion, Order } from '@shared/types/api';
 import { LockIcon } from 'lucide-react';
 import { CATEGORY_LABELS } from '@shared/constants/categories';
+import CollectionSkeleton from '@shared/components/skeletons/CollectionSkeleton';
 
 interface IntensityStyle {
   border: string;
@@ -71,11 +72,7 @@ function EmotionCollection() {
   const percentage = totalCount > 0 ? Math.round((collectedCount / totalCount) * 100) : 0;
 
   if (loading) {
-    return (
-      <div className="max-w-225 mx-auto min-h-[60vh] px-5 py-10">
-        <div className="py-25 text-center text-[rgba(255,248,212,0.7)]">불러오는 중...</div>
-      </div>
-    );
+    return <CollectionSkeleton />;
   }
 
   if (error) {

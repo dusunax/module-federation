@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useEnergyStore } from 'auth/energyStore';
 import { CATEGORY_LABELS } from '@shared/constants/categories';
 import type { DailyUsage, Order, FirestoreTimestamp } from '@shared/types/api';
+import { ChartSkeleton, RecentOrdersSkeleton } from '@shared/components/skeletons/DashboardSkeleton';
 
 interface ChartProps {
   data?: DailyUsage[];
@@ -227,11 +228,7 @@ function groupOrdersByDate(orders: Order[]): Map<string, Order[]> {
 
 function RecentOrders({ orders, loading }: { orders: Order[]; loading: boolean }) {
   if (loading) {
-    return (
-      <div className="flex h-24 items-center justify-center">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--color-accent-green)] border-t-transparent" />
-      </div>
-    );
+    return <RecentOrdersSkeleton />;
   }
 
   if (orders.length === 0) {
@@ -363,9 +360,7 @@ export default function Dashboard() {
           </div>
         </div>
         {loading ? (
-          <div className="flex h-[200px] items-center justify-center">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--color-accent-green)] border-t-transparent" />
-          </div>
+          <ChartSkeleton />
         ) : (
           <UsageChart data={data} />
         )}

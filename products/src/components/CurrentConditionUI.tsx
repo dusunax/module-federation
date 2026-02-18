@@ -4,9 +4,10 @@ import { ConditionViewModel } from '../hooks/useCurrentConditions';
 
 interface CurrentConditionUIProps {
   view: ConditionViewModel;
+  loading?: boolean;
 }
 
-const CurrentConditionUI = ({ view }: CurrentConditionUIProps) => {
+const CurrentConditionUI = ({ view, loading = false }: CurrentConditionUIProps) => {
   const {
     timeHours,
     timeMinutes,
@@ -50,15 +51,23 @@ const CurrentConditionUI = ({ view }: CurrentConditionUIProps) => {
             {timeMinutes}
           </div>
 
-          {conditionTextParts.length > 0 && (
-            <div className="md:max-w-[80px] order-last md:order-0 w-full md:max-w-[140px] text-center text-base sm:text-lg md:text-[12px] leading-[1.4] opacity-85 sm:-translate-y-1 md:translate-y-0 -translate-y-1.5">
-              {conditionTextParts.join('·')}
-            </div>
-          )}
+          <div className="md:max-w-[80px] order-last md:order-0 w-full md:max-w-[140px] text-center text-base sm:text-lg md:text-[12px] leading-[1.4] opacity-85 sm:-translate-y-1 md:translate-y-0 -translate-y-1.5">
+            {loading ? (
+              <span className="inline-block h-3.5 w-20 animate-pulse rounded bg-white/15 md:h-3 md:w-16" />
+            ) : (
+              conditionTextParts.length > 0 ? conditionTextParts.join('·') : '\u00A0'
+            )}
+          </div>
 
           <div className="flex items-center gap-1 sm:translate-y-1 md:translate-y-0 translate-y-1.5">
             {isNight ? <Moon className="sm:h-10 h-6 sm:w-10 w-6 md:h-9 md:w-9" /> : <Sun className="sm:h-10 h-6 sm:w-10 w-6 md:h-9 md:w-9" />}
-            <div className="text-2xl md:text-xl min-h-7 min-w-10 font-medium opacity-90 flex items-center justify-center">{temperatureText}</div>
+            <div className="text-2xl md:text-xl min-h-7 min-w-10 font-medium opacity-90 flex items-center justify-center">
+              {loading ? (
+                <span className="inline-block h-5 w-10 animate-pulse rounded bg-white/15" />
+              ) : (
+                temperatureText
+              )}
+            </div>
           </div>
 
         </div>

@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getAllEmotions, createEmotion, updateEmotion } from 'auth/services/emotionService';
 import { toast } from 'sonner';
 import type { Emotion as RemoteEmotion } from 'auth/services/emotionService';
+import AdminSkeleton from '@shared/components/skeletons/AdminSkeleton';
 
 type Emotion = RemoteEmotion;
 type VisibilityCondition = Emotion['visibility'];
@@ -428,11 +429,7 @@ function AdminEmotions() {
   }, [form, editingId, emotions, queryClient, closeModal]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-  <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-(--color-accent-green) border-t-transparent" />
-      </div>
-    );
+    return <AdminSkeleton />;
   }
 
   return (

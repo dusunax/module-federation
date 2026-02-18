@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect, useRef } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useSearchParams } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import ToastHost from './components/ToastHost';
 import { useRememberProgress } from 'cart/features/remembering/hooks/useRememberProgress';
@@ -8,7 +8,63 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import { useAuthStore } from 'auth/authStore';
 import { seedEmotions } from 'auth/services/seedService';
+import HeaderSkeleton from '@shared/components/skeletons/HeaderSkeleton';
+import ProductListSkeleton from '@shared/components/skeletons/ProductListSkeleton';
+import ProductDetailSkeleton from '@shared/components/skeletons/ProductDetailSkeleton';
+import CartSkeleton from '@shared/components/skeletons/CartSkeleton';
+import OrderListSkeleton from '@shared/components/skeletons/OrderListSkeleton';
+import OrderDetailSkeleton from '@shared/components/skeletons/OrderDetailSkeleton';
+import DashboardSkeleton from '@shared/components/skeletons/DashboardSkeleton';
+import CollectionSkeleton from '@shared/components/skeletons/CollectionSkeleton';
+import AdminSkeleton from '@shared/components/skeletons/AdminSkeleton';
+import LoginSkeleton from '@shared/components/skeletons/LoginSkeleton';
+import CurrentConditionSkeleton from '@shared/components/skeletons/CurrentConditionSkeleton';
+import WheelSkeleton from '@shared/components/skeletons/WheelSkeleton';
 import './styles/tailwind.css';
+
+const VIEW_MODE_KEY = 'emotion-view-mode';
+
+function getSavedViewMode(): 'list' | 'wheel' {
+  try {
+    const saved = localStorage.getItem(VIEW_MODE_KEY);
+    if (saved === 'list' || saved === 'wheel') return saved;
+  } catch { /* ignore */ }
+  return 'wheel';
+}
+
+function ProductListFallback() {
+  const [searchParams] = useSearchParams();
+  const view = searchParams.get('view') || getSavedViewMode();
+  return view === 'list' ? (
+    <ProductListSkeleton />
+  ) : (
+    <>
+      <CurrentConditionSkeleton />
+      <WheelSkeleton />
+    </>
+  );
+}
+
+/** query string 없이 / 접근 시 localStorage 또는 기본값으로 정규화 */
+function ProductListWithDefault() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (!searchParams.get('view')) {
+      const defaultView = getSavedViewMode();
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('view', defaultView);
+        return next;
+      }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  return (
+    <Suspense fallback={<ProductListFallback />}>
+      <ProductList />
+    </Suspense>
+  );
+}
 
 const Header = lazy(() => import('header/Header'));
 const ProductList = lazy(() => import('products/ProductList'));
@@ -62,7 +118,7 @@ function AppContent() {
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-[var(--color-bg-primary)]">
-      <Suspense fallback={<div>헤더 로딩 중...</div>}>
+      <Suspense fallback={<HeaderSkeleton />}>
         <Header />
       </Suspense>
 
@@ -72,9 +128,7 @@ function AppContent() {
             path="/"
             element={
               <ProtectedRoute>
-                <Suspense fallback={<div>제품 목록 로딩 중...</div>}>
-                  <ProductList />
-                </Suspense>
+                <ProductListWithDefault />
               </ProtectedRoute>
             }
           />
@@ -82,7 +136,7 @@ function AppContent() {
             path="/detail/:id"
             element={
               <ProtectedRoute>
-                <Suspense fallback={<div>상품 상세 로딩 중...</div>}>
+                <Suspense fallback={<ProductDetailSkeleton />}>
                   <ProductDetail />
                 </Suspense>
               </ProtectedRoute>
@@ -92,7 +146,7 @@ function AppContent() {
             path="/cart"
             element={
               <ProtectedRoute>
-                <Suspense fallback={<div>장바구니 로딩 중...</div>}>
+                <Suspense fallback={<CartSkeleton />}>
                   <Cart />
                 </Suspense>
               </ProtectedRoute>
@@ -102,7 +156,7 @@ function AppContent() {
             path="/archive"
             element={
               <ProtectedRoute>
-                <Suspense fallback={<div>감정 기록 로딩 중...</div>}>
+                <Suspense fallback={<OrderListSkeleton />}>
                   <OrderList />
                 </Suspense>
               </ProtectedRoute>
@@ -112,7 +166,7 @@ function AppContent() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Suspense fallback={<div>대시보드 로딩 중...</div>}>
+                <Suspense fallback={<DashboardSkeleton />}>
                   <Dashboard />
                 </Suspense>
               </ProtectedRoute>
@@ -122,7 +176,7 @@ function AppContent() {
             path="/collection"
             element={
               <ProtectedRoute>
-                <Suspense fallback={<div>감정 도감 로딩 중...</div>}>
+                <Suspense fallback={<CollectionSkeleton />}>
                   <EmotionCollection />
                 </Suspense>
               </ProtectedRoute>
@@ -132,7 +186,7 @@ function AppContent() {
             path="/archive/:orderId"
             element={
               <ProtectedRoute>
-                <Suspense fallback={<div>기억 상세 로딩 중...</div>}>
+                <Suspense fallback={<OrderDetailSkeleton />}>
                   <OrderDetail />
                 </Suspense>
               </ProtectedRoute>
@@ -142,7 +196,7 @@ function AppContent() {
             path="/admin/emotions"
             element={
               <AdminRoute>
-                <Suspense fallback={<div>관리 페이지 로딩 중...</div>}>
+                <Suspense fallback={<AdminSkeleton />}>
                   <AdminEmotions />
                 </Suspense>
               </AdminRoute>
@@ -169,7 +223,7 @@ function App() {
           <Route
             path="/login"
             element={
-              <Suspense fallback={<div>로딩 중...</div>}>
+              <Suspense fallback={<LoginSkeleton />}>
                 <Login />
               </Suspense>
             }

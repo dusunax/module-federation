@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useCartStore } from './store/cartStore';
 import { useRememberingStore } from 'auth/rememberingStore';
@@ -16,6 +16,8 @@ import CurrentConditionUI from './components/CurrentConditionUI';
 import PlutchikWheel from './components/PlutchikWheel';
 import { InfoIcon, ListIcon, CircleDotIcon } from 'lucide-react';
 import { CATEGORY_LABELS } from '@shared/constants/categories';
+import ProductListSkeleton from '@shared/components/skeletons/ProductListSkeleton';
+import WheelSkeleton from '@shared/components/skeletons/WheelSkeleton';
 
 type ViewMode = 'list' | 'wheel';
 type SortDirection = 'asc' | 'desc' | null;
@@ -26,6 +28,7 @@ interface SortPrefs {
 }
 
 const STORAGE_KEY = 'emotion-sort-prefs';
+const VIEW_MODE_KEY = 'emotion-view-mode';
 const ENERGY_STATES: SortDirection[] = ['asc', 'desc', null];
 
 const ENERGY_LABELS: Record<string, string> = { asc: '낮은순', desc: '높은순' };
@@ -50,8 +53,21 @@ function saveSortPrefs(energySort: SortDirection) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ energySort }));
 }
 
+function isViewMode(value: string | null): value is ViewMode {
+  return value === 'list' || value === 'wheel';
+}
+
 function ProductList() {
-  const [viewMode, setViewMode] = useState<ViewMode>('wheel');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const viewMode: ViewMode = isViewMode(searchParams.get('view')) ? searchParams.get('view') as ViewMode : 'wheel';
+  const setViewMode = useCallback((mode: ViewMode) => {
+    localStorage.setItem(VIEW_MODE_KEY, mode);
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('view', mode);
+      return next;
+    }, { replace: true });
+  }, [setSearchParams]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortPrefs, setSortPrefs] = useState<SortPrefs>(loadSortPrefs);
   const [hintOpen, setHintOpen] = useState(false);
@@ -61,7 +77,7 @@ function ProductList() {
   const addToCart = useCartStore((state) => state.addToCart);
   const cartItems = useCartStore((state) => state.items);
   const orderStatuses = useOrderStore((state) => state.orderStatuses);
-  const { conditions, view } = useCurrentConditions();
+  const { conditions, loading: conditionsLoading, view } = useCurrentConditions();
 
   const {
     data: emotions,
@@ -144,9 +160,9 @@ function ProductList() {
   return (
     <div className="mx-auto max-w-[1400px] px-3 md:px-5">
       <div className="flex flex-col md:flex-row md:items-center gap-4">
-        <div className="flex relative z-10">
+        <div className="flex relative z-10 min-h-12">
           {/* 현재 조건 */}
-          <CurrentConditionUI view={view} />
+          <CurrentConditionUI view={view} loading={conditionsLoading} />
           
           <button
             onClick={() => setHintOpen(true)}
@@ -247,17 +263,13 @@ function ProductList() {
           {/* 검색 결과 표시 */}
           {searchTerm && (
             <p className="mb-5 text-[13px] font-normal text-[var(--color-text-secondary)]">
-              검색 결과: {visibleEmotions?.length || 0}개
-              {isFetching && <span className="ml-2.5 text-xs">업데이트 중...</span>}
+              {searchTerm ? `"${searchTerm}" 검색 결과: ${visibleEmotions?.length || 0}개` : '검색 결과: 0개'}
+              {isFetching && <span className="ml-2.5 text-xs">찾는 중...</span>}
             </p>
           )}
 
           {/* 로딩 상태 */}
-          {isLoading && !emotions && (
-            <div className="py-15 text-center">
-              <p className="font-normal text-[var(--color-text-primary)]">로딩 중...</p>
-            </div>
-          )}
+          {isLoading && !emotions && <ProductListSkeleton />}
 
           {/* 순간 카드 목록 */}
           {!isLoading && (
@@ -325,12 +337,11 @@ function ProductList() {
         </>
       )}
 
+      {/* <WheelSkeleton /> */}
       {viewMode === 'wheel' && (
         <>
           {isLoading && !emotions ? (
-            <div className="py-15 text-center">
-              <p className="font-normal text-[var(--color-text-primary)]">로딩 중...</p>
-            </div>
+            <WheelSkeleton />
           ) : (
             <PlutchikWheel
               emotions={emotions}

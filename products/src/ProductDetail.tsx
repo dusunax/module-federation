@@ -10,6 +10,7 @@ import { EMOTION_STATUS } from './constants';
 import { getEmotionById, Emotion } from 'auth/services/emotionService';
 import BackButton from '@shared/components/BackButton';
 import { CATEGORY_LABELS } from '@shared/constants/categories';
+import ProductDetailSkeleton from '@shared/components/skeletons/ProductDetailSkeleton';
 
 interface RouteParams {
   id: string;
@@ -52,11 +53,7 @@ function ProductDetail(): React.ReactElement {
   const isInCart = emotion && Object.values(items).some((item) => item.product.id === emotion.id);
 
   if (isLoading) {
-    return (
-      <div className="p-10 text-center">
-        <p className="font-normal text-[#FFF8D4]">로딩 중...</p>
-      </div>
-    );
+    return <ProductDetailSkeleton />;
   }
 
   if (error) {
