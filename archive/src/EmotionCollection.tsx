@@ -3,7 +3,7 @@ import { useAuthStore } from 'auth/authStore';
 import { subscribeToUserOrders } from 'auth/services/orderService';
 import { getAllEmotions } from 'auth/services/emotionService';
 import type { Emotion, Order } from '@shared/types/api';
-import { LockIcon } from 'lucide-react';
+import { LockIcon, Sparkles } from 'lucide-react';
 import { CATEGORY_LABELS } from '@shared/constants/categories';
 import CollectionSkeleton from '@shared/components/skeletons/CollectionSkeleton';
 
@@ -119,12 +119,18 @@ function EmotionCollection() {
             return (
               <div
                 key={emotion.id}
-                className={`flex flex-col items-center gap-2 rounded-lg border-2 bg-[rgba(67,86,99,0.2)] p-5 backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[rgba(67,86,99,0.3)] ${intensity.border} ${intensity.glow}`}
+                className={`relative flex flex-col items-center gap-2 rounded-lg border-2 bg-[rgba(67,86,99,0.2)] p-5 backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[rgba(67,86,99,0.3)] ${intensity.border} ${intensity.glow}`}
               >
                 <span className="text-[40px] leading-none">{emotion.emoji}</span>
                 <span className="text-center text-sm font-normal tracking-wide text-[#FFF8D4]">
                   {emotion.name.ko}
                 </span>
+                {emotion.visibility?.event?.length > 0 && (
+                  <Sparkles
+                    size={16}
+                    className="absolute right-3 top-3 text-[var(--color-accent-green)] opacity-85"
+                  />
+                )}
                 <span className="text-xs font-normal tracking-wide text-[rgba(255,248,212,0.5)]">
                   {categoryLabel}
                 </span>

@@ -9,6 +9,7 @@ import ProductList from '../ProductList';
 import { __setMockEmotions, Emotion } from 'auth/services/emotionService';
 
 const cartState = { items: {} as Record<number, { product: { id: number } }> };
+const mockUseCurrentConditions = vi.fn();
 
 vi.mock('../store/cartStore', () => ({
   useCartStore: (selector: (state: typeof cartState) => unknown) => selector(cartState),
@@ -17,6 +18,10 @@ vi.mock('../store/cartStore', () => ({
 vi.mock('../store/orderStore', () => ({
   useOrderStore: (selector: (state: { orderStatuses: Record<number, string> }) => unknown) =>
     selector({ orderStatuses: {} }),
+}));
+
+vi.mock('../hooks/useCurrentConditions', () => ({
+  useCurrentConditions: () => mockUseCurrentConditions(),
 }));
 
 const renderWithProviders = (ui: React.ReactElement) => {
@@ -32,6 +37,30 @@ const renderWithProviders = (ui: React.ReactElement) => {
 
 describe('ProductList', () => {
   beforeEach(() => {
+    mockUseCurrentConditions.mockReturnValue({
+      conditions: {
+        time: 'day',
+        day: 'monday',
+        dayExtras: ['weekday'],
+        weather: 'clear',
+        season: 'winter',
+        events: ['christmas'],
+      },
+      loading: false,
+      view: {
+        timeHours: '09',
+        timeMinutes: '30',
+        timeLabel: '낮',
+        isNight: false,
+        seasonKey: 'winter',
+        dayText: '월·평일',
+        weatherLabel: '맑음',
+        seasonLabel: '겨울',
+        eventLabels: ['크리스마스'],
+        temperatureText: '12°C',
+      },
+    });
+
     const now = Date.now();
     const data: Emotion[] = [
       {
@@ -77,5 +106,13 @@ describe('ProductList', () => {
     expect(screen.getByLabelText('products-filter-collection')).toBeInTheDocument();
     expect(await screen.findByLabelText('product-card-1')).toBeInTheDocument();
     expect(screen.getByLabelText('product-card-2')).toBeInTheDocument();
+  });
+
+  it('활성 기념일이 있으면 리스트 상단에 배너를 표시한다', async () => {
+    renderWithProviders(<ProductList />);
+
+    expect(await screen.findByText('기념일')).toBeInTheDocument();
+    expect(screen.getByText('크리스마스')).toBeInTheDocument();
+    expect(screen.getByText('(12/24 ~ 12/26)')).toBeInTheDocument();
   });
 });

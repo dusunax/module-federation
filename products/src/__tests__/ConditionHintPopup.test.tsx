@@ -3,7 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect } from 'vitest';
 import ConditionHintPopup from '../components/ConditionHintPopup';
-import { CurrentConditions, VisibilityCondition } from '../utils/conditions';
+import { CurrentConditions } from '../utils/conditions';
 
 const baseConditions: CurrentConditions = {
   time: 'day',
@@ -120,7 +120,7 @@ describe('ConditionHintPopup', () => {
     expect(within(allTab).getByText('주말 · 맑음 · 겨울:')).toBeInTheDocument();
   });
 
-  it('이벤트 조건을 시즌 이벤트 섹션으로 분리하여 날짜 범위를 표시한다', async () => {
+  it('이벤트 조건을 기념일 섹션으로 분리하여 날짜 범위를 표시한다', async () => {
     const user = userEvent.setup();
     const emotions = [
       { emoji: '🎄', published: true, visibility: { time: [], day: [], weather: [], season: [], event: ['christmas'] } },
@@ -147,8 +147,63 @@ describe('ConditionHintPopup', () => {
     await user.click(screen.getByLabelText('tab-all'));
 
     const allTab = screen.getByLabelText('all-conditions-tab');
-    expect(within(allTab).getByText(/시즌 이벤트/)).toBeInTheDocument();
+    expect(within(allTab).getByText(/기념일/)).toBeInTheDocument();
     expect(within(allTab).getByText(/12\/24 ~ 12\/26/)).toBeInTheDocument();
+  });
+
+  it('현재 조건 탭에서 활성 기념일을 강조한다', () => {
+    const emotions = [
+      { emoji: '🎄', published: true, visibility: { time: [], day: [], weather: [], season: [], event: ['christmas'] } },
+    ];
+    const conditions: CurrentConditions = {
+      time: 'day',
+      day: 'monday',
+      dayExtras: ['weekday'],
+      weather: 'clear',
+      season: 'winter',
+      events: ['christmas'],
+    };
+
+    render(
+      <ConditionHintPopup
+        emotions={emotions}
+        conditions={conditions}
+        isOpen
+        onClose={() => {}}
+      />
+    );
+
+    const currentTab = screen.getByLabelText('current-conditions-tab');
+    expect(within(currentTab).getByText('기념일')).toBeInTheDocument();
+  });
+
+  it('전체 조건 탭에서는 활성 기념일을 별도 강조하지 않는다', async () => {
+    const user = userEvent.setup();
+    const emotions = [
+      { emoji: '🎄', published: true, visibility: { time: [], day: [], weather: [], season: [], event: ['christmas'] } },
+    ];
+    const conditions: CurrentConditions = {
+      time: 'day',
+      day: 'monday',
+      dayExtras: ['weekday'],
+      weather: 'clear',
+      season: 'winter',
+      events: ['christmas'],
+    };
+
+    render(
+      <ConditionHintPopup
+        emotions={emotions}
+        conditions={conditions}
+        isOpen
+        onClose={() => {}}
+      />
+    );
+
+    await user.click(screen.getByLabelText('tab-all'));
+
+    const allTab = screen.getByLabelText('all-conditions-tab');
+    expect(within(allTab).queryByText('활성')).not.toBeInTheDocument();
   });
 
   it('단일 조건을 카테고리별로 그룹핑하여 서브헤더를 표시한다', async () => {

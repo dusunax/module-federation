@@ -4,6 +4,7 @@ import { useOrderStore, Order } from 'products/orderStore';
 import { useAuthStore } from 'auth/authStore';
 import { subscribeToUserOrders } from 'auth/services/orderService';
 import { getStatusConfig, EMOTION_STATUS } from 'products/utils/statusStyle';
+import { Sparkles } from 'lucide-react';
 
 function OrderList() {
   const navigate = useNavigate();
@@ -60,7 +61,9 @@ function OrderList() {
     <div className="max-w-225 mx-auto px-5 py-10">
       {/* 헤더 */}
       <div className="mb-10 border-b border-[rgba(255,248,212,0.15)] pb-6">
-        <h1 className="m-0 mb-2 text-[28px] font-normal tracking-wider text-[#FFF8D4]">감정 기록</h1>
+        <h1 className="m-0 mb-2 text-[28px] font-normal tracking-wider text-[#FFF8D4]">
+          감정 기록
+        </h1>
         <p
           className="m-0 text-[13px] font-normal tracking-wide text-[rgba(255,248,212,0.7)]"
           aria-label="orders-count"
@@ -101,9 +104,15 @@ function OrderList() {
                     return (
                       <span
                         key={product.id}
-                        className="shrink-0 text-xl leading-none opacity-90"
+                        className="relative shrink-0 text-xl leading-none opacity-90"
                       >
                         {product.emoji}
+                        {product.visibility?.event?.length > 0 && (
+                          <Sparkles
+                            size={12}
+                            className="absolute right-0 top-0 text-[var(--color-accent-green)] opacity-85"
+                          />
+                        )}
                       </span>
                     );
                   })}

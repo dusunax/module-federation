@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Check, ChevronDown, ChevronRight, InfoIcon, Lock, X } from 'lucide-react';
+import { Check, ChevronDown, ChevronRight, InfoIcon, Lock, Sparkles, X } from 'lucide-react';
 import {
   VisibilityCondition,
   CurrentConditions,
@@ -13,7 +13,13 @@ import type { ConditionType } from '../utils/conditions';
 interface EmotionLike {
   emoji: string;
   published: boolean;
-  visibility: VisibilityCondition;
+  visibility: {
+    time: ReadonlyArray<VisibilityCondition['time'][number]>;
+    day: ReadonlyArray<VisibilityCondition['day'][number]>;
+    weather: ReadonlyArray<VisibilityCondition['weather'][number]>;
+    season: ReadonlyArray<VisibilityCondition['season'][number]>;
+    event: ReadonlyArray<VisibilityCondition['event'][number]>;
+  };
 }
 
 interface Props {
@@ -32,7 +38,7 @@ interface ConditionGroup {
 }
 
 interface ConditionCategory {
-  keys: string[];
+  keys: ReadonlyArray<string>;
 }
 
 type Tab = 'current' | 'all';
@@ -117,15 +123,18 @@ function groupSinglesByCategory(groups: ConditionGroup[]): Map<ConditionType, Co
   return map;
 }
 
-function renderGroupRow(group: ConditionGroup, showEventDate = false) {
+function renderGroupRow(group: ConditionGroup, showEventDate = false, emphasizeActiveEvent = true) {
   const eventDate = showEventDate ? getEventDateLabel(group.conditionKey) : null;
+  const isActiveEvent = showEventDate && group.isMet && emphasizeActiveEvent;
 
   return (
     <div
       key={group.conditionKey}
       className={`flex items-center justify-between gap-2.5 rounded-md px-3 py-2 ${
         group.isMet
-          ? 'bg-[var(--color-green-overlay-1)]'
+          ? isActiveEvent
+            ? 'border border-[var(--color-accent-green)] bg-[var(--color-green-overlay-1)] shadow-[inset_0_0_18px_rgba(0,0,0,0.12)]'
+            : 'bg-[var(--color-green-overlay-1)]'
           : 'bg-[var(--color-overlay-2)] opacity-60'
       }`}
     >
@@ -135,6 +144,9 @@ function renderGroupRow(group: ConditionGroup, showEventDate = false) {
         ) : (
           <Lock size={14} className="shrink-0 text-[var(--color-text-faded)]" />
         )}
+        {isActiveEvent && (
+          <Sparkles size={14} className="shrink-0 text-[var(--color-accent-green)]" />
+        )}
         <span className="shrink-0 text-sm">
           {group.conditionLabel}
           {eventDate && (
@@ -142,6 +154,11 @@ function renderGroupRow(group: ConditionGroup, showEventDate = false) {
           )}
           :
         </span>
+        {isActiveEvent && (
+          <span className="rounded-full border border-[var(--color-accent-green)] bg-[var(--color-bg-primary)] px-2 py-0.5 text-[10px] font-semibold text-[var(--color-accent-green)]">
+            활성
+          </span>
+        )}
       </div>
       <div className="flex flex-1 flex-wrap justify-end gap-1 text-[var(--color-text-muted)]">
         {group.isMet && group.emotionEmojis.length > 0 ? (
@@ -235,16 +252,78 @@ function CurrentTab({
   activeGroups: ConditionGroup[];
 }) {
   const activeSingles = activeGroups.filter((g) => !g.isComposite);
+  const activeEvents = activeSingles.filter((g) => getConditionType(g.conditionKey) === 'event');
+  const activeNonEvents = activeSingles.filter((g) => getConditionType(g.conditionKey) !== 'event');
   const activeComposites = activeGroups.filter((g) => g.isComposite);
   const hasAny = alwaysGroup || activeSingles.length > 0 || activeComposites.length > 0;
+
+  function renderEventEmojis(emojis: string[]) {
+    if (emojis.length === 0) {
+      return <span className="text-xs text-[var(--color-text-muted)]">0개</span>;
+    }
+
+    const visible = emojis.slice(0, 4);
+    const extra = emojis.length - visible.length;
+
+    return (
+      <div className="flex items-center gap-1">
+        {visible.map((emoji, i) => (
+          <span key={i} className="text-base text-[var(--color-text-primary)]">
+            {emoji}
+          </span>
+        ))}
+        {extra > 0 && (
+          <span className="text-xs text-[var(--color-text-muted)]">+{extra}</span>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-1.5" aria-label="current-conditions-tab">
       {alwaysGroup && renderGroupRow(alwaysGroup)}
 
-      {activeSingles.length > 0 && (
+      {activeEvents.length > 0 && (
+        <div className="rounded-md border border-[var(--color-accent-green)] bg-[var(--color-green-overlay-1)] px-3 py-2.5 shadow-[inset_0_0_24px_rgba(0,0,0,0.15)]">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-sm font-medium text-[var(--color-text-primary)]">
+              <Check size={16} className="text-[var(--color-accent-green)]" />
+              기념일
+            </div>
+            <span className="rounded-full bg-[var(--color-bg-primary)] px-2 py-0.5 text-xs text-[var(--color-text-muted)]">
+              {activeEvents.length}개
+            </span>
+          </div>
+          <div className="mt-2 flex flex-col gap-1.5">
+            {activeEvents.map((group) => {
+              const eventDate = getEventDateLabel(group.conditionKey);
+              return (
+                <div
+                  key={`active-event-${group.conditionKey}`}
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-[var(--color-border-primary)] bg-[var(--color-bg-primary)] px-2.5 py-1.5"
+                >
+                  <Sparkles size={14} className="shrink-0 text-[var(--color-accent-green)]" />
+                  <div className="flex min-w-[140px] flex-col flex-1 min-w-0">
+                    <span className="text-sm font-medium text-[var(--color-text-primary)]">
+                      {group.conditionLabel}
+                    </span>
+                    {eventDate && (
+                      <span className="text-xs text-[var(--color-text-muted)]">
+                        {eventDate}
+                      </span>
+                    )}
+                  </div>
+                  {renderEventEmojis(group.emotionEmojis)}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {activeNonEvents.length > 0 && (
         <>
-          {renderSinglesWithCategoryHeaders(activeSingles)}
+          {renderSinglesWithCategoryHeaders(activeNonEvents)}
         </>
       )}
 
@@ -329,16 +408,16 @@ function AllTab({
       {events.length > 0 && (
         <div>
           <div className="px-1 pt-2 mb-1 text-sm font-medium tracking-wider text-[var(--color-text-muted)]">
-            시즌 이벤트 ({events.length}개)
+            기념일 ({events.length}개)
           </div>
           {activeEvents.length > 0 && (
             <div className="mt-1 flex flex-col gap-1">
-              {activeEvents.map((group) => renderGroupRow(group, true))}
+              {activeEvents.map((group) => renderGroupRow(group, true, false))}
             </div>
           )}
           {inactiveEvents.length > 0 && (
             <CollapsibleSection label="비활성화" count={inactiveEvents.length}>
-              {inactiveEvents.map((group) => renderGroupRow(group, true))}
+              {inactiveEvents.map((group) => renderGroupRow(group, true, false))}
             </CollapsibleSection>
           )}
         </div>

@@ -5,8 +5,7 @@ import { toast } from 'sonner';
 import { useCartStore } from './store/cartStore';
 import { useRememberingStore } from 'auth/rememberingStore';
 import { useOrderStore } from './store/orderStore';
-import { getStatusConfig } from './utils/statusStyle';
-import { isEmotionVisible } from './utils/conditions';
+import { EVENT_DATES, getConditionLabel, isEmotionVisible } from './utils/conditions';
 import { EMOTION_STATUS } from './constants';
 import { getAllEmotions } from 'auth/services/emotionService';
 import type { Emotion } from '@shared/types/api';
@@ -14,7 +13,7 @@ import { useCurrentConditions } from './hooks/useCurrentConditions';
 import ConditionHintPopup from './components/ConditionHintPopup';
 import CurrentConditionUI from './components/CurrentConditionUI';
 import PlutchikWheel from './components/PlutchikWheel';
-import { InfoIcon, ListIcon, CircleDotIcon } from 'lucide-react';
+import { InfoIcon, ListIcon, CircleDotIcon, Sparkles } from 'lucide-react';
 import { CATEGORY_LABELS } from '@shared/constants/categories';
 import ProductListSkeleton from '@shared/components/skeletons/ProductListSkeleton';
 import WheelSkeleton from '@shared/components/skeletons/WheelSkeleton';
@@ -38,6 +37,28 @@ const INTENSITY_LABELS: Record<string, string> = {
   middle: 'Middle',
   low: 'Low',
 };
+
+function getEventDateLabel(eventKey: string): string | null {
+  const config = EVENT_DATES[eventKey];
+  if (!config) return null;
+
+  const year = new Date().getFullYear();
+
+  if (config.yearlyDates?.[year]) {
+    const ranges = config.yearlyDates[year];
+    return ranges
+      .map((r) => `${r.startMonth}/${r.startDay} ~ ${r.endMonth}/${r.endDay}`)
+      .join(', ');
+  }
+
+  if (config.ranges.length > 0) {
+    return config.ranges
+      .map((r) => `${r.startMonth}/${r.startDay} ~ ${r.endMonth}/${r.endDay}`)
+      .join(', ');
+  }
+
+  return null;
+}
 
 function loadSortPrefs(): SortPrefs {
   try {
@@ -78,6 +99,14 @@ function ProductList() {
   const cartItems = useCartStore((state) => state.items);
   const orderStatuses = useOrderStore((state) => state.orderStatuses);
   const { conditions, loading: conditionsLoading, view } = useCurrentConditions();
+  const activeEventMeta = React.useMemo(
+    () => (conditions.events ?? []).map((eventKey) => ({
+      key: eventKey,
+      label: getConditionLabel(eventKey),
+      date: getEventDateLabel(eventKey),
+    })),
+    [conditions.events]
+  );
 
   const {
     data: emotions,
@@ -174,6 +203,26 @@ function ProductList() {
         </div>
 
         <div className="flex-1 min-w-0 flex flex-col items-stretch md:items-end gap-3">
+          {activeEventMeta.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 rounded-lg border border-[var(--color-accent-green)] bg-[var(--color-green-overlay-1)] px-3 py-2 text-xs text-[var(--color-text-primary)]">
+              <div className="flex items-center gap-1.5 font-medium">
+                <Sparkles size={14} className="text-[var(--color-accent-green)]" />
+                기념일
+              </div>
+              <span className="rounded-full bg-[var(--color-bg-primary)] px-2 py-0.5 text-[10px] text-[var(--color-text-muted)]">
+                {activeEventMeta.length}개
+              </span>
+              {activeEventMeta.map((event) => (
+                <span
+                  key={event.key}
+                  className="flex items-center gap-1 rounded-full border border-[var(--color-border-primary)] bg-[var(--color-bg-primary)] px-2 py-0.5 text-[10px] text-[var(--color-text-muted)]"
+                >
+                  {event.label}
+                  {event.date && <span className="text-[10px]">({event.date})</span>}
+                </span>
+              ))}
+            </div>
+          )}
           {/* 검색 */}
           {viewMode === 'list' && (
             <input
@@ -274,7 +323,7 @@ function ProductList() {
           {/* 순간 카드 목록 */}
           {!isLoading && (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4 md:gap-6 mt-6">
-              {visibleEmotions?.map((emotion) => {
+              {visibleEmotions?.sort((a, b) => b.visibility.event.length - a.visibility.event.length).map((emotion) => {
                 const hasInCart = Object.values(cartItems).some(
                   (item) => item.product.id === emotion.id
                 );
@@ -284,7 +333,8 @@ function ProductList() {
                   : hasInCart
                     ? EMOTION_STATUS.HELD
                     : EMOTION_STATUS.NOTICING;
-                const statusStyle = getStatusConfig(currentStatus);
+                void currentStatus;
+                const isEventItem = emotion.visibility.event.length > 0;
                 return (
                   <div
                     key={emotion.id}
@@ -292,15 +342,15 @@ function ProductList() {
                     role="button"
                     tabIndex={0}
                     aria-label={`product-card-${emotion.id}`}
-                    className="relative flex cursor-pointer flex-col rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] p-4 md:p-6 text-left backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-accent-green)] hover:bg-[var(--color-overlay-3)]"
+                    className={`relative flex cursor-pointer flex-col rounded border border-[var(--color-border-primary)] bg-[var(--color-overlay-2)] p-4 md:p-6 text-left backdrop-blur-[10px] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-accent-green)] hover:bg-[var(--color-overlay-3)] ${isEventItem ? 'ring-1 ring-[var(--color-accent-green)]' : ''}`}
                   >
-                    <div
-                      className={`absolute right-4 top-4 rounded-sm bg-[var(--color-overlay-4)] px-2 py-1 text-[10px] font-normal tracking-wide ${statusStyle.label ? '' : 'hidden'}`}
-                      style={{ color: statusStyle.color }}
-                    >
-                      {statusStyle.label}
-                    </div>
-
+                    {isEventItem && (
+                      <Sparkles
+                        size={16}
+                        className="absolute right-4 top-4 text-[var(--color-accent-green)] opacity-80"
+                        aria-hidden
+                      />
+                    )}
                     <div className="mb-4 text-5xl opacity-90">{emotion.emoji}</div>
                     <h3 className="mb-1 text-base font-normal leading-6 tracking-wide ">
                       {emotion.name.ko}
