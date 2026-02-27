@@ -236,7 +236,7 @@ function ProductList() {
           )}
 
           {/* 뷰 모드 토글 + 정렬/필터 */}
-          <div className="mb-3 flex flex-wrap items-center gap-2">
+          <div className="mb-3 flex flex-wrap items-center gap-2 z-1">
             <div className="flex items-center rounded-full border border-[var(--color-border-faded)] overflow-hidden mr-1">
               <button
                 onClick={() => setViewMode('wheel')}
