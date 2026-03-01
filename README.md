@@ -2,7 +2,7 @@
 
 **감정 기록 및 책 추천**
 
-감정 기록과 책 추천을 연결한 감성 플랫폼입니다. 감정을 저장하고 회고하면서, 감정에 맞는 책을 발견하는 흐름을 제공합니다. Webpack Module Federation 기반 마이크로 프론트엔드 아키텍처로 구축되었습니다.
+감정 기록과 책 추천을 연결한 감성 플랫폼입니다. 감정을 저장하고 회고하면서, 감정에 맞는 책을 발견하는 흐름을 제공합니다. Vite + Module Federation 기반 마이크로 프론트엔드 아키텍처로 구축되었습니다.
 
 ## 프로젝트 구조
 
@@ -30,15 +30,15 @@ booked-by-feelings/
 | 영역 | 기술 |
 |------|------|
 | UI | React 18.2, TypeScript 5.3 |
-| 번들러 | Webpack 5 (Module Federation) |
+| 번들러 | Vite 4 + @originjs/vite-plugin-federation |
 | 라우팅 | React Router 7.12 |
 | 상태 관리 | Zustand |
 | 데이터 페칭 | @tanstack/react-query 5 |
 | 스타일링 | Tailwind CSS 4 |
 | 인증/DB | Firebase (Authentication, Firestore) |
 | 토스트 | Sonner |
-| 테스트 | Vitest 4, @testing-library/react |
-| 트랜스파일 | Babel (preset-typescript) |
+| 테스트 | Vitest, @testing-library/react |
+| 트랜스파일 | esbuild (Vite 기본) |
 
 ## 아키텍처
 
@@ -94,18 +94,28 @@ react, react-dom, react-router-dom, @tanstack/react-query, zustand, sonner
 
 ## 실행 방법
 
-각 앱을 별도의 터미널에서 실행합니다:
+루트에서 MF 앱들을 한 번에 실행합니다:
 
 ```bash
-# 터미널 1: Auth 앱 (다른 앱의 의존성이므로 먼저 실행)
-cd auth && npm install && npm start
+# 통합 실행 (prod-like 모드)
+npm run start:mf
 
-# 터미널 2-6: 나머지 앱 (순서 무관)
+# 통합 실행 (dev 모드: 각 remote는 build --watch + vite preview)
+npm run start:mf:dev
+
+# 단일 앱 실행(개별 디버깅)
+# 터미널 1
 cd host && npm install && npm start
+# 터미널 2
 cd header && npm install && npm start
+# 터미널 3
 cd products && npm install && npm start
+# 터미널 4
 cd cart && npm install && npm start
+# 터미널 5
 cd archive && npm install && npm start
+# 터미널 6
+cd auth && npm install && npm start
 ```
 
 모든 앱이 실행되면 `http://localhost:3000`에서 통합된 애플리케이션을 확인할 수 있습니다.
@@ -113,6 +123,7 @@ cd archive && npm install && npm start
 ## 배포
 
 - **Host 앱**: `https://dusunax-001.web.app/`
+- `npm run deploy`는 각 앱을 build 후 Firebase Hosting으로 배포합니다.
 
 ## 테스트
 
@@ -126,13 +137,13 @@ cd host && npm run test:watch
 
 ## 환경 변수
 
-`auth/.env` 파일에 Firebase 설정이 필요합니다:
+`auth/.env` 파일에 Firebase 설정이 필요합니다 (`VITE_*` 형식):
 
 ```env
-FIREBASE_API_KEY=your_api_key
-FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-FIREBASE_APP_ID=your_app_id
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
 ```
