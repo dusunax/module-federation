@@ -4,7 +4,13 @@ import { getFirestore } from 'firebase/firestore';
 
 const getEnv = (key: string) => {
   const env = import.meta.env as Record<string, string | undefined>;
-  return env[`VITE_${key}`] || '';
+  const value = env[`VITE_${key}`];
+
+  if (!value) {
+    throw new Error(`[firebase] Missing required environment variable: VITE_${key}`);
+  }
+
+  return value;
 };
 
 const firebaseConfig = {

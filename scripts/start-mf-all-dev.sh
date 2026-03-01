@@ -67,7 +67,7 @@ run_app() {
   local dir="$1"
   local cmd="$2"
   local expected=$3
-  local wait_timeout="${4:-120}"
+  local wait_timeout="${4:-20}"
 
   (
     cd "$dir"
@@ -79,13 +79,19 @@ run_app() {
 
   if [ -n "$expected" ]; then
     echo "[wait-dev] $dir at $expected"
+    local ready=0
     for _ in $(seq 1 "$wait_timeout"); do
       if curl -sf "$expected" >/dev/null; then
+        ready=1
         echo "[ok-dev] $dir is ready"
         break
       fi
       sleep 0.25
     done
+    if [ "$ready" -eq 0 ]; then
+      echo "[error] Timeout waiting for $dir at $expected" >&2
+      return 1
+    fi
   fi
 }
 
@@ -110,7 +116,7 @@ start_remote_dev() {
 
     trap cleanup_remote INT TERM EXIT
 
-    for _ in {1..120}; do
+    for _ in {1..20}; do
       if [ -f "dist/assets/remoteEntry.js" ] || [ -f "dist/remoteEntry.js" ]; then
         break
       fi
@@ -130,13 +136,19 @@ start_remote_dev() {
   PIDS+=("$pid")
 
   echo "[wait-dev] ${dir} at ${expected}"
-  for _ in $(seq 1 120); do
+  local ready=0
+  for _ in $(seq 1 20); do
     if curl -sf "${expected}" >/dev/null; then
+      ready=1
       echo "[ok-dev] ${dir} is ready"
       break
     fi
     sleep 0.25
   done
+  if [ "$ready" -eq 0 ]; then
+    echo "[error] Timeout waiting for ${dir} at ${expected}" >&2
+    return 1
+  fi
 }
 
 kill_port 3001

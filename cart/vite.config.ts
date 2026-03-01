@@ -60,8 +60,7 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-      '@shared': path.resolve(__dirname, '../shared'),
-      sonner: path.resolve(__dirname, './node_modules/sonner'),
+        '@shared': path.resolve(__dirname, '../shared'),
       },
     },
   };

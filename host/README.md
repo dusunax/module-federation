@@ -18,6 +18,7 @@ Module Federation의 호스트(메인) 애플리케이션입니다. 다른 마�
 - `products@http://localhost:3002/assets/remoteEntry.js`
 - `cart@http://localhost:3003/assets/remoteEntry.js`
 - `archive@http://localhost:3004/assets/remoteEntry.js`
+- `auth@http://localhost:3005/assets/remoteEntry.js`
 
 ## 공유 의존성 (Shared)
 

@@ -36,6 +36,12 @@ export const MF_SHARED_CORE: SharedDependencies = {
 
 export const MF_SHARED_WITH_SONNER: SharedDependencies = {
   ...MF_SHARED_CORE,
+  sonner: {
+    singleton: true,
+    version: '2.0.7',
+    requiredVersion: '^2.0.7',
+    strictVersion: false,
+  },
 };
 
 export const MF_SHARED_HOST: SharedDependencies = {

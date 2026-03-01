@@ -78,13 +78,19 @@ run_app() {
 
   if [ -n "$url" ]; then
     echo "[wait] $dir at $url"
-    for _ in {1..40}; do
+    local ready=0
+    for _ in {1..10}; do
       if curl -sf "$url" >/dev/null; then
+        ready=1
         echo "[ok] $dir is ready"
         break
       fi
       sleep 0.5
     done
+    if [ "$ready" -eq 0 ]; then
+      echo "[error] Timeout waiting for $dir at $url" >&2
+      return 1
+    fi
   fi
 }
 

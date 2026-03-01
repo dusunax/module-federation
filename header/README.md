@@ -18,6 +18,7 @@
 ## 원격 의존성 (Remotes)
 
 - `products@http://localhost:3002/assets/remoteEntry.js`
+- `auth@http://localhost:3005/assets/remoteEntry.js`
 
 ## 공유 의존성 (Shared)
 
