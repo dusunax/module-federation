@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { EMOTION_STATUS } from 'products/utils/statusStyle';
 import showConfirmToast from '@shared/components/showConfirmToast';
@@ -29,6 +30,7 @@ export function CartSummary({
 
   const hasEnoughEnergy = currentEnergy >= normalTotalEnergyCost;
   const isDisabled = !isLoggedIn || !hasEnoughEnergy;
+  const [isPending, setIsPending] = useState(false);
 
   const handleRemember = () => {
     if (!isLoggedIn) {
@@ -47,15 +49,28 @@ export function CartSummary({
       confirmLabel: '기억하기',
       cancelLabel: '취소',
       onConfirm: async () => {
+        if (isPending) return;
         try {
+          setIsPending(true);
+
+          if (normalItems.length === 0) {
+            toast.error('기억할 항목이 없습니다.');
+            return;
+          }
+
           await startRemembering();
           const newStatuses: Record<number, string> = {};
           normalItems.forEach((item) => {
             newStatuses[item.product.id] = EMOTION_STATUS.BEING_UNDERSTOOD;
           });
           updateAllOrderStatuses(newStatuses);
+          toast.success('기억을 시작했습니다.');
         } catch (error) {
-          toast.error('에너지 차감에 실패했습니다.');
+          const message = error instanceof Error ? error.message : '에너지 차감에 실패했습니다.';
+          console.error('startRemembering failed', error);
+          toast.error(message.includes('User not initialized') ? '로그인 세션이 유효하지 않습니다.' : message);
+        } finally {
+          setIsPending(false);
         }
       },
     });
@@ -80,14 +95,21 @@ export function CartSummary({
 
       <button
         onClick={handleRemember}
-        disabled={isDisabled}
+        disabled={isDisabled || isPending}
+        type="button"
         className={`w-full rounded border py-4 text-base font-normal tracking-wider text-[#FFF8D4] transition-all duration-300 ${
-          isDisabled
+          isDisabled || isPending
             ? 'cursor-not-allowed border-[rgba(255,248,212,0.1)] bg-[rgba(67,86,99,0.3)] opacity-50'
             : 'cursor-pointer border-[rgba(163,176,135,0.5)] bg-[rgba(163,176,135,0.3)] hover:-translate-y-px hover:border-[rgba(163,176,135,0.7)] hover:bg-[rgba(163,176,135,0.5)]'
         }`}
       >
-        {!isLoggedIn ? '로그인 필요' : !hasEnoughEnergy ? '에너지 부족' : '기억하기'}
+        {!isLoggedIn
+          ? '로그인 필요'
+          : !hasEnoughEnergy
+            ? '에너지 부족'
+            : isPending
+              ? '기억 시작 중...'
+              : '기억하기'}
       </button>
     </div>
   );

@@ -4,18 +4,21 @@
   "private": true,
   "description": "Module Federation monorepo",
   "dependencies": {
-    "firebase-admin": "^12.1.1",
-    "sonner": "^2.0.7",
-    "lucide-react": "^0.278.0"
+    "firebase-admin": "^12.1.1"
   },
   "scripts": {
     "start:auth": "cd auth && npm start",
     "build:auth": "cd auth && npm run build",
+    "start:mf": "bash ./scripts/start-mf-all.sh",
+    "start:mf:dev": "bash ./scripts/start-mf-all-dev.sh",
     "deploy": "./deploy.sh",
+    "lockfile:sync": "bash ./scripts/sync-lockfiles.sh",
+    "lockfile:install": "bash ./scripts/sync-lockfiles.sh --full",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\""
   },
   "devDependencies": {
+    "firebase-tools": "^15.8.0",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.5.14"
   }

@@ -31,7 +31,7 @@ react, react-dom, react-router-dom, zustand
 
 - **인증**: Google OAuth (`signInWithPopup`)
 - **DB**: Firestore
-- **환경변수**: `auth/.env` (REACT_APP_FIREBASE_*)
+- **환경변수**: `auth/.env` (`VITE_FIREBASE_*`)
 
 ## Stores
 

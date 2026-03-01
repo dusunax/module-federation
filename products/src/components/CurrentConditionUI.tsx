@@ -33,7 +33,7 @@ const CurrentConditionUI = ({ view, loading = false }: CurrentConditionUIProps) 
     ? 'bg-[linear-gradient(135deg,#6366f1,#818cf8)]'
     : 'bg-[linear-gradient(135deg,#f59e0b,#fbbf24)]';
   const seasonInnerClass = {
-    spring: 'bg-[radial-gradient(circle_at_top,#7a1432,#020617)]',
+    spring: 'bg-[radial-gradient(circle_at_top,#14651c,#020617)]',
     summer: 'bg-[radial-gradient(circle_at_top,#7a2a0e,#020617)]',
     autumn: 'bg-[radial-gradient(circle_at_top,#7a3a0e,#020617)]',
     winter: 'bg-[radial-gradient(circle_at_top,#0e3f7a,#020617)]',
@@ -52,7 +52,7 @@ const CurrentConditionUI = ({ view, loading = false }: CurrentConditionUIProps) 
           </div>
 
           <div className="md:max-w-[80px] order-last md:order-0 w-full md:max-w-[140px] text-center text-base sm:text-lg md:text-[12px] leading-[1.4] opacity-85 sm:-translate-y-1 md:translate-y-0 -translate-y-1.5">
-            {loading ? (
+          {loading ? (
               <span className="inline-block h-3.5 w-20 animate-pulse rounded bg-white/15 md:h-3 md:w-16" />
             ) : (
               conditionTextParts.length > 0 ? conditionTextParts.join('·') : '\u00A0'

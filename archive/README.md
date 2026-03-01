@@ -19,7 +19,7 @@
 
 ## 원격 의존성 (Remotes)
 
-- `products@http://localhost:3002/remoteEntry.js`
+- `products@http://localhost:3002/assets/remoteEntry.js`
   - `orderStore` - 기억/주문 상태 관리 (완료된 기억 내역 조회)
   - `utils/statusStyle` - 상태 스타일 유틸리티
   - `constants` - 상수 정의 (EMOTION_STATUS)
