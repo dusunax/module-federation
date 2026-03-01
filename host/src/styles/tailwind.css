@@ -1,10 +1,9 @@
 @import 'tailwindcss';
+@import '../../../shared/styles/globals.css';
 
 @source "../**/*.{js,jsx,ts,tsx}";
 @source "../../../header/src/**/*.{js,jsx,ts,tsx}";
 @source "../../../products/src/**/*.{js,jsx,ts,tsx}";
 @source "../../../cart/src/**/*.{js,jsx,ts,tsx}";
 @source "../../../archive/src/**/*.{js,jsx,ts,tsx}";
-
 @source "../../../shared/**/*.{js,jsx,ts,tsx}";
-@import '../../../shared/styles/globals.css';

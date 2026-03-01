@@ -14,10 +14,10 @@ Module Federation의 호스트(메인) 애플리케이션입니다. 다른 마�
 
 ## 원격 앱 (Remotes)
 
-- `header@http://localhost:3001/remoteEntry.js`
-- `products@http://localhost:3002/remoteEntry.js`
-- `cart@http://localhost:3003/remoteEntry.js`
-- `archive@http://localhost:3004/remoteEntry.js`
+- `header@http://localhost:3001/assets/remoteEntry.js`
+- `products@http://localhost:3002/assets/remoteEntry.js`
+- `cart@http://localhost:3003/assets/remoteEntry.js`
+- `archive@http://localhost:3004/assets/remoteEntry.js`
 
 ## 공유 의존성 (Shared)
 

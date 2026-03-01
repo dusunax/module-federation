@@ -35,7 +35,7 @@ src/
 
 ## 원격 의존성 (Remotes)
 
-- `products@http://localhost:3002/remoteEntry.js`
+- `products@http://localhost:3002/assets/remoteEntry.js`
   - `cartStore` - 장바구니 상태 관리
   - `orderStore` - 기억/주문 상태 관리
   - `utils/statusStyle` - 상태 스타일 유틸리티
