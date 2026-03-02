@@ -52,6 +52,11 @@ export default defineConfig(({ mode }) => {
             'AUTH_REMOTE',
             'http://localhost:3005/assets/remoteEntry.js'
           ),
+          chatbot: getRemoteEntry(
+            resolvedEnv,
+            'CHATBOT_REMOTE',
+            'https://micro-frontends-chatbot.vercel.app/assets/remoteEntry.js'
+          ),
         },
         shared: MF_SHARED_HOST,
       }),

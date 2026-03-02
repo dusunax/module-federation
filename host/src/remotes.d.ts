@@ -41,6 +41,13 @@ declare module 'archive/EmotionCollection' {
   export default EmotionCollection;
 }
 
+declare module 'chatbot/Chatbot' {
+  const Chatbot: React.ComponentType;
+
+  export default Chatbot;
+  export { Chatbot };
+}
+
 declare module 'auth/authStore' {
   type User = import('@shared/types/api').User;
 

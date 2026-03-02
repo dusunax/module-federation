@@ -1,6 +1,7 @@
 import React from 'react';
 import SuspenseRoute from './SuspenseRoute';
 import Header from 'header/Header';
+import ChatbotWidget from './ChatbotWidget';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ function AppShell({ children }: AppShellProps) {
           Booked by Feelings - 감정 기록 및 책 추천
         </p>
       </footer>
+      <ChatbotWidget />
     </div>
   );
 }
