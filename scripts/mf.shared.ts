@@ -10,14 +10,14 @@ export type SharedDependencies = Record<string, SharedDependencyConfig>;
 export const MF_SHARED_CORE: SharedDependencies = {
   react: {
     singleton: true,
-    version: '18.2.0',
-    requiredVersion: '^18.2.0',
+    version: '19.0.0',
+    requiredVersion: '^19.0.0',
     strictVersion: false,
   },
   'react-dom': {
     singleton: true,
-    version: '18.2.0',
-    requiredVersion: '^18.2.0',
+    version: '19.0.0',
+    requiredVersion: '^19.0.0',
     strictVersion: false,
   },
   'react-router-dom': {
