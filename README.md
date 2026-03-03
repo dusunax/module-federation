@@ -77,6 +77,12 @@ react, react-dom, react-router-dom, @tanstack/react-query, zustand, sonner
 | cartStore | products | 장바구니 아이템 관리 (쿠키 저장) |
 | orderStore | products | 주문 상태 관리 |
 
+### 공유 감정 스토어 가이드
+
+공유 감정 스토어 사용 가이드는 아래 문서로 분리했습니다.  
+
+- [공유 감정 스토어 가이드](./shared-emotion-store-guide.md): 호스트 브릿지 API, 사용 예시, 소비 앱 연동 방식
+
 ### 데이터 저장소
 
 - **Firebase Firestore**: 사용자 정보, 에너지, 주문 내역, 감정 데이터

@@ -163,7 +163,7 @@ start_remote_dev header 3001
 start_remote_dev products 3002
 start_remote_dev archive 3004
 start_remote_dev cart 3003
-run_app host "npm run start -- --host 0.0.0.0 --strictPort --port 3000" "http://localhost:3000/"
+start_remote_dev host 3000
 
 echo "All MF apps started in DEV mode. Press Ctrl+C to stop."
 wait

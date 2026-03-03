@@ -61,8 +61,14 @@ declare module 'auth/authStore' {
     clearError: () => void;
   }
 
-  export function useAuthStore(): AuthState;
-  export function useAuthStore<T>(selector: (state: AuthState) => T): T;
+  export const useAuthStore: {
+    (): AuthState;
+    <T>(selector: (state: AuthState) => T): T;
+    getState: () => AuthState;
+    subscribe: (
+      listener: (state: AuthState, prevState: AuthState) => void,
+    ) => () => void;
+  };
 }
 
 declare module 'auth/energyStore' {
@@ -86,8 +92,10 @@ declare module 'auth/energyStore' {
     fetchRecentOrders: (count?: number) => Promise<Order[]>;
   }
 
-  export function useEnergyStore(): EnergyState;
-  export function useEnergyStore<T>(selector: (state: EnergyState) => T): T;
+  export const useEnergyStore: {
+    (): EnergyState;
+    <T>(selector: (state: EnergyState) => T): T;
+  };
 }
 
 declare module 'auth/services/emotionService' {
@@ -106,6 +114,38 @@ declare module 'auth/services/emotionService' {
 declare module 'auth/services/seedService' {
   export function isEmotionsCollectionEmpty(): Promise<boolean>;
   export function seedEmotions(): Promise<number>;
+}
+
+declare module 'auth/services/orderService' {
+  type Order = import('@shared/types/api').Order;
+
+  export function saveUserOrder(userId: string, order: Order): Promise<void>;
+  export function subscribeToUserOrders(
+    userId: string,
+    onUpdate: (orders: Order[]) => void
+  ): () => void;
+  export function getRecentOrders(userId: string, count?: number): Promise<Order[]>;
+  export function getAllUserOrders(userId: string): Promise<Order[]>;
+  export function deleteUserOrder(userId: string, orderId: string | number): Promise<void>;
+  export function getUserOrderById(userId: string, orderId: string | number): Promise<Order | null>;
+  export function updateOrderItemEventCount(
+    userId: string,
+    orderId: string | number,
+    itemId: number,
+    eventCount: {
+      combine: number;
+    },
+  ): Promise<void>;
+  export function updateOrderItemFields(
+    userId: string,
+    orderId: string | number,
+    itemId: number,
+    fields: {
+      eventCount?: { combine: number };
+      productIntensity?: 'low' | 'middle' | 'high';
+      removeProductRarity?: boolean;
+    },
+  ): Promise<void>;
 }
 
 declare module '*.css' {

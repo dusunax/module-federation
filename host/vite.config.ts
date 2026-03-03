@@ -26,6 +26,10 @@ export default defineConfig(({ mode }) => {
       react(),
       federation({
         name: 'host',
+        filename: 'remoteEntry.js',
+        exposes: {
+          './sharedEmotionStore': './src/stores/sharedEmotionStore.ts',
+        },
         remotes: {
           header: getRemoteEntry(
             resolvedEnv,

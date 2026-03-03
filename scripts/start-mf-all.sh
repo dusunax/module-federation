@@ -106,7 +106,7 @@ run_app header "npm run start:mf" "http://localhost:3001/assets/remoteEntry.js"
 run_app products "npm run start:mf" "http://localhost:3002/assets/remoteEntry.js"
 run_app archive "npm run start:mf" "http://localhost:3004/assets/remoteEntry.js"
 run_app cart "npm run start:mf" "http://localhost:3003/assets/remoteEntry.js"
-run_app host "npm run start" "http://localhost:3000/"
+run_app host "npm run start:mf" "http://localhost:3000/assets/remoteEntry.js"
 
 echo "All MF apps started. Press Ctrl+C to stop."
 wait

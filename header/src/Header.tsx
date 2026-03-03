@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import SharedEmotionStoreExample from './components/SharedEmotionStoreExample';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCartStore } from 'products/cartStore';
 import { useAuthStore } from 'auth/authStore';
@@ -15,6 +16,7 @@ import {
   LayoutDashboardIcon,
   ShieldIcon,
   MenuIcon,
+  Share2Icon,
 } from 'lucide-react';
 
 function Header() {
@@ -22,6 +24,7 @@ function Header() {
   const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isStorePopupOpen, setIsStorePopupOpen] = useState(false);
   const profileRef = useRef<HTMLLIElement>(null);
 
   const items = useCartStore((state) => state.items);
@@ -74,6 +77,32 @@ function Header() {
     }
     return () => document.body.classList.remove('overflow-hidden');
   }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (!isStorePopupOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsStorePopupOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isStorePopupOpen]);
+
+  const openStorePopup = () => {
+    setIsStorePopupOpen(true);
+  };
+
+  const closeStorePopup = () => {
+    setIsStorePopupOpen(false);
+  };
 
   return (
     <>
@@ -143,6 +172,16 @@ function Header() {
               >
                 <LayoutDashboardIcon className="h-4 w-4" />
               </Link>
+            </li>
+            <li className="hidden md:list-item">
+              <button
+                type="button"
+                onClick={openStorePopup}
+                aria-label="공유 스토어 예시 열기"
+                className="flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full border-2 text-xs font-semibold text-[var(--color-text-primary)] no-underline transition-colors border-[var(--color-border-primary)] bg-transparent hover:bg-[var(--color-overlay-3)]"
+              >
+                <Share2Icon className="h-4 w-4" />
+              </button>
             </li>
             {user ? (
               <li className="relative hidden md:list-item" ref={profileRef}>
@@ -266,6 +305,32 @@ function Header() {
           </ul>
         </nav>
       </header>
+      {isStorePopupOpen && (
+        <div
+          className="fixed inset-0 z-[10050] flex items-center justify-center bg-black/55 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="공유 스토어 예시"
+          onClick={closeStorePopup}
+        >
+        <div
+          className="relative w-full max-w-2xl overflow-hidden rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-bg-primary)] shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={closeStorePopup}
+              aria-label="공유 스토어 예시 닫기"
+              className="absolute right-3 top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-bg-dark)] text-sm text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-overlay-3)]"
+            >
+              <XIcon className="h-4 w-4" />
+            </button>
+            <div className="max-h-[85vh] overflow-auto p-2 sm:p-3">
+              <SharedEmotionStoreExample />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Side Drawer — header 밖에 렌더링하여 stacking context 회피 */}
       <div
@@ -396,6 +461,16 @@ function Header() {
               </div>
             </div>
           )}
+          <button
+            type="button"
+            onClick={() => {
+              setIsStorePopupOpen(true);
+              setIsMobileMenuOpen(false);
+            }}
+            className="my-3 w-[calc(100%-40px)] mx-5 rounded-lg border border-[var(--color-border-primary)] px-3 py-2 text-sm text-left text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-bg-tertiary)]"
+          >
+            공유 스토어 예시 열기
+          </button>
 
           {/* Sign Out / Sign In */}
           <div className="px-5 py-3">

@@ -4,6 +4,7 @@
   "description": "Module Federation Host Application",
   "scripts": {
     "start": "vite --open",
+    "start:mf": "npm run build -- --mode development && vite preview --host 0.0.0.0 --strictPort --port 3000 --mode development",
     "build": "vite build",
     "test": "vitest --config vitest.config.ts",
     "test:watch": "vitest --config vitest.config.ts --watch"
