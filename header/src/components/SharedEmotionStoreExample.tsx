@@ -501,7 +501,12 @@ function SharedEmotionStoreExample() {
                           key={item.id}
                           className="rounded border border-[var(--color-border-primary)] p-1.5 text-xs text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)]"
                         >
-                          <span className="font-semibold text-[var(--color-text-primary)]">{item.emotion}</span>
+                          <span
+                            className="font-semibold text-[var(--color-text-primary)]"
+                            title={item.emotion}
+                          >
+                            {item.emotion}
+                          </span>
                           {` / 강도 ${item.intensity} / ${item.date}`}
                           {item.note ? ` / ${item.note}` : ''}
                         </li>
@@ -563,7 +568,12 @@ function SharedEmotionStoreExample() {
                                 key={item.id}
                                 className="rounded border border-[var(--color-border-secondary)] p-1 text-xs text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)]"
                               >
-                                <span className="font-semibold text-[var(--color-text-primary)]">{item.emotion}</span>
+                                <span
+                                  className="font-semibold text-[var(--color-text-primary)]"
+                                  title={item.emotion}
+                                >
+                                  {item.emotion}
+                                </span>
                                 {` / 강도 ${item.intensity} / ${item.date}`}
                                 {item.note ? ` / ${item.note}` : ''}
                               </li>

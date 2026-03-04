@@ -13,6 +13,10 @@ import type { ConditionType } from '../utils/conditions';
 interface EmotionLike {
   emoji: string;
   published: boolean;
+  name?: string | {
+    ko?: string;
+    en?: string;
+  };
   visibility: {
     time: ReadonlyArray<VisibilityCondition['time'][number]>;
     day: ReadonlyArray<VisibilityCondition['day'][number]>;
@@ -20,6 +24,11 @@ interface EmotionLike {
     season: ReadonlyArray<VisibilityCondition['season'][number]>;
     event: ReadonlyArray<VisibilityCondition['event'][number]>;
   };
+}
+
+interface EmotionLabel {
+  emoji: string;
+  name: string;
 }
 
 interface Props {
@@ -32,7 +41,7 @@ interface Props {
 interface ConditionGroup {
   conditionKey: string;
   conditionLabel: string;
-  emotionEmojis: string[];
+  emotionEmojis: EmotionLabel[];
   isMet: boolean;
   isComposite: boolean;
 }
@@ -72,9 +81,31 @@ function isConditionMet(conditionKey: string, conditions: CurrentConditions): bo
   return keys.every((key) => isSingleConditionMet(key, conditions));
 }
 
-function addGroupEmoji(groupMap: Map<string, Set<string>>, key: string, emoji: string): void {
-  if (!groupMap.has(key)) groupMap.set(key, new Set());
-  groupMap.get(key)!.add(emoji);
+function getEmotionName(emotion: EmotionLike): string {
+  if (typeof emotion.name === 'string') {
+    const trimmed = emotion.name.trim();
+    if (trimmed) return trimmed;
+  } else if (emotion.name && typeof emotion.name === 'object') {
+    if (typeof emotion.name.ko === 'string') {
+      const trimmedKo = emotion.name.ko.trim();
+      if (trimmedKo) return trimmedKo;
+    }
+    if (typeof emotion.name.en === 'string') {
+      const trimmedEn = emotion.name.en.trim();
+      if (trimmedEn) return trimmedEn;
+    }
+  }
+
+  return '감정';
+}
+
+function addGroupEmotion(
+  groupMap: Map<string, Map<string, EmotionLabel>>,
+  key: string,
+  emotion: EmotionLabel
+): void {
+  if (!groupMap.has(key)) groupMap.set(key, new Map());
+  groupMap.get(key)!.set(emotion.emoji, emotion);
 }
 
 function buildConditionCombos(categories: ConditionCategory[]): string[][] {
@@ -111,6 +142,34 @@ function getEventDateLabel(eventKey: string): string | null {
   }
 
   return null;
+}
+
+function getEventSortValue(eventKey: string): number {
+  const config = EVENT_DATES[eventKey];
+  if (!config) return Number.MAX_SAFE_INTEGER;
+
+  const year = new Date().getFullYear();
+  const ranges = config.yearlyDates?.[year] ?? config.ranges;
+  if (!ranges || ranges.length === 0) return Number.MAX_SAFE_INTEGER;
+
+  return Math.min(
+    ...ranges.map((range) => {
+      const startValue = range.startMonth * 100 + range.startDay;
+      const endValue = range.endMonth * 100 + range.endDay;
+      return startValue <= endValue ? startValue : endValue;
+    }),
+  );
+}
+
+function sortEventGroupsAsc(left: ConditionGroup, right: ConditionGroup): number {
+  const leftValue = getEventSortValue(left.conditionKey);
+  const rightValue = getEventSortValue(right.conditionKey);
+
+  if (leftValue !== rightValue) {
+    return leftValue - rightValue;
+  }
+
+  return left.conditionLabel.localeCompare(right.conditionLabel);
 }
 
 function groupSinglesByCategory(groups: ConditionGroup[]): Map<ConditionType, ConditionGroup[]> {
@@ -162,9 +221,13 @@ function renderGroupRow(group: ConditionGroup, showEventDate = false, emphasizeA
       </div>
       <div className="flex flex-1 flex-wrap justify-end gap-1 text-[var(--color-text-muted)]">
         {group.isMet && group.emotionEmojis.length > 0 ? (
-          group.emotionEmojis.map((emoji, i) => (
-            <span key={i} className="text-base text-[var(--color-text-primary)]">
-              {emoji}
+          group.emotionEmojis.map((item, i) => (
+            <span
+              key={i}
+              className="text-base text-[var(--color-text-primary)]"
+              title={item.name}
+            >
+              {item.emoji}
             </span>
           ))
         ) : (
@@ -252,24 +315,30 @@ function CurrentTab({
   activeGroups: ConditionGroup[];
 }) {
   const activeSingles = activeGroups.filter((g) => !g.isComposite);
-  const activeEvents = activeSingles.filter((g) => getConditionType(g.conditionKey) === 'event');
+  const activeEvents = [...activeSingles]
+    .filter((g) => getConditionType(g.conditionKey) === 'event')
+    .sort(sortEventGroupsAsc);
   const activeNonEvents = activeSingles.filter((g) => getConditionType(g.conditionKey) !== 'event');
   const activeComposites = activeGroups.filter((g) => g.isComposite);
   const hasAny = alwaysGroup || activeSingles.length > 0 || activeComposites.length > 0;
 
-  function renderEventEmojis(emojis: string[]) {
-    if (emojis.length === 0) {
+  function renderEventEmojis(emotions: EmotionLabel[]) {
+    if (emotions.length === 0) {
       return <span className="text-xs text-[var(--color-text-muted)]">0개</span>;
     }
 
-    const visible = emojis.slice(0, 4);
-    const extra = emojis.length - visible.length;
+    const visible = emotions.slice(0, 4);
+    const extra = emotions.length - visible.length;
 
     return (
       <div className="flex items-center gap-1">
-        {visible.map((emoji, i) => (
-          <span key={i} className="text-base text-[var(--color-text-primary)]">
-            {emoji}
+        {visible.map((emotion) => (
+          <span
+            key={emotion.emoji}
+            className="text-base text-[var(--color-text-primary)]"
+            title={emotion.name}
+          >
+            {emotion.emoji}
           </span>
         ))}
         {extra > 0 && (
@@ -358,8 +427,8 @@ function AllTab({
   const inactiveSingles = singles.filter((g) => !g.isMet);
   const activeComposites = composites.filter((g) => g.isMet);
   const inactiveComposites = composites.filter((g) => !g.isMet);
-  const activeEvents = events.filter((g) => g.isMet);
-  const inactiveEvents = events.filter((g) => !g.isMet);
+  const activeEvents = [...events].filter((g) => g.isMet).sort(sortEventGroupsAsc);
+  const inactiveEvents = [...events].filter((g) => !g.isMet).sort(sortEventGroupsAsc);
 
   return (
     <div className="flex flex-col gap-2" aria-label="all-conditions-tab">
@@ -436,13 +505,14 @@ function ConditionHintPopup({ emotions, conditions, isOpen, onClose }: Props): R
   const [activeTab, setActiveTab] = useState<Tab>('current');
 
   const { alwaysGroup, allGroups } = useMemo(() => {
-    const groupMap = new Map<string, Set<string>>();
-    const alwaysEmojis = new Set<string>();
+    const groupMap = new Map<string, Map<string, EmotionLabel>>();
+    const alwaysEmojis = new Map<string, EmotionLabel>();
 
     for (const emotion of emotions) {
       const v = emotion.visibility;
       if (!v) {
-        alwaysEmojis.add(emotion.emoji ?? '?');
+        const emoji = emotion.emoji ?? '?';
+        alwaysEmojis.set(emoji, { emoji, name: getEmotionName(emotion) });
         continue;
       }
 
@@ -453,7 +523,8 @@ function ConditionHintPopup({ emotions, conditions, isOpen, onClose }: Props): R
         v.season.length > 0 ||
         v.event.length > 0;
       if (!hasCondition) {
-        alwaysEmojis.add(emotion.emoji ?? '?');
+        const emoji = emotion.emoji ?? '?';
+        alwaysEmojis.set(emoji, { emoji, name: getEmotionName(emotion) });
         continue;
       }
 
@@ -465,38 +536,41 @@ function ConditionHintPopup({ emotions, conditions, isOpen, onClose }: Props): R
         { keys: v.event },
       ].filter((category) => category.keys.length > 0);
 
-      const emoji = emotion.emoji ?? '?';
+      const emotionLabel: EmotionLabel = {
+        emoji: emotion.emoji ?? '?',
+        name: getEmotionName(emotion),
+      };
       if (categories.length <= 1) {
         const singleKeys = categories.length === 0 ? [] : categories[0].keys;
-        for (const key of singleKeys) addGroupEmoji(groupMap, key, emoji);
+        for (const key of singleKeys) addGroupEmotion(groupMap, key, emotionLabel);
         continue;
       }
 
       const combos = buildConditionCombos(categories);
       for (const combo of combos) {
         const comboKey = combo.join(' && ');
-        addGroupEmoji(groupMap, comboKey, emoji);
+        addGroupEmotion(groupMap, comboKey, emotionLabel);
       }
     }
 
     const conditionGroups = Array.from(groupMap.entries()).map(([key, emojis]) => ({
       conditionKey: key,
       conditionLabel: formatConditionLabel(key),
-      emotionEmojis: Array.from(emojis),
+      emotionEmojis: Array.from(emojis.values()),
       isMet: isConditionMet(key, conditions),
       isComposite: key.includes('&&'),
     }));
 
     const always: ConditionGroup | null =
       alwaysEmojis.size > 0
-        ? {
-            conditionKey: 'always',
-            conditionLabel: '항상',
-            emotionEmojis: Array.from(alwaysEmojis),
-            isMet: true,
-            isComposite: false,
-          }
-        : null;
+            ? {
+                conditionKey: 'always',
+                conditionLabel: '항상',
+                emotionEmojis: Array.from(alwaysEmojis.values()),
+                isMet: true,
+                isComposite: false,
+              }
+            : null;
 
     return { alwaysGroup: always, allGroups: conditionGroups };
   }, [emotions, conditions]);

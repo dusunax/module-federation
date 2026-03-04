@@ -1,13 +1,19 @@
 declare module 'auth/authStore' {
   export const useAuthStore: () => {
     user: null | {
+      uid: string;
       displayName: string;
       email: string;
       photoURL: string;
       plan: string;
       role: string;
     };
+    loading: boolean;
+    error: string | null;
+    signInWithGoogle: () => Promise<void>;
     signOut: () => Promise<void> | void;
+    initAuthListener: () => () => void;
+    clearError: () => void;
   };
 }
 
@@ -17,10 +23,10 @@ declare module 'auth/energyStore' {
 
 declare module 'auth/store/rememberingStore' {
   export interface ProductInfo {
-    id?: number;
-    name?: string;
-    emoji?: string;
-    energyCost?: number;
+    id: number;
+    name: string;
+    emoji: string;
+    energyCost: number;
   }
 
   export interface RememberingItem {
