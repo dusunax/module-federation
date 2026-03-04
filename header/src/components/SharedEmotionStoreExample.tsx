@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAuthStore } from 'auth/authStore';
 
 type EmotionIntensity = 1 | 2 | 3 | 4 | 5;
 type SharedEmotionSource = 'chatbot' | 'manual' | 'imported';
@@ -221,6 +222,7 @@ const emptyPayload = (today: string): WeeklyEmotionPayload => ({
 
 function SharedEmotionStoreExample() {
   const today = new Date().toISOString().slice(0, 10);
+  const { user, signInWithGoogle } = useAuthStore();
   const [payload, setPayload] = useState<WeeklyEmotionPayload>(emptyPayload(today));
   const [allRecords, setAllRecords] = useState<SharedEmotionRecord[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -229,6 +231,7 @@ function SharedEmotionStoreExample() {
   const [isThisWeekOpen, setIsThisWeekOpen] = useState(false);
   const [openWeeklyBatchKeys, setOpenWeeklyBatchKeys] = useState<Set<string>>(new Set());
   const [mode, setMode] = useState<ViewMode>('thisWeek');
+  const [loginError, setLoginError] = useState('');
 
   const refresh = useCallback(() => {
     const nextDate = new Date().toISOString().slice(0, 10);
@@ -388,10 +391,39 @@ function SharedEmotionStoreExample() {
     [allRecords, allRecordsAverageIntensity, averageIntensity, mode, payload.endDate, payload.records, payload.startDate, summaryPeriod, weeklyBatches]
   );
 
+  const handleLogin = useCallback(async () => {
+    setLoginError('');
+    try {
+      await signInWithGoogle();
+      refresh();
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : '로그인에 실패했습니다.');
+    }
+  }, [refresh, signInWithGoogle]);
+
   if (!isLoaded) {
     return (
       <section className="mx-3 mb-2 rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-bg-tertiary)] px-3 py-2 text-xs text-[var(--color-text-secondary)]">
         공유 감정 스토어 브릿지가 아직 준비되지 않았습니다.
+      </section>
+    );
+  }
+
+  if (!user) {
+    return (
+      <section className="mx-3 mb-2 rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-bg-tertiary)] px-3 py-3 text-xs text-[var(--color-text-secondary)]">
+        <p className="m-0 mb-2 font-semibold text-[var(--color-text-primary)]">공유 감정 스토어</p>
+        <p className="m-0 mb-3">
+          감정 데이터를 보려면 먼저 로그인해야 합니다.
+        </p>
+        <button
+          type="button"
+          onClick={handleLogin}
+          className="cursor-pointer rounded border border-[var(--color-border-primary)] bg-[var(--color-bg-primary)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-bg-secondary)]"
+        >
+          Google 로그인
+        </button>
+        {loginError ? <p className="m-0 mt-2 text-red-400">{loginError}</p> : null}
       </section>
     );
   }
