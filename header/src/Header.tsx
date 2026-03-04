@@ -5,6 +5,7 @@ import { useCartStore } from 'products/cartStore';
 import { useAuthStore } from 'auth/authStore';
 import { useEnergyStore } from 'auth/energyStore';
 import { useRememberingStore } from 'auth/rememberingStore';
+import { UserRole } from '@shared/types/api';
 import {
   HomeIcon,
   ShoppingCartIcon,
@@ -258,7 +259,7 @@ function Header() {
                     >
                       <BookOpenIcon className="h-4 w-4" /> 감정 기록
                     </Link>
-                    {user.role === 'admin' && (
+                    {user.role === UserRole.ADMIN && (
                       <Link
                         to="/admin/emotions"
                         className={`flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[var(--color-text-primary)] no-underline transition-colors hover:bg-[var(--color-bg-tertiary)] ${
@@ -434,7 +435,7 @@ function Header() {
                 >
                   <BookOpenIcon className="h-4 w-4" /> 감정 기록
                 </Link>
-                {user.role === 'admin' && (
+                {user.role === UserRole.ADMIN && (
                   <Link
                     to="/admin/emotions"
                     className={`flex items-center gap-3 px-5 py-3 text-sm text-[var(--color-text-primary)] no-underline transition-colors hover:text-[var(--color-accent-green)] ${

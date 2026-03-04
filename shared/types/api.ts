@@ -33,13 +33,20 @@ export interface Emotion {
   visibility: VisibilityCondition;
 }
 
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+}
+
+export type UserRoleType = UserRole;
+
 export interface User {
   uid: string;
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
   plan: string;
-  role?: string;
+  role: UserRoleType;
 }
 
 export interface OrderItem {

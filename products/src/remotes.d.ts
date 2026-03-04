@@ -49,10 +49,10 @@ declare module 'auth/services/orderService' {
 
 declare module 'auth/store/rememberingStore' {
   export interface ProductInfo {
-    id?: number;
-    name?: string;
-    emoji?: string;
-    energyCost?: number;
+    id: number;
+    name: string;
+    emoji: string;
+    energyCost: number;
   }
 
   export interface RememberingItem {

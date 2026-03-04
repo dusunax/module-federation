@@ -1,23 +1,22 @@
 declare module 'auth/authStore' {
-  export const useAuthStore: () => {
-    user: null | {
-      uid: string;
-      displayName: string;
-      email: string;
-      photoURL: string;
-      plan: string;
-      role: string;
-    };
+  type User = import('@shared/types/api').User;
+  interface AuthState {
+    user: User | null;
     loading: boolean;
     error: string | null;
     signInWithGoogle: () => Promise<void>;
     signOut: () => Promise<void> | void;
     initAuthListener: () => () => void;
     clearError: () => void;
-  };
+  }
+
+  export function useAuthStore(): AuthState;
+  export function useAuthStore<T>(selector: (state: AuthState) => T): T;
+  export const __setMockAuthState: (next: Partial<AuthState>) => void;
 }
 
 declare module 'auth/energyStore' {
+  export const __setMockEnergyState: (next: Partial<{ current: number; maxEnergy: number }>) => void;
   export const useEnergyStore: () => { current: number; maxEnergy: number };
 }
 
@@ -68,5 +67,6 @@ declare module 'auth/rememberingStore' {
 }
 
 declare module 'products/cartStore' {
+  export const __setMockCartState: (next: Partial<{ items: Record<string, { id: number; quantity: number }> }) => void;
   export const useCartStore: <T>(selector: (state: { items: Record<string, { id: number; quantity: number }> }) => T) => T;
 }

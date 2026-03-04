@@ -9,6 +9,7 @@ import {
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useEnergyStore } from './energyStore';
+import { UserRole } from '@shared/types/api';
 import type { User } from '@shared/types/api';
 
 interface AuthState {
@@ -22,6 +23,7 @@ interface AuthState {
 }
 
 const googleProvider = new GoogleAuthProvider();
+const DEFAULT_USER_ROLE: UserRole = UserRole.USER;
 
 const useAuthStore = create<AuthState>((set) => ({
   user: null,
@@ -33,30 +35,33 @@ const useAuthStore = create<AuthState>((set) => ({
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
+      const userRef = doc(db, 'users', user.uid);
+      const existingUserDoc = await getDoc(userRef);
+      const isNewUser = !existingUserDoc.exists();
 
       await setDoc(
-        doc(db, 'users', user.uid),
+        userRef,
         {
           email: user.email,
           displayName: user.displayName,
           photoURL: user.photoURL,
           plan: 'none',
+          role: DEFAULT_USER_ROLE,
           lastLoginAt: serverTimestamp(),
         },
         { merge: true }
       );
 
-      const isNewUser = result._tokenResponse?.isNewUser;
       if (isNewUser) {
-        await setDoc(doc(db, 'users', user.uid), {
+        await setDoc(userRef, {
           createdAt: serverTimestamp(),
         }, { merge: true });
       }
 
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userDoc = await getDoc(userRef);
       const userData = userDoc.exists() ? userDoc.data() : {};
       const plan = userData.plan || 'none';
-      const role = userData.role;
+      const role = userData.role || DEFAULT_USER_ROLE;
 
       set({
         user: {
@@ -98,7 +103,7 @@ const useAuthStore = create<AuthState>((set) => ({
           const userDoc = await getDoc(doc(db, 'users', user.uid));
           const userData = userDoc.exists() ? userDoc.data() : {};
           const plan = userData.plan || 'none';
-          const role = userData.role;
+          const role = userData.role || DEFAULT_USER_ROLE;
 
           set({
             user: {
@@ -122,6 +127,7 @@ const useAuthStore = create<AuthState>((set) => ({
               displayName: user.displayName,
               photoURL: user.photoURL,
               plan: 'none',
+              role: DEFAULT_USER_ROLE,
             },
             loading: false,
           });

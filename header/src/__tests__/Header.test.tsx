@@ -8,6 +8,7 @@ import { __setMockCartState } from 'products/cartStore';
 import { __setMockAuthState } from 'auth/authStore';
 import { __setMockEnergyState } from 'auth/energyStore';
 import { __setMockRememberingState } from 'auth/rememberingStore';
+import { UserRole } from '@shared/types/api';
 
 describe('Header', () => {
   const renderHeader = (path = '/') =>
@@ -32,7 +33,7 @@ describe('Header', () => {
         email: 'test@example.com',
         photoURL: '',
         plan: 'none',
-        role: 'user',
+        role: UserRole.USER,
       },
       signOut: async () => {},
     });

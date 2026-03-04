@@ -101,7 +101,7 @@ declare module 'auth/authStore' {
     displayName: string | null;
     photoURL: string | null;
     plan: string;
-    role?: string;
+    role: string;
   }
 
   interface AuthState {

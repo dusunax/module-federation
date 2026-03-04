@@ -29,7 +29,7 @@ booked-by-feelings/
 
 | 영역 | 기술 |
 |------|------|
-| UI | React 18.2, TypeScript 5.3 |
+| UI | React 19.2, TypeScript 5.3 |
 | 번들러 | Vite 4 + @originjs/vite-plugin-federation |
 | 라우팅 | React Router 7.12 |
 | 상태 관리 | Zustand |
@@ -153,3 +153,9 @@ VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 ```
+
+## 사용자 권한 규칙
+
+- 사용자 역할은 `@shared/types/api.ts`의 `UserRole` enum(`USER`, `ADMIN`)으로 관리합니다.
+- `User.role`은 필수 필드이며, 신규 사용자 생성 시 `UserRole.USER`가 기본값입니다.
+- 관리자 라우트/메뉴는 `user.role === UserRole.ADMIN` 조건으로만 노출/허용합니다.

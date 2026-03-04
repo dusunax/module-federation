@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useAuthStore } from '../store/authStore';
+import { UserRole } from '@shared/types/api';
 
 const energyState = {
   initializeEnergy: vi.fn(),
@@ -69,7 +70,7 @@ describe('인증 스토어', () => {
   it('로그인 상태 변화 시 사용자/에너지를 설정한다', async () => {
     (getDoc as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
       exists: () => true,
-      data: () => ({ plan: 'pro', role: 'admin' }),
+      data: () => ({ plan: 'pro', role: UserRole.ADMIN }),
     });
 
     useAuthStore.getState().initAuthListener();
@@ -84,7 +85,7 @@ describe('인증 스토어', () => {
     const state = useAuthStore.getState();
     expect(state.user?.uid).toBe('u1');
     expect(state.user?.plan).toBe('pro');
-    expect(state.user?.role).toBe('admin');
+    expect(state.user?.role).toBe(UserRole.ADMIN);
     expect(state.loading).toBe(false);
     expect(energyState.initializeEnergy).toHaveBeenCalledWith('u1', 'pro');
   });

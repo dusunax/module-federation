@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, it, expect, beforeEach } from 'vitest';
 import AdminRoute from '../AdminRoute';
 import { __setAuthState, __resetAuthState } from '../../__mocks__/auth/authStore';
+import { UserRole } from '@shared/types/api';
 
 function renderWithRouter() {
   return render(
@@ -44,7 +45,7 @@ describe('AdminRoute', () => {
     expect(screen.queryByTestId('admin-content')).not.toBeInTheDocument();
   });
 
-  it('일반 사용자(role !== "admin")가 /로 리다이렉트된다', () => {
+  it(`일반 사용자(role !== ${UserRole.ADMIN})가 /로 리다이렉트된다`, () => {
     __setAuthState({
       user: {
         uid: 'user-1',
@@ -52,7 +53,7 @@ describe('AdminRoute', () => {
         displayName: 'Test User',
         photoURL: null,
         plan: 'free',
-        role: 'user',
+        role: UserRole.USER,
       },
       loading: false,
     });
@@ -70,7 +71,7 @@ describe('AdminRoute', () => {
         displayName: 'Admin User',
         photoURL: null,
         plan: 'pro',
-        role: 'admin',
+        role: UserRole.ADMIN,
       },
       loading: false,
     });
