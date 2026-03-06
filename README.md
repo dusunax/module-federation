@@ -29,16 +29,15 @@ booked-by-feelings/
 
 | 영역 | 기술 |
 |------|------|
-| UI | React 19.2, TypeScript 5.3 |
+| 프론트엔드 | React 19.2, TypeScript 5.3 |
 | 번들러 | Vite 4 + @originjs/vite-plugin-federation |
 | 라우팅 | React Router 7.12 |
-| 상태 관리 | Zustand |
-| 데이터 페칭 | @tanstack/react-query 5 |
+| 전역 상태 관리 | Zustand |
+| 서버 상태 관리 | @tanstack/react-query 5 |
 | 스타일링 | Tailwind CSS 4 |
 | 인증/DB | Firebase (Authentication, Firestore) |
 | 토스트 | Sonner |
 | 테스트 | Vitest, @testing-library/react |
-| 트랜스파일 | esbuild (Vite 기본) |
 
 ## 아키텍처
 
