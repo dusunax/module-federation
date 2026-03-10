@@ -56,7 +56,7 @@ function UsageChart({ data = [] }: ChartProps) {
     return `${toX(0)},${baseline} ${pts.join(' ')} ${toX(values.length - 1)},${baseline}`;
   };
 
-  const xLabelInterval = data.length <= 7 ? 1 : data.length <= 14 ? 2 : 3;
+  const xLabelInterval = 1;
 
   return (
     <svg viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`} className="w-full">
