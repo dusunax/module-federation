@@ -8,6 +8,12 @@ export default defineConfig(({ mode }) => {
   const authRemote = env.VITE_AUTH_REMOTE || 'https://auth-dusunax-001.web.app/assets/remoteEntry.js';
 
   return {
+    esbuild: {
+      target: 'esnext',
+    },
+    build: {
+      target: 'esnext',
+    },
     plugins: [
       react(),
       federation({
