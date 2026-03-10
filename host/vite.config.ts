@@ -29,6 +29,7 @@ export default defineConfig(({ mode }) => {
         filename: 'remoteEntry.js',
         exposes: {
           './sharedEmotionStore': './src/stores/sharedEmotionStore.ts',
+          './EmotionStoreInitializer': './src/stores/EmotionStoreInitializer.tsx',
         },
         remotes: {
           header: getRemoteEntry(
@@ -69,6 +70,11 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       strictPort: true,
       open: true,
+    },
+    preview: {
+      port: 3000,
+      strictPort: true,
+      cors: true,
     },
     resolve: {
       alias: {
