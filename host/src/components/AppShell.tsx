@@ -1,7 +1,6 @@
 import React from 'react';
 import SuspenseRoute from './SuspenseRoute';
 import Header from 'header/Header';
-import ChatbotWidget from './ChatbotWidget';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -21,7 +20,6 @@ function AppShell({ children }: AppShellProps) {
           </p>
         </footer>
       </div>
-      <ChatbotWidget />
     </>
   );
 }
