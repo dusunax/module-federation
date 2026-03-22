@@ -15,7 +15,7 @@ import {
   XIcon,
   UserIcon,
   LineChartIcon,
-  ShieldIcon,
+  Settings,
   MenuIcon,
 } from 'lucide-react';
 
@@ -31,6 +31,9 @@ function Header() {
   const rememberingItemIds = Object.keys(rememberingItems).map(Number);
   const { user, signOut } = useAuthStore();
   const { current: currentEnergy, maxEnergy } = useEnergyStore();
+  const isAdminUser = user?.role?.toLowerCase() === UserRole.ADMIN;
+  const userPhotoUrl =
+    user?.photoURL && user.photoURL.trim().length > 0 ? user.photoURL : null;
 
   const totalItems = Object.values(items)
     .filter((item) => !rememberingItemIds.includes(item.id))
@@ -173,12 +176,14 @@ function Header() {
                   aria-label="profile-menu-toggle"
                   className="flex h-10 w-10 md:h-8 md:w-8 cursor-pointer items-center justify-center rounded-full border border-[var(--color-border-primary)] bg-transparent transition-colors hover:bg-[var(--color-overlay-3)]"
                 >
-                  {user.photoURL && (
+                  {userPhotoUrl ? (
                     <img
-                      src={user.photoURL}
-                      alt={user.displayName}
+                      src={userPhotoUrl}
+                      alt={user.displayName ?? '사용자'}
                       className="h-full w-full rounded-full"
                     />
+                  ) : (
+                    <UserIcon className="h-4 w-4 text-[var(--color-text-secondary)]" />
                   )}
                 </button>
 
@@ -194,11 +199,15 @@ function Header() {
                   </button>
                   <div className="flex flex-col border-b border-[var(--color-border-primary)] px-4 pb-4 pt-3">
                     <div className="flex flex-col items-center gap-2">
-                      <img
-                        src={user.photoURL}
-                        alt={user.displayName}
-                        className="h-10 w-10 rounded-full"
-                      />
+                      {userPhotoUrl ? (
+                        <img
+                          src={userPhotoUrl}
+                          alt={user.displayName ?? '사용자'}
+                          className="h-10 w-10 rounded-full"
+                        />
+                      ) : (
+                        <UserIcon className="h-10 w-10 rounded-full p-1 text-[var(--color-text-secondary)]" />
+                      )}
                       <p className="m-0 text-sm font-medium text-[var(--color-text-primary)]">
                         {user.displayName}
                       </p>
@@ -241,14 +250,14 @@ function Header() {
                     >
                       <LineChartIcon className="h-4 w-4" /> 대시보드
                     </Link>
-                    {user.role === UserRole.ADMIN && (
+                    {isAdminUser && (
                       <Link
                         to="/admin/emotions"
                         className={`flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[var(--color-text-primary)] no-underline transition-colors hover:bg-[var(--color-bg-tertiary)] ${
                           isActive('/admin/emotions') ? 'bg-[var(--color-green-overlay-3)]' : ''
                         }`}
                       >
-                        <ShieldIcon className="h-4 w-4" /> 관리자 페이지
+                        <Settings className="h-4 w-4" /> 관리자 페이지
                       </Link>
                     )}
                   </div>
@@ -322,12 +331,15 @@ function Header() {
           {user && (
             <div className="border-b border-[var(--color-border-primary)] px-5 pb-4">
               <div className="flex items-center gap-3">
-                {user.photoURL && (
+                {userPhotoUrl && (
                   <img
-                    src={user.photoURL}
+                    src={userPhotoUrl}
                     alt={user.displayName}
                     className="h-10 w-10 rounded-full"
                   />
+                )}
+                {!userPhotoUrl && (
+                  <UserIcon className="h-10 w-10 text-[var(--color-text-secondary)]" />
                 )}
                 <div className="min-w-0">
                   <p className="m-0 truncate text-sm font-medium text-[var(--color-text-primary)]">
@@ -390,14 +402,14 @@ function Header() {
                 >
                   <HistoryIcon className="h-4 w-4" /> 감정 기록
                 </Link>
-                {user.role === UserRole.ADMIN && (
+                {isAdminUser && (
                   <Link
                     to="/admin/emotions"
                     className={`flex items-center gap-3 px-5 py-3 text-sm text-[var(--color-text-primary)] no-underline transition-colors hover:text-[var(--color-accent-green)] ${
                       isActive('/admin/emotions') ? 'bg-[var(--color-green-overlay-3)]' : ''
                     }`}
                   >
-                    <ShieldIcon className="h-4 w-4" /> 관리자
+                    <Settings className="h-4 w-4" /> 관리자
                   </Link>
                 )}
               </>
