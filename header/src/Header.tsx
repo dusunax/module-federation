@@ -1,23 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
-import SharedEmotionStoreExample from './components/SharedEmotionStoreExample';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCartStore } from 'products/cartStore';
 import { useAuthStore } from 'auth/authStore';
 import { useEnergyStore } from 'auth/energyStore';
 import { useRememberingStore } from 'auth/rememberingStore';
+import BooksRecommendationButton from './components/BooksRecommendationButton';
 import { UserRole } from '@shared/types/api';
 import {
-  HomeIcon,
+  List,
   ShoppingCartIcon,
   LogOutIcon,
-  BookOpenIcon,
+  HistoryIcon,
   BookMarkedIcon,
   XIcon,
   UserIcon,
-  LayoutDashboardIcon,
+  LineChartIcon,
   ShieldIcon,
   MenuIcon,
-  Share2Icon,
 } from 'lucide-react';
 
 function Header() {
@@ -25,7 +24,6 @@ function Header() {
   const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isStorePopupOpen, setIsStorePopupOpen] = useState(false);
   const profileRef = useRef<HTMLLIElement>(null);
 
   const items = useCartStore((state) => state.items);
@@ -79,32 +77,6 @@ function Header() {
     return () => document.body.classList.remove('overflow-hidden');
   }, [isMobileMenuOpen]);
 
-  useEffect(() => {
-    if (!isStorePopupOpen) {
-      return;
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsStorePopupOpen(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isStorePopupOpen]);
-
-  const openStorePopup = () => {
-    setIsStorePopupOpen(true);
-  };
-
-  const closeStorePopup = () => {
-    setIsStorePopupOpen(false);
-  };
-
   return (
     <>
       <header
@@ -112,13 +84,33 @@ function Header() {
         style={{ zIndex: 'var(--z-sticky)' }}
       >
         <nav className="flex items-center justify-between">
-          <Link to="/" className="text-[var(--color-text-primary)] no-underline">
+          <Link
+            to="/"
+            className="text-[var(--color-text-primary)] no-underline hidden md:block"
+          >
             <h2 className="m-0 text-lg md:text-4xl font-normal tracking-[1px]">Booked by Feelings</h2>
             <p className="mb-0 mt-1 text-xs font-normal text-[var(--color-text-secondary)] hidden sm:block">
               감정 기록 및 책 추천
             </p>
           </Link>
-          <ul className="m-0 flex list-none items-center gap-1.5 sm:gap-3 p-0">
+          <ul className="m-0 mt-1 flex list-none items-center gap-1.5 p-0 md:hidden">
+            <BooksRecommendationButton
+              href="https://micro-frontend-shell-two.vercel.app/books"
+              label="추천"
+              ariaLabel="북스 페이지로 이동"
+              className="list-item md:hidden"
+              anchorClassName="h-10 px-3 py-1.5 text-[11px]"
+              hideTooltip
+            />
+          </ul>
+          <ul className="m-0 mt-1 flex list-none items-center gap-1.5 sm:gap-3 p-0 md:mt-0">
+            <BooksRecommendationButton
+              href="https://micro-frontend-shell-two.vercel.app/books"
+              label="책 추천 받기"
+              ariaLabel="북스 페이지로 이동"
+              tooltip="최근 경험한 감정에 어울리는 책을 알아보세요"
+              className="hidden md:list-item"
+            />
             <li className="hidden md:list-item">
               <span
                 className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-green-overlay-3)] px-3 py-0.5 font-semibold text-[var(--color-accent-green)]"
@@ -137,7 +129,7 @@ function Header() {
                 }`}
                 aria-label="홈 페이지로 이동"
               >
-                <HomeIcon className="h-4 w-4" />
+                <List className="h-4 w-4" />
               </Link>
             </li>
             <li>
@@ -163,26 +155,16 @@ function Header() {
             </li>
             <li className="hidden md:list-item">
               <Link
-                to="/dashboard"
+                to="/archive"
                 className={`flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full border-2 text-2xl no-underline transition-colors ${
-                  isActive('/dashboard')
+                  isActive('/archive')
                     ? 'border-[var(--color-accent-green)] bg-[var(--color-green-overlay-3)]'
                     : 'border-[var(--color-border-primary)] hover:bg-[var(--color-overlay-3)]'
                 }`}
-                aria-label="대시보드로 이동"
+                aria-label="감정 기록으로 이동"
               >
-                <LayoutDashboardIcon className="h-4 w-4" />
+                <HistoryIcon className="h-4 w-4" />
               </Link>
-            </li>
-            <li className="hidden md:list-item">
-              <button
-                type="button"
-                onClick={openStorePopup}
-                aria-label="공유 스토어 예시 열기"
-                className="flex h-10 w-10 md:h-8 md:w-8 items-center justify-center rounded-full border-2 text-xs font-semibold text-[var(--color-text-primary)] no-underline transition-colors border-[var(--color-border-primary)] bg-transparent hover:bg-[var(--color-overlay-3)]"
-              >
-                <Share2Icon className="h-4 w-4" />
-              </button>
             </li>
             {user ? (
               <li className="relative hidden md:list-item" ref={profileRef}>
@@ -252,12 +234,12 @@ function Header() {
                       <BookMarkedIcon className="h-4 w-4" /> 감정 도감
                     </Link>
                     <Link
-                      to="/archive"
+                      to="/dashboard"
                       className={`flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-[var(--color-text-primary)] no-underline transition-colors hover:bg-[var(--color-bg-tertiary)] ${
-                        isActive('/archive') ? 'bg-[var(--color-green-overlay-3)]' : ''
+                        isActive('/dashboard') ? 'bg-[var(--color-green-overlay-3)]' : ''
                       }`}
                     >
-                      <BookOpenIcon className="h-4 w-4" /> 감정 기록
+                      <LineChartIcon className="h-4 w-4" /> 대시보드
                     </Link>
                     {user.role === UserRole.ADMIN && (
                       <Link
@@ -306,33 +288,6 @@ function Header() {
           </ul>
         </nav>
       </header>
-      {isStorePopupOpen && (
-        <div
-          className="fixed inset-0 z-[10050] flex items-center justify-center bg-black/55 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label="공유 스토어 예시"
-          onClick={closeStorePopup}
-        >
-        <div
-          className="relative w-full max-w-2xl overflow-hidden rounded-lg border border-[var(--color-border-primary)] bg-[var(--color-bg-primary)] shadow-2xl"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={closeStorePopup}
-              aria-label="공유 스토어 예시 닫기"
-              className="absolute right-3 top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-[var(--color-bg-dark)] text-sm text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-overlay-3)]"
-            >
-              <XIcon className="h-4 w-4" />
-            </button>
-            <div className="max-h-[85vh] overflow-auto p-2 sm:p-3">
-              <SharedEmotionStoreExample />
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Mobile Side Drawer — header 밖에 렌더링하여 stacking context 회피 */}
       <div
         className={`fixed inset-0 transition-opacity duration-300 md:hidden ${
@@ -394,7 +349,7 @@ function Header() {
                 isActive('/') ? 'bg-[var(--color-green-overlay-3)]' : ''
               }`}
             >
-              <HomeIcon className="h-4 w-4" /> 홈
+              <List className="h-4 w-4" /> 홈
             </Link>
             <Link
               to="/cart"
@@ -415,7 +370,7 @@ function Header() {
                 isActive('/dashboard') ? 'bg-[var(--color-green-overlay-3)]' : ''
               }`}
             >
-              <LayoutDashboardIcon className="h-4 w-4" /> 대시보드
+                  <LineChartIcon className="h-4 w-4" /> 대시보드
             </Link>
             {user && (
               <>
@@ -433,7 +388,7 @@ function Header() {
                     isActive('/archive') ? 'bg-[var(--color-green-overlay-3)]' : ''
                   }`}
                 >
-                  <BookOpenIcon className="h-4 w-4" /> 감정 기록
+                  <HistoryIcon className="h-4 w-4" /> 감정 기록
                 </Link>
                 {user.role === UserRole.ADMIN && (
                   <Link
@@ -462,17 +417,6 @@ function Header() {
               </div>
             </div>
           )}
-          <button
-            type="button"
-            onClick={() => {
-              setIsStorePopupOpen(true);
-              setIsMobileMenuOpen(false);
-            }}
-            className="my-3 w-[calc(100%-40px)] mx-5 rounded-lg border border-[var(--color-border-primary)] px-3 py-2 text-sm text-left text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-bg-tertiary)]"
-          >
-            공유 스토어 예시 열기
-          </button>
-
           {/* Sign Out / Sign In */}
           <div className="px-5 py-3">
             {user ? (
