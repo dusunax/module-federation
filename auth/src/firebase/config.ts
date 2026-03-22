@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { browserLocalPersistence, getAuth, setPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const getEnv = (key: string) => {
@@ -25,5 +25,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// 사용자 재접속/새로고침 시 로그인 상태가 유지되도록 명시적으로 로컬 지속성 설정
+void setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error('Firebase auth persistence 설정 실패:', error);
+});
 
 export { app, auth, db };
