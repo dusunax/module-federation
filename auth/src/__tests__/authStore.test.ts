@@ -38,7 +38,7 @@ vi.mock('../firebase', () => ({
 }));
 
 const { signInWithPopup, signOut } = await import('firebase/auth');
-const { getDoc } = await import('firebase/firestore');
+const { getDoc, setDoc } = await import('firebase/firestore');
 
 describe('인증 스토어', () => {
   beforeEach(() => {
@@ -48,6 +48,7 @@ describe('인증 스토어', () => {
     (signInWithPopup as unknown as ReturnType<typeof vi.fn>).mockReset();
     (signOut as unknown as ReturnType<typeof vi.fn>).mockReset();
     (getDoc as unknown as ReturnType<typeof vi.fn>).mockReset();
+    (setDoc as unknown as ReturnType<typeof vi.fn>).mockReset();
     (useAuthStore as unknown as { setState: (s: unknown) => void }).setState({
       user: null,
       loading: true,
@@ -55,7 +56,7 @@ describe('인증 스토어', () => {
     });
   });
 
-  it('로그아웃 상태 변화 시 에너지를 초기화한다', async () => {
+  it('로그아웃 상태 변화 시 에너지를 초기화한다', () => {
     const unsubscribe = useAuthStore.getState().initAuthListener();
     expect(typeof unsubscribe).toBe('function');
 
@@ -114,7 +115,6 @@ describe('인증 스토어', () => {
         displayName: '사용자',
         photoURL: null,
       },
-      _tokenResponse: { isNewUser: false },
     });
     (getDoc as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
       exists: () => true,
@@ -127,6 +127,76 @@ describe('인증 스토어', () => {
     expect(user.uid).toBe('u2');
     expect(state.user?.uid).toBe('u2');
     expect(state.user?.plan).toBe('none');
+    expect(state.user?.role).toBe(UserRole.USER);
     expect(state.loading).toBe(false);
+    expect(setDoc).toHaveBeenCalledWith(
+      { _db: {}, _col: 'users', _id: 'u2' },
+      { lastLoginAt: 'now' },
+      { merge: true }
+    );
+  });
+
+  it('처음 로그인한 사용자는 사용자 문서를 생성한다', async () => {
+    (signInWithPopup as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+      user: {
+        uid: 'new-user',
+        email: 'new@example.com',
+        displayName: '새회원',
+        photoURL: 'https://example.com/avatar.png',
+      },
+    });
+
+    let callCount = 0;
+    (getDoc as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => {
+      callCount += 1;
+      return Promise.resolve(
+        callCount === 1
+          ? { exists: () => false }
+          : { exists: () => true, data: () => ({ plan: 'none', role: UserRole.USER }) }
+      );
+    });
+
+    const user = await useAuthStore.getState().signInWithGoogle();
+
+    expect(user.uid).toBe('new-user');
+    expect(setDoc).toHaveBeenCalledWith(
+      { _db: {}, _col: 'users', _id: 'new-user' },
+      {
+        email: 'new@example.com',
+        displayName: '새회원',
+        photoURL: 'https://example.com/avatar.png',
+        plan: 'none',
+        role: UserRole.USER,
+        createdAt: 'now',
+        lastLoginAt: 'now',
+      },
+      { merge: false }
+    );
+    const state = useAuthStore.getState();
+    expect(state.user?.uid).toBe('new-user');
+    expect(state.user?.plan).toBe('none');
+    expect(state.user?.role).toBe(UserRole.USER);
+  });
+
+  it('clearError는 에러 메시지를 초기화한다', async () => {
+    const { clearError } = useAuthStore.getState();
+    (useAuthStore as unknown as { setState: (s: unknown) => void }).setState({
+      error: 'something wrong',
+    });
+
+    clearError();
+
+    expect(useAuthStore.getState().error).toBeNull();
+  });
+
+  it('로그인 실패 시 에러를 상태에 저장한다', async () => {
+    (signInWithPopup as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(
+      new Error('login failed')
+    );
+
+    await expect(useAuthStore.getState().signInWithGoogle()).rejects.toThrow('login failed');
+
+    expect(useAuthStore.getState().loading).toBe(false);
+    expect(useAuthStore.getState().error).toBe('login failed');
   });
 });
