@@ -18,6 +18,7 @@ import {
   Settings,
   MenuIcon,
 } from 'lucide-react';
+import { ENV } from './env';
 
 function Header() {
   const location = useLocation();
@@ -98,7 +99,7 @@ function Header() {
           </Link>
           <ul className="m-0 mt-1 flex list-none items-center gap-1.5 p-0 md:hidden">
             <BooksRecommendationButton
-              href="https://micro-frontend-shell-two.vercel.app/books"
+              href={ENV.BOOKS_RECOMMENDATION_URL}
               label="추천"
               ariaLabel="북스 페이지로 이동"
               className="list-item md:hidden"
@@ -108,7 +109,7 @@ function Header() {
           </ul>
           <ul className="m-0 mt-1 flex list-none items-center gap-1.5 sm:gap-3 p-0 md:mt-0">
             <BooksRecommendationButton
-              href="https://micro-frontend-shell-two.vercel.app/books"
+              href={ENV.BOOKS_RECOMMENDATION_URL}
               label="책 추천 받기"
               ariaLabel="북스 페이지로 이동"
               tooltip="최근 경험한 감정에 어울리는 책을 알아보세요"
