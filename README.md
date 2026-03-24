@@ -23,6 +23,8 @@ booked-by-feelings/
     └── rules/         # 프로젝트 규칙
         ├── guidelines/  # 코딩 가이드라인 (coding-style, performance, security)
         └── specs/       # 앱별 기능 명세 (host)
+
+- books/             # 호스트 외부 모듈
 ```
 
 ## 기술 스택
