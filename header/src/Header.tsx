@@ -40,6 +40,32 @@ function Header() {
     .filter((item) => !rememberingItemIds.includes(item.id))
     .reduce((total, item) => total + item.quantity, 0);
 
+  const booksRecommendationHref = (() => {
+    if (!ENV.BOOKS_RECOMMENDATION_URL) {
+      return '#';
+    }
+
+    try {
+      const url = new URL(ENV.BOOKS_RECOMMENDATION_URL, window.location.origin);
+
+      if (user?.uid) {
+        url.searchParams.set('userId', user.uid);
+      }
+
+      return url.toString();
+    } catch (error) {
+      console.error('[Header] Failed to build books recommendation URL', error);
+
+      if (!user?.uid) {
+        return ENV.BOOKS_RECOMMENDATION_URL;
+      }
+
+      const separator = ENV.BOOKS_RECOMMENDATION_URL.includes('?') ? '&' : '?';
+
+      return `${ENV.BOOKS_RECOMMENDATION_URL}${separator}userId=${encodeURIComponent(user.uid)}`;
+    }
+  })();
+
   const isActive = (path: string) => {
     if (path === '/') {
       return location.pathname === '/';
@@ -99,7 +125,7 @@ function Header() {
           </Link>
           <ul className="m-0 mt-1 flex list-none items-center gap-1.5 p-0 md:hidden">
             <BooksRecommendationButton
-              href={ENV.BOOKS_RECOMMENDATION_URL}
+              href={booksRecommendationHref}
               label="추천"
               ariaLabel="북스 페이지로 이동"
               className="list-item md:hidden"
@@ -109,7 +135,7 @@ function Header() {
           </ul>
           <ul className="m-0 mt-1 flex list-none items-center gap-1.5 sm:gap-3 p-0 md:mt-0">
             <BooksRecommendationButton
-              href={ENV.BOOKS_RECOMMENDATION_URL}
+              href={booksRecommendationHref}
               label="책 추천 받기"
               ariaLabel="북스 페이지로 이동"
               tooltip="최근 경험한 감정에 어울리는 책을 알아보세요"

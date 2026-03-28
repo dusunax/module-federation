@@ -5,7 +5,6 @@ import federation from '@originjs/vite-plugin-federation';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const hostRemote = env.VITE_HOST_REMOTE || 'https://dusunax-001.web.app/assets/remoteEntry.js';
-  const authRemote = env.VITE_AUTH_REMOTE || 'https://auth-dusunax-001.web.app/assets/remoteEntry.js';
 
   return {
     esbuild: {
@@ -20,7 +19,6 @@ export default defineConfig(({ mode }) => {
         name: 'hostRemoteTest',
         remotes: {
           host: hostRemote,
-          auth: authRemote,
         },
         shared: {
           react: {

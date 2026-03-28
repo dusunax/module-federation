@@ -1,11 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const HOST_REMOTE_URL =
   import.meta.env.VITE_HOST_REMOTE || 'https://dusunax-001.web.app/assets/remoteEntry.js';
-const AUTH_REMOTE_URL =
-  import.meta.env.VITE_AUTH_REMOTE || 'https://auth-dusunax-001.web.app/assets/remoteEntry.js';
 
 const MAX_TRACE_LOGS = 120;
+const getQueryUserId = () => {
+  try {
+    return new URLSearchParams(window.location.search).get('userId');
+  } catch {
+    return null;
+  }
+};
 
 function getOrigin(url) {
   try {
@@ -31,62 +36,14 @@ function formatRecords(records) {
   return JSON.stringify(records, null, 2);
 }
 
-function formatUser(user) {
-  if (!user) {
-    return '(비로그인)';
-  }
-
-  return `${user.uid ?? 'uid-unknown'} (${user.email ?? 'email-unknown'})`;
-}
-
-function hasStoreApi(value) {
-  return Boolean(
-    value &&
-      (typeof value.getState === 'function' || typeof value.setState === 'function') &&
-      typeof value.subscribe === 'function'
-  );
-}
-
-const isPermissionError = (message) =>
-  typeof message === 'string' && message.includes('Missing or insufficient permissions');
-
-function AuthStoreObserver({ useAuthStore, onAuthState }) {
-  const authState = useAuthStore();
-  const didInitAuthListener = useRef(false);
-
-  useEffect(() => {
-    if (!authState || typeof authState.initAuthListener !== 'function' || didInitAuthListener.current) {
-      return;
-    }
-
-    didInitAuthListener.current = true;
-    const unsubscribe = authState.initAuthListener();
-
-    return () => {
-      if (typeof unsubscribe === 'function') {
-        unsubscribe();
-      }
-    };
-  }, [authState]);
-
-  useEffect(() => {
-    onAuthState?.(authState ?? null);
-  }, [authState?.loading, authState?.user?.uid, authState?.user?.email, onAuthState]);
-
-  return null;
-}
-
 export default function App() {
   const [status, setStatus] = useState('로딩 중');
   const [error, setError] = useState('');
   const [recordCount, setRecordCount] = useState(0);
   const [records, setRecords] = useState([]);
   const [rawPayload, setRawPayload] = useState('');
-  const [authStatus, setAuthStatus] = useState('로그인 상태 확인 전');
-  const [authUser, setAuthUser] = useState(null);
-  const [authActionError, setAuthActionError] = useState('');
+  const [queryUserId] = useState(() => getQueryUserId());
   const [Initializer, setInitializer] = useState(null);
-  const [authStore, setAuthStore] = useState(null);
   const [traceEvents, setTraceEvents] = useState([]);
 
   const addTrace = useCallback((name, detail = {}) => {
@@ -98,25 +55,6 @@ export default function App() {
       return next;
     });
   }, []);
-
-  const applyAuthState = useCallback(
-    (authState) => {
-      setAuthUser(authState?.user ?? null);
-      setAuthStatus(
-        authState?.loading
-          ? '인증 로딩 중'
-          : authState?.user
-          ? '로그인 유지 중'
-          : '비로그인'
-      );
-      addTrace('auth.state.updated', {
-        uid: authState?.user?.uid ?? null,
-        email: authState?.user?.email ?? null,
-        loading: authState?.loading ?? null,
-      });
-    },
-    [addTrace]
-  );
 
   const handleInitializerTrace = useCallback(
     (name, detail) => {
@@ -130,10 +68,8 @@ export default function App() {
       pageOrigin: window.location.origin,
       hostRemote: HOST_REMOTE_URL,
       hostRemoteOrigin: getOrigin(HOST_REMOTE_URL),
-      authRemote: AUTH_REMOTE_URL,
-      authRemoteOrigin: getOrigin(AUTH_REMOTE_URL),
       isHostLocalhost: getOrigin(HOST_REMOTE_URL).includes('localhost'),
-      isAuthLocalhost: getOrigin(AUTH_REMOTE_URL).includes('localhost'),
+      queryUserId: queryUserId ?? null,
       publicUrl: import.meta.env.BASE_URL,
       mode: import.meta.env.MODE,
     });
@@ -218,11 +154,12 @@ export default function App() {
               type: typeof InitializerComp,
             });
           }
-  } catch (err) {
+        } catch (err) {
           addTrace('host.emotionStoreInitializer.import.failed', {
             message: err instanceof Error ? err.message : String(err),
           });
         }
+
       } catch (err) {
         if (!mounted) return;
         const message = err instanceof Error ? err.message : String(err);
@@ -231,37 +168,6 @@ export default function App() {
         addTrace('host.sharedEmotionStore.import.failed', { message });
       }
 
-      try {
-        addTrace('auth.import.start', {
-          remote: AUTH_REMOTE_URL,
-        });
-        const authModule = await import('auth/authStore');
-        const resolvedAuthStore =
-          authModule?.useAuthStore ??
-          authModule?.default?.useAuthStore ??
-          authModule?.default ??
-          null;
-
-        if (!mounted) return;
-
-        if (typeof resolvedAuthStore !== 'function' && !hasStoreApi(resolvedAuthStore)) {
-          setAuthStatus('authStore 인터페이스 불일치: useAuthStore 훅/스토어가 없음');
-          addTrace('auth.import.invalid', {
-            type: typeof resolvedAuthStore,
-          });
-          return;
-        }
-
-        setAuthStore(() => resolvedAuthStore);
-        setAuthStatus('authStore 로드 완료');
-        addTrace('auth.import.success', {
-          api: hasStoreApi(resolvedAuthStore) ? 'store-api' : 'hook',
-        });
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'authStore 로드 실패';
-        setAuthStatus(`authStore 로드 실패: ${message}`);
-        addTrace('auth.import.failed', { message });
-      }
     })();
 
     return () => {
@@ -270,112 +176,7 @@ export default function App() {
         unsubscribe();
       }
     };
-  }, [addTrace, recordCount]);
-
-  useEffect(() => {
-    if (!authStore) {
-      return;
-    }
-
-    if (!hasStoreApi(authStore)) {
-      if (typeof authStore !== 'function') {
-        setAuthStatus('authStore 인터페이스 불일치: 함수가 아닙니다.');
-        addTrace('auth.binding.invalid', {
-          type: typeof authStore,
-        });
-      }
-      return;
-    }
-
-    const unsubscribeAuth = authStore.subscribe((state) => {
-      applyAuthState(state);
-    });
-
-    const currentState = authStore.getState?.();
-    if (currentState) {
-      applyAuthState(currentState);
-
-      if (typeof currentState.initAuthListener === 'function') {
-        const unsubscribe = currentState.initAuthListener();
-        setAuthStatus('인증 리스너 초기화 중');
-        addTrace('auth.listener.called', {
-          mode: 'store-api',
-        });
-
-        return () => {
-          unsubscribeAuth?.();
-          if (typeof unsubscribe === 'function') {
-            unsubscribe();
-          }
-        };
-      }
-    }
-
-    return () => {
-      unsubscribeAuth?.();
-    };
-  }, [applyAuthState, authStore, addTrace]);
-
-  const shouldUseObserver =
-    typeof authStore === 'function' && !hasStoreApi(authStore);
-
-  const runSignIn = async () => {
-    if (!hasStoreApi(authStore)) {
-      setAuthActionError('authStore 객체 모드가 아닙니다.');
-      return;
-    }
-
-    const signInWithGoogle = authStore.getState?.()?.signInWithGoogle;
-    if (typeof signInWithGoogle !== 'function') {
-      setAuthActionError('signInWithGoogle를 찾지 못했습니다.');
-      return;
-    }
-
-    try {
-      setAuthActionError('');
-      addTrace('auth.action.signIn.start', {});
-      await signInWithGoogle();
-      addTrace('auth.action.signIn.success', {
-        uid: authStore.getState?.()?.user?.uid ?? null,
-      });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      if (!isPermissionError(message)) {
-        setAuthActionError(message);
-      } else {
-        setAuthActionError('');
-      }
-      addTrace('auth.action.signIn.failed', { message });
-    }
-  };
-
-  const runSignOut = async () => {
-    if (!hasStoreApi(authStore)) {
-      setAuthActionError('authStore 객체 모드가 아닙니다.');
-      return;
-    }
-
-    const signOut = authStore.getState?.()?.signOut;
-    if (typeof signOut !== 'function') {
-      setAuthActionError('signOut를 찾지 못했습니다.');
-      return;
-    }
-
-    try {
-      setAuthActionError('');
-      addTrace('auth.action.signOut.start', {});
-      await signOut();
-      addTrace('auth.action.signOut.success', {});
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      if (!isPermissionError(message)) {
-        setAuthActionError(message);
-      } else {
-        setAuthActionError('');
-      }
-      addTrace('auth.action.signOut.failed', { message });
-    }
-  };
+  }, [addTrace]);
 
   const cardStyle = {
     background: '#ffffff',
@@ -409,16 +210,6 @@ export default function App() {
     marginLeft: 8,
   };
 
-  const actionButtonStyle = {
-    border: 'none',
-    color: 'white',
-    padding: '10px 18px',
-    borderRadius: 999,
-    fontWeight: 700,
-    fontSize: 14,
-    cursor: 'pointer',
-  };
-
   const detailPreStyle = {
     whiteSpace: 'pre-wrap',
     background: '#f8fbff',
@@ -442,9 +233,6 @@ export default function App() {
       }}
     >
       {Initializer ? <Initializer onTrace={handleInitializerTrace} /> : null}
-      {shouldUseObserver ? (
-        <AuthStoreObserver useAuthStore={authStore} onAuthState={applyAuthState} />
-      ) : null}
 
       <div
         style={{
@@ -492,20 +280,6 @@ export default function App() {
                 </div>
               </div>
               <div>
-                <strong>Auth Remote</strong>
-                <div
-                  style={{
-                    fontSize: 12,
-                    color: '#334155',
-                    wordBreak: 'break-all',
-                    marginTop: 6,
-                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
-                  }}
-                >
-                  {AUTH_REMOTE_URL}
-                </div>
-              </div>
-              <div>
                 <strong>상태</strong>
                 <span style={{ ...chipStyle, background: statusColor(status) }}>{status}</span>
               </div>
@@ -516,48 +290,13 @@ export default function App() {
             <h2 style={{ marginTop: 0, marginBottom: 12, fontSize: 18, color: '#0f172a' }}>인증 상태</h2>
             <div style={sectionMetaStyle}>
               <div>
-                <strong>로그인 사용자</strong> {formatUser(authUser)}
+                <strong>query userId</strong> {queryUserId ?? '(없음)'}
               </div>
               <div>
-                <strong>로그인 상태</strong> {authStatus}
-              </div>
-              <div>
-                <strong>authStore 객체</strong> {hasStoreApi(authStore) ? 'yes' : 'no'}
+                <strong>감정 조회 userId</strong>{' '}
+                {queryUserId ?? '(없음)'}
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginTop: 14 }}>
-              <button
-                type="button"
-                onClick={runSignIn}
-                disabled={!hasStoreApi(authStore)}
-                style={{
-                  ...actionButtonStyle,
-                  background: '#2563eb',
-                  cursor: !hasStoreApi(authStore) ? 'not-allowed' : 'pointer',
-                  opacity: !hasStoreApi(authStore) ? 0.55 : 1,
-                }}
-              >
-                Google 로그인
-              </button>
-              <button
-                type="button"
-                onClick={runSignOut}
-                disabled={!hasStoreApi(authStore) || !authUser}
-                style={{
-                  ...actionButtonStyle,
-                  background: '#0f172a',
-                  cursor: !hasStoreApi(authStore) || !authUser ? 'not-allowed' : 'pointer',
-                  opacity: !hasStoreApi(authStore) || !authUser ? 0.55 : 1,
-                }}
-              >
-                로그아웃
-              </button>
-            </div>
-            {authActionError && (
-              <p style={{ color: '#b91c1c', marginTop: 10, marginBottom: 0 }}>
-                로그인 동작 오류: {authActionError}
-              </p>
-            )}
           </section>
 
           <section style={cardStyle}>

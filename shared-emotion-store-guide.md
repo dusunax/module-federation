@@ -60,8 +60,8 @@ export type SharedEmotionStoreBridge = {
 
 1. `bootstrap`에서 인증 리스너와 동기화 초기화 실행
 2. `resolveEmotionUserId()`에서 사용자 식별을 결정
-   - `auth` 상태의 `user.uid` 우선 (동일 오리진 모듈에서 사용)
-   - 없으면 `window.location.search`의 `userId` (오리진이 다른 모듈에서 사용)
+   - `auth` 상태의 `user.uid` 우선
+   - 없으면 `window.location.search`의 `userId`
 3. `userId` 존재 시 `getRecentOrders(userId, limit)` 조회
 4. 주문을 `setEmotionRecordsFromOrders`로 변환해 `records` 갱신
 5. 사용자 변경 시 동기화를 다시 수행, 없으면 `clearEmotionRecords()`

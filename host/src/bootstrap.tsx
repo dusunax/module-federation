@@ -29,6 +29,21 @@ declare global {
   }
 }
 
+const resolveEmotionUserId = (): string | null => {
+  const userIdFromAuth = useAuthStore.getState().user?.uid;
+  if (userIdFromAuth) {
+    return userIdFromAuth;
+  }
+
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const userIdFromQuery = params.get('userId');
+  return userIdFromQuery && userIdFromQuery.trim().length > 0 ? userIdFromQuery.trim() : null;
+};
+
 const createSharedEmotionStoreBridge = (): SharedEmotionStoreBridge => {
   const store = useSharedEmotionStore;
   return {
@@ -79,13 +94,13 @@ const startSharedEmotionDashboardSync = () => {
 
     isRunning = true;
     try {
-      const user = useAuthStore.getState().user;
-      if (!user?.uid) {
+      const userId = resolveEmotionUserId();
+      if (!userId) {
         useSharedEmotionStore.getState().clearEmotionRecords();
         return;
       }
 
-      const orders = await getRecentOrders(user.uid, 50);
+      const orders = await getRecentOrders(userId, 50);
       useSharedEmotionStore.getState().setEmotionRecordsFromOrders(Array.isArray(orders) ? orders : []);
     } catch (error) {
       console.error('[shared-emotion] failed to sync records from orders', error);
@@ -95,8 +110,8 @@ const startSharedEmotionDashboardSync = () => {
   };
 
   const runSync = async () => {
-    const user = useAuthStore.getState().user;
-    if (!user?.uid) {
+    const userId = resolveEmotionUserId();
+    if (!userId) {
       useSharedEmotionStore.getState().clearEmotionRecords();
       return;
     }
@@ -105,8 +120,9 @@ const startSharedEmotionDashboardSync = () => {
   };
 
   const unsubscribe = useAuthStore.subscribe((state, prevState) => {
-    const prevUserId = prevState.user?.uid;
-    const nextUserId = state.user?.uid;
+    const queryUserId = resolveEmotionUserId();
+    const prevUserId = prevState.user?.uid ?? queryUserId;
+    const nextUserId = state.user?.uid ?? queryUserId;
     if (nextUserId === prevUserId) {
       return;
     }
@@ -122,7 +138,7 @@ const startSharedEmotionDashboardSync = () => {
     }
   });
 
-  if (useAuthStore.getState().user?.uid) {
+  if (resolveEmotionUserId()) {
     void runSync();
     timer = setInterval(() => {
       void runSync();
@@ -136,10 +152,8 @@ const startSharedEmotionDashboardSync = () => {
 };
 
 const startApp = () => {
-  registerSharedEmotionStoreBridge();
-
-  // Firebase Auth 리스너 초기화
   useAuthStore.getState().initAuthListener();
+  registerSharedEmotionStoreBridge();
   startSharedEmotionDashboardSync();
 
   const rootElement = document.getElementById('root');

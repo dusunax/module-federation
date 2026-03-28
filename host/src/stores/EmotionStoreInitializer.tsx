@@ -8,7 +8,26 @@ export interface EmotionStoreInitializerProps {
   onTrace?: (name: string, detail?: Record<string, unknown>) => void;
 }
 
-const trace = (onTrace, name, detail = {}) => {
+const resolveEmotionUserId = (): string | null => {
+  const userIdFromAuth = useAuthStore.getState().user?.uid;
+  if (userIdFromAuth) {
+    return userIdFromAuth;
+  }
+
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const userIdFromQuery = params.get('userId');
+  return userIdFromQuery && userIdFromQuery.trim().length > 0 ? userIdFromQuery.trim() : null;
+};
+
+const trace = (
+  onTrace: EmotionStoreInitializerProps['onTrace'],
+  name: string,
+  detail: Record<string, unknown> = {}
+) => {
   if (typeof onTrace === 'function') {
     onTrace(name, detail);
   }
@@ -20,7 +39,7 @@ export default function EmotionStoreInitializer({ limit = 100, onTrace }: Emotio
     let canceled = false;
 
     const hydrate = async () => {
-      const userId = useAuthStore.getState().user?.uid;
+      const userId = resolveEmotionUserId();
 
       if (!userId) {
         useSharedEmotionStore.getState().clearEmotionRecords();
@@ -65,7 +84,7 @@ export default function EmotionStoreInitializer({ limit = 100, onTrace }: Emotio
       }
 
       trace(onTrace, 'auth.changed', {
-        userId: useAuthStore.getState().user?.uid ?? null,
+        userId: resolveEmotionUserId(),
       });
       void hydrate();
     });
