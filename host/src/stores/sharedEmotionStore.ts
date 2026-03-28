@@ -3,15 +3,12 @@ import type { Order } from '@shared/types/api';
 
 export type EmotionIntensity = 1 | 2 | 3 | 4 | 5;
 
-export type SharedEmotionSource = 'chatbot' | 'manual' | 'imported';
-
 export interface SharedEmotionRecord {
   id: string;
   emotion: string;
   date: string;
   intensity: EmotionIntensity;
   note?: string;
-  source: SharedEmotionSource;
   createdAt: number;
 }
 
@@ -217,7 +214,6 @@ export const useSharedEmotionStore = create<SharedEmotionStoreState>((set, get) 
           date: toDateKey(addedAt),
           intensity: toDashboardRecordIntensity(item.product?.intensity),
           note: baseNote,
-          source: 'imported',
           createdAt: Number.isFinite(createdAt) ? createdAt : Date.now(),
         });
 

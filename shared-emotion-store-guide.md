@@ -1,177 +1,121 @@
 # 공유 감정 스토어 가이드
 
-## 0) 먼저 읽기
+## 1) 현재 구조 요약
 
-- 브릿지는 `window.__sharedEmotionStoreBridge__` 에 노출됩니다.
-- 버전은 `1.0.0`이고, 버전 비교는 문자열 비교가 아니라 숫자 분해 비교를 사용합니다.
-- `getState()`는 **읽기 전용 스냅샷**입니다. 직접 수정하지 마세요.
-- 구독은 상태 참조가 바뀐 시점에 발생합니다(불필요한 렌더 최소화를 위해 `records`의 키만 비교하세요).
-- 브릿지가 없거나 버전이 맞지 않으면 fallback UI를 띄워야 합니다.
+- `sharedEmotionStore`는 **호스트가 소유**하는 상태입니다.
+- 호스트는 Module Federation으로 다음을 노출합니다.
+  - `host/sharedEmotionStore`
+  - `host/EmotionStoreInitializer`
+- 호스트 노출 모듈을 가져온 원격 앱에서 상태를 구독해 UI를 구성합니다.
+- 인증 객체는 공유하지 않고, `userId`를 기준으로 주문 데이터를 다시 조회해 스토어를 갱신합니다.
 
-## 1) 브릿지 기본
+## 2) 주 의존 파일
 
-### 노출 위치
+- [host/src/vite.config.ts](/Users/du/repository/test-claude-code/host/src/vite.config.ts): MF expose 설정
+- [host/src/bootstrap.tsx](/Users/du/repository/test-claude-code/host/src/bootstrap.tsx): 브릿지 등록과 동기화 스케줄러 시작
+- [host/src/stores/sharedEmotionStore.ts](/Users/du/repository/test-claude-code/host/src/stores/sharedEmotionStore.ts): Zustand 스토어, 주간 payload 계산
+- [host/src/stores/EmotionStoreInitializer.tsx](/Users/du/repository/test-claude-code/host/src/stores/EmotionStoreInitializer.tsx): 사용자 식별 기반 주문 동기화
 
-- 파일: `host/src/bootstrap.tsx`
-- 기본 키: `window.__sharedEmotionStoreBridge__`
-- 권장 키: `window.__BOOKED_BY_FEELINGS__.sharedEmotionStore`
-- 용도: 감정 기록을 앱 간 읽기/구독하는 공유 상태 인터페이스
-
-### 타입(요약)
+## 3) 상태 계약(Bridge 타입)
 
 ```ts
-type SharedEmotionRecord = {
+export type SharedEmotionRecord = {
   id: string;
   emotion: string;
-  date: string;          // YYYY-MM-DD (집계 키)
+  date: string; // YYYY-MM-DD
   intensity: 1 | 2 | 3 | 4 | 5;
   note?: string;
-  source: 'chatbot' | 'manual' | 'imported';
-  createdAt: number;     // unix ms
+  createdAt: number; // unix ms
 };
 
 type WeeklyEmotionPayload = {
   version: '1.0.0';
-  startDate: string; // YYYY-MM-DD (일~토 구간)
-  endDate: string;   // YYYY-MM-DD (일~토 구간)
+  startDate: string; // Sunday
+  endDate: string; // Saturday
   records: SharedEmotionRecord[];
 };
 
-type SharedEmotionStoreSnapshot = {
+export type SharedEmotionStoreSnapshot = {
   records: SharedEmotionRecord[];
 };
 
-type SharedEmotionStoreBridge = {
+export type SharedEmotionStoreBridge = {
   version: '1.0.0';
   getState: () => SharedEmotionStoreSnapshot;
   subscribe: (
-    listener: (state: SharedEmotionStoreSnapshot, prevState: SharedEmotionStoreSnapshot) => void
+    listener: (
+      state: SharedEmotionStoreSnapshot,
+      prevState: SharedEmotionStoreSnapshot
+    ) => void
   ) => () => void;
   getRecentWeekPayload: (baseDate?: string | Date) => WeeklyEmotionPayload;
 };
 ```
 
-## 2) 기본 사용 순서 (권장)
+- `version`은 현재 `1.0.0` 입니다.
+- `getRecentWeekPayload`는 일요일~토요일 구간의 주간 레코드를 반환합니다.
+- 주간 계산/정렬의 기본 키는 각 레코드의 `createdAt`입니다.
 
-1. 브릿지 조회/대기 (`resolveSharedBridge`, `waitForSharedBridge`)
-2. 버전 확인 (`isSupportedVersion`)
-3. 데이터 사용 (`getState`, `getRecentWeekPayload`)
-4. 변경 반영 (`subscribe`)
-5. 컴포넌트 언마운트 시 `unsubscribe`
+## 4) 호스트 동기화 파이프라인
 
-```ts
-const isSupportedBridge = (bridge: unknown): bridge is SharedEmotionStoreBridge => {
-  const b = bridge as SharedEmotionStoreBridge | null;
-  return !!b && typeof b.version === 'string' && isSupportedVersion(b.version) && typeof b.getState === 'function';
-};
+1. `bootstrap`에서 인증 리스너와 동기화 초기화 실행
+2. `resolveEmotionUserId()`에서 사용자 식별을 결정
+   - `auth` 상태의 `user.uid` 우선 (동일 오리진 모듈에서 사용)
+   - 없으면 `window.location.search`의 `userId` (오리진이 다른 모듈에서 사용)
+3. `userId` 존재 시 `getRecentOrders(userId, limit)` 조회
+4. 주문을 `setEmotionRecordsFromOrders`로 변환해 `records` 갱신
+5. 사용자 변경 시 동기화를 다시 수행, 없으면 `clearEmotionRecords()`
 
-(async () => {
-  let unsubscribe: (() => void) | null = null;
+`host/src/bootstrap.tsx`와 `host/src/stores/EmotionStoreInitializer.tsx`가 이 경로를 공유합니다.
 
-  try {
-    const bridge = await waitForSharedBridge(4000);
-    if (!isSupportedBridge(bridge)) return;
-
-    const state = bridge.getState();
-    const thisWeek = bridge.getRecentWeekPayload(new Date());
-    console.log('current', state.records.length, thisWeek);
-
-    unsubscribe = bridge.subscribe((next, prev) => {
-      if (next.records.length === prev.records.length) return;
-      console.log('records changed');
-    });
-  } catch (error) {
-    // fallback: 로컬 상태만 표시하거나 안내 UI
-    console.warn('shared bridge fallback', error);
-  }
-
-  return () => unsubscribe?.();
-})();
-```
-
-## 3) 각 API 쉽게 쓰기
-
-### `getState()`
-- 현재 감정 기록 전체를 가져옵니다.
-- **반환값은 변경 금지** (`state.records.push()` 금지).
-
-### `subscribe(listener)`
-- 기록이 바뀌었을 때 호출되는 이벤트 구독입니다.
-- 반환값은 `unsubscribe` 함수.
-- 사용 시 `unmount` 에서 반드시 해제.
-
-### `getRecentWeekPayload(baseDate?)`
-- `baseDate`를 기준으로 일요일~토요일 구간을 계산해 반환.
-- 기본값은 현재 시각.
-- `startDate`, `endDate`: `YYYY-MM-DD`
-- `date`: 집계 키, `createdAt`: 정렬용.
-
-## 4) 버전/호환성
+## 5) 원격 앱 소비 패턴
 
 ```ts
-type BridgeVersion = '1.0.0';
-type ParsedVersion = { major: number; minor: number; patch: number };
-const MIN_SHARED_EMOTION_STORE_VERSION: BridgeVersion = '1.0.0';
+const module = await import('host/sharedEmotionStore');
+const store = module.useSharedEmotionStore;
 
-const parseVersion = (value: string): ParsedVersion | null => {
-  const [major, minor, patch] = value.split('.').map((segment) => Number(segment));
-  if (!Number.isFinite(major) || !Number.isFinite(minor) || !Number.isFinite(patch)) return null;
-  return { major, minor, patch };
+const applyState = () => {
+  const nextState = store.getState();
+  const payload = nextState.getRecentWeekPayload?.(new Date());
+  const nextRecords = payload?.records ?? nextState.records ?? [];
+  // 렌더 상태 업데이트
 };
 
-const isSupportedVersion = (value?: string): boolean => {
-  if (!value) return false;
-  const target = parseVersion(value);
-  const minimum = parseVersion(MIN_SHARED_EMOTION_STORE_VERSION);
-  if (!target || !minimum) return false;
-  if (target.major !== minimum.major) return target.major > minimum.major;
-  if (target.minor !== minimum.minor) return target.minor > minimum.minor;
-  return target.patch >= minimum.patch;
-};
+applyState();
+const unsubscribe = store.subscribe(() => applyState());
 ```
 
-## 5) 브릿지 준비 유틸 (요약)
+- `Initializer`는 `host/EmotionStoreInitializer`를 동적으로 받아 렌더링하고,
+  host 쪽 동기화 훅을 트리거합니다.
 
-```ts
-type ReadyBridge = SharedEmotionStoreBridge;
-type SharedBridge =
-  typeof window extends Window & { __sharedEmotionStoreBridge__?: ReadyBridge }
-    ? NonNullable<Window['__sharedEmotionStoreBridge__']>
-    : never;
+## 6) 글로벌 브릿지(호환 경로)
 
-const resolveSharedBridge = (): SharedBridge | null => {
-  const root = window as Window & {
-    __sharedEmotionStoreBridge__?: SharedBridge;
-    __BOOKED_BY_FEELINGS__?: { sharedEmotionStore?: SharedBridge };
-  };
-  return root.__BOOKED_BY_FEELINGS__?.sharedEmotionStore ?? root.__sharedEmotionStoreBridge__ ?? null;
-};
+- `window.__sharedEmotionStoreBridge__`
+- `window.__BOOKED_BY_FEELINGS__?.sharedEmotionStore`
 
-const waitForSharedBridge = (timeoutMs = 5000): Promise<SharedBridge> =>
-  new Promise((resolve, reject) => {
-    const start = Date.now();
-    const tick = () => {
-      const bridge = resolveSharedBridge();
-      if (bridge && isSupportedVersion(bridge.version)) {
-        resolve(bridge);
-        return;
-      }
-      if (Date.now() - start > timeoutMs) {
-        reject(new Error('shared emotion bridge timeout'));
-        return;
-      }
-      window.setTimeout(tick, 16);
-    };
-    tick();
-  });
-```
+현재 원격 앱은 기본적으로 MF 모듈 import 방식을 사용하며, 글로벌 브릿지는 예비/호환 경로입니다.
 
-## 6) 체크리스트
+## 7) 사용 시 주의점(특히 오리진 혼용)
 
-- 브릿지 존재/버전 확인
-- `getState` 수정 금지
-- `subscribe` 후 반드시 `unsubscribe`
-- `date`는 집계 키, `createdAt`는 최신순 정렬용
-- `source` 값은 계약된 값만 처리
-- 브릿지 미연결/버전 미지원 시 fallback UI
+- `getState` 결과는 읽기 전용으로 취급합니다.
+- `subscribe` 해제 누락 시 메모리 누수/중복 이벤트가 발생합니다.
+- `useEffect` 재실행으로 구독 중복이 생기지 않도록 의존성 관리를 최소화합니다.
+- 인증 라우팅(ProtectedRoute)과는 분리되어야 하며, 조회 실패 시 사용자 메시지/폴백 UI를 분리합니다.
+- remoteEntry URL이 바뀌면 스키마 불일치가 발생할 수 있으므로 배포/캐시 관리를 명확히 합니다.
 
+## 8) 권장 디버그 체크리스트
+
+- 임포트 상태
+  - `host.sharedEmotionStore.import.success`
+  - `host.emotionStoreInitializer.import.success`
+- 동기화 상태
+  - `EmotionStoreInitializer.hydrate.start`
+  - `EmotionStoreInitializer.hydrate.success`(`ordersCount`)
+  - `EmotionStoreInitializer.auth.changed`
+- 표시 상태
+  - `host.store.updated`(`count`)
+  - `fullState.json`, `weeklyPayload.json`
+- 빈 데이터 판별
+  - `ordersCount === 0`인지
+  - `userId`가 실제 주문 조회 대상으로 맞는지
+  - `createdAt/date`가 주간 범위 밖인지

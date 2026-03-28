@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuthStore } from 'auth/authStore';
 
 type EmotionIntensity = 1 | 2 | 3 | 4 | 5;
-type SharedEmotionSource = 'chatbot' | 'manual' | 'imported';
 
 const RECENT_PAGE_SIZE = 5;
 
@@ -12,7 +11,6 @@ type SharedEmotionRecord = {
   date: string;
   intensity: EmotionIntensity;
   note?: string;
-  source: SharedEmotionSource;
   createdAt: number;
 };
 
@@ -68,7 +66,6 @@ const isRecord = (value: unknown): value is SharedEmotionRecord => {
     date?: unknown;
     intensity?: unknown;
     note?: unknown;
-    source?: unknown;
     createdAt?: unknown;
   };
 
@@ -78,10 +75,7 @@ const isRecord = (value: unknown): value is SharedEmotionRecord => {
     typeof candidate.date === 'string' &&
     typeof candidate.intensity === 'number' &&
     [1, 2, 3, 4, 5].includes(candidate.intensity) &&
-    (candidate.source === undefined ||
-      candidate.source === 'chatbot' ||
-      candidate.source === 'manual' ||
-      candidate.source === 'imported')
+      candidate.note === undefined || typeof candidate.note === 'string'
   );
 };
 
@@ -99,11 +93,10 @@ const resolveRecordCreatedAt = (record: SharedEmotionRecord): number => {
   return 0;
 };
 
-const normalizeRecord = (record: SharedEmotionRecord, fallbackSource: SharedEmotionSource = 'imported'): SharedEmotionRecord => ({
+const normalizeRecord = (record: SharedEmotionRecord): SharedEmotionRecord => ({
   ...record,
   id: record.id || `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
   emotion: normalizeEmotionText(record.emotion),
-  source: record.source || fallbackSource,
   createdAt: resolveRecordCreatedAt(record),
   date: record.date,
 });
